@@ -368,6 +368,103 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     });
   };
 
+  // Site-wide reveal-on-scroll effects for pages that do not use explicit RevealOnScroll wrappers.
+  let revealObserver = null;
+  let revealRaf = 0;
+
+  const isRevealCandidate = (node) => {
+    if (!node || !(node instanceof HTMLElement)) return false;
+    if (node.closest('[data-no-auto-reveal]')) return false;
+    if (node.classList.contains('reveal-observe')) return false;
+    if (node.querySelector('.reveal-observe')) return false;
+    if (node.getAttribute('aria-hidden') === 'true') return false;
+
+    const className = typeof node.className === 'string' ? node.className : '';
+    if (/(^|\\s)(sr-only|pointer-events-none)(\\s|$)/.test(className)) return false;
+    if (/(^|\\s)(absolute|fixed)(\\s|$)/.test(className)) return false;
+
+    return true;
+  };
+
+  const uniqueNodes = (nodes) => nodes.filter((node, index, all) => all.indexOf(node) === index);
+
+  const collectRevealTargets = () => {
+    if (window.location.pathname.startsWith('/studio')) return [];
+
+    const targets = [];
+
+    document.querySelectorAll('main').forEach((mainEl) => {
+      if (!(mainEl instanceof HTMLElement)) return;
+
+      const semanticBlocks = Array.from(mainEl.querySelectorAll('section, article, header')).filter((node) =>
+        isRevealCandidate(node)
+      );
+
+      if (semanticBlocks.length > 0) {
+        semanticBlocks.forEach((node) => targets.push(node));
+        return;
+      }
+
+      const directChildren = Array.from(mainEl.children).filter((node) => isRevealCandidate(node));
+      directChildren.forEach((node) => targets.push(node));
+
+      if (directChildren.length === 1 && directChildren[0] instanceof HTMLElement) {
+        Array.from(directChildren[0].children)
+          .filter((node) => isRevealCandidate(node))
+          .forEach((node) => targets.push(node));
+      }
+    });
+
+    return uniqueNodes(targets);
+  };
+
+  const refreshAutoReveals = () => {
+    if (revealObserver) {
+      revealObserver.disconnect();
+      revealObserver = null;
+    }
+
+    const targets = collectRevealTargets();
+    if (!targets.length) return;
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hasIntersectionObserver = 'IntersectionObserver' in window;
+
+    targets.forEach((node, index) => {
+      node.classList.add('reveal-observe');
+      node.dataset.autoRevealManaged = 'true';
+      if (!node.dataset.effect) node.dataset.effect = 'fade-up';
+      node.style.setProperty('--reveal-delay', (Math.min(index * 70, 280) + 'ms'));
+      node.dataset.revealed = reducedMotion || !hasIntersectionObserver ? 'true' : 'false';
+    });
+
+    if (reducedMotion || !hasIntersectionObserver) return;
+
+    revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.target instanceof HTMLElement) {
+            entry.target.dataset.revealed = 'true';
+            revealObserver && revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.16, rootMargin: '0px 0px -8% 0px' }
+    );
+
+    targets.forEach((node) => revealObserver.observe(node));
+  };
+
+  const scheduleRevealRefresh = () => {
+    if (revealRaf) window.cancelAnimationFrame(revealRaf);
+
+    revealRaf = window.requestAnimationFrame(() => {
+      revealRaf = window.requestAnimationFrame(() => {
+        refreshAutoReveals();
+      });
+    });
+  };
+
   // Mobile drawer open/close
   const drawer = document.getElementById('mobile-drawer');
   let lastOpener = null;
@@ -449,6 +546,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const onLocationChange = () => {
     setActive();
     closeMenu();
+    scheduleRevealRefresh();
   };
 
   const patchHistory = (type) => {
@@ -469,6 +567,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   // Initial state
   setActive();
   syncAria(root.dataset.menuOpen === 'true');
+  scheduleRevealRefresh();
 })();
             `}
           </Script>

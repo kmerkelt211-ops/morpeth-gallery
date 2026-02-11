@@ -248,13 +248,7 @@ export default function ClubsPageClient({
         className="pointer-events-none absolute inset-0 halftone-soft opacity-20"
       />
       <div className="relative mx-auto max-w-6xl">
-        <div className="mb-10 flex items-center justify-between gap-4">
-          <Link
-            href="/"
-            className="font-exhibitions inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.26em] text-neutral-800"
-          >
-            ← Back to exhibitions
-          </Link>
+        <div className="mb-10 flex items-center justify-end gap-4">
           <span className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
             {pageTitle}
           </span>
@@ -482,14 +476,6 @@ export default function ClubsPageClient({
           </div>
         </section>
 
-        <div className="mt-16">
-          <Link
-            href="/"
-            className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
-          >
-            ← Back to exhibitions
-          </Link>
-        </div>
       </div>
     </main>
   )

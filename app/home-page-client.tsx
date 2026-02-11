@@ -244,7 +244,7 @@ export default function HomePageClient({
           <div className="order-1 md:order-2 relative">
             <div
               aria-hidden
-              className="pointer-events-none absolute -top-8 -bottom-20 right-[-38%] w-[180%] rotate-6 halftone-current-exhibitions opacity-95 md:-top-28 md:-bottom-56 md:right-[-52%] md:w-[230%]"
+              className="pointer-events-none absolute -top-8 -bottom-20 right-[-38%] hidden w-[180%] rotate-6 halftone-current-exhibitions opacity-95 md:-top-28 md:-bottom-56 md:right-[-52%] md:block md:w-[230%]"
             />
             <div className="relative z-10 grid gap-4 md:grid-cols-2">
               {activeExhibition?.heroImageUrl ? (
@@ -577,10 +577,13 @@ export default function HomePageClient({
                 </p>
               </div>
               <div className="mt-6 flex flex-wrap gap-3 text-xs">
-                <button className="font-exhibitions inline-flex items-center justify-center gap-2 bg-black px-5 py-3 text-xs uppercase tracking-[0.26em] text-white">
+                <Link
+                  href="/support"
+                  className="font-exhibitions inline-flex items-center justify-center gap-2 bg-black px-5 py-3 text-xs uppercase tracking-[0.26em] text-white"
+                >
                   Get in touch
                   <span aria-hidden>→</span>
-                </button>
+                </Link>
               </div>
             </div>
 

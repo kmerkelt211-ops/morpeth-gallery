@@ -76,6 +76,18 @@ body {
 
 }
 
+/* Improve mobile readability by removing decorative halftone textures. */
+@media (max-width: 767px) {
+  .halftone-soft,
+  .halftone-strong,
+  .halftone-morpeth,
+  .halftone-current-exhibitions {
+    background-image: none !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+}
+
 /* -----------------------------
    Sticky header scroll-state
 ------------------------------ */
@@ -188,7 +200,7 @@ html[data-menu-open="true"] .mobile-drawer__panel {
 }
 
 /* -----------------------------
-   Support page reveals
+   Site-wide reveal effects
 ------------------------------ */
 .reveal-observe {
   opacity: 0;
