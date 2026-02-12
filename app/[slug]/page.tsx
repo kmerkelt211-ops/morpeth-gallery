@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import client from '../../sanity/lib/client'
+import LightboxKeyboardControls from '../components/lightbox-keyboard-controls'
 
 type PortableTextSpan = {
   _type: 'span'
@@ -147,7 +148,6 @@ export default async function GalleryExhibitionPage(props: {
     isCurrent,
     startDate,
     endDate,
-    bgColor,
     heroImageUrls,
     galleryImageUrls,
     guidePdfUrl,
@@ -186,10 +186,7 @@ export default async function GalleryExhibitionPage(props: {
     const label = 'WHAT’S ON'
 
     return (
-      <main
-        className="min-h-screen bg-neutral-50 px-6 py-16 md:px-10 lg:px-20"
-        style={{ backgroundColor: bgColor || '#F5F5F5' }}
-      >
+      <main className="min-h-screen bg-neutral-50 px-6 py-16 md:px-10 lg:px-20">
         <div className="mx-auto max-w-6xl">
           <div className="mb-6 flex items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-3">
@@ -385,10 +382,7 @@ export default async function GalleryExhibitionPage(props: {
   }
 
   return (
-    <main
-      className="min-h-screen px-6 py-16 md:px-10 lg:px-20"
-      style={{ backgroundColor: bgColor || '#F5F5F5' }}
-    >
+    <main id="exhibition-top" className="min-h-screen bg-neutral-50 px-6 py-16 md:px-10 lg:px-20">
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3">
@@ -547,27 +541,61 @@ export default async function GalleryExhibitionPage(props: {
 
         {lightboxImages.length > 0 && (
           <>
+            <LightboxKeyboardControls imageCount={lightboxImages.length} />
             {lightboxImages.map((src, i) => {
               const prev = i === 0 ? lightboxImages.length - 1 : i - 1
               const next = i === lightboxImages.length - 1 ? 0 : i + 1
 
               return (
                 <div key={`lb-${src}-${i}`} id={`lb-${i}`} className="lb" role="dialog" aria-modal="true">
-                  <a href="#gallery" className="lb__backdrop" aria-label="Close fullscreen view" />
+                  <a href="#exhibition-top" className="lb__backdrop" aria-label="Close fullscreen view" />
 
-                  <div className="lb__inner">
-                    <Image
-                      src={src}
-                      alt={`${title} fullscreen image ${i + 1}`}
-                      fill
-                      sizes="100vw"
-                      className="object-contain"
-                      priority={i === 0}
-                    />
+                  <div className="lb__shell">
+                    <div className="lb__meta">
+                      <p className="lb__label">Artwork view</p>
+                      <p className="lb__title">{title}</p>
+                      <p className="lb__count">
+                        {i + 1} / {lightboxImages.length}
+                      </p>
+                    </div>
 
-                    <a href="#gallery" className="lb__close" aria-label="Close">×</a>
-                    <a href={`#lb-${prev}`} className="lb__nav lb__prev" aria-label="Previous image">‹</a>
-                    <a href={`#lb-${next}`} className="lb__nav lb__next" aria-label="Next image">›</a>
+                    <div className="lb__inner">
+                      <Image
+                        src={src}
+                        alt={`${title} fullscreen image ${i + 1}`}
+                        fill
+                        sizes="100vw"
+                        className="lb__image object-contain"
+                        priority={i === 0}
+                      />
+
+                      <a href="#exhibition-top" className="lb__close" aria-label="Close">
+                        ×
+                      </a>
+                      {lightboxImages.length > 1 && (
+                        <>
+                          <a href={`#lb-${prev}`} className="lb__nav lb__prev" aria-label="Previous image">
+                            ‹
+                          </a>
+                          <a href={`#lb-${next}`} className="lb__nav lb__next" aria-label="Next image">
+                            ›
+                          </a>
+                        </>
+                      )}
+                    </div>
+
+                    {lightboxImages.length > 1 && (
+                      <div className="lb__strip" aria-label="Image navigation">
+                        {lightboxImages.map((_, stripIndex) => (
+                          <a
+                            key={`lb-strip-${stripIndex}`}
+                            href={`#lb-${stripIndex}`}
+                            className={`lb__dot ${stripIndex === i ? 'is-active' : ''}`}
+                            aria-label={`Go to image ${stripIndex + 1}`}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )
@@ -581,7 +609,7 @@ export default async function GalleryExhibitionPage(props: {
                 align-items: center;
                 justify-content: center;
                 z-index: 60;
-                padding: 24px;
+                padding: clamp(10px, 1.8vw, 24px);
               }
               .lb:target {
                 display: flex;
@@ -589,59 +617,207 @@ export default async function GalleryExhibitionPage(props: {
               .lb__backdrop {
                 position: absolute;
                 inset: 0;
-                background: rgba(0, 0, 0, 0.92);
+                background:
+                  radial-gradient(circle at 18% 18%, rgba(88, 137, 214, 0.18), transparent 42%),
+                  radial-gradient(circle at 82% 85%, rgba(255, 255, 255, 0.09), transparent 44%),
+                  rgba(5, 8, 16, 0.9);
+                backdrop-filter: blur(12px);
+              }
+              .lb__shell {
+                position: relative;
+                width: min(94vw, 1280px);
+                height: min(92vh, 860px);
+                display: grid;
+                grid-template-rows: auto 1fr auto;
+                gap: 12px;
+              }
+              .lb:target .lb__shell {
+                animation: lb-enter 260ms cubic-bezier(0.22, 1, 0.36, 1);
+              }
+              .lb__meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 0 4px;
+                color: rgba(255, 255, 255, 0.9);
+              }
+              .lb__label,
+              .lb__title,
+              .lb__count {
+                margin: 0;
+              }
+              .lb__label {
+                font-size: 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.24em;
+                opacity: 0.7;
+              }
+              .lb__title {
+                font-size: 13px;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
+              .lb__count {
+                margin-left: auto;
+                font-size: 11px;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                opacity: 0.8;
               }
               .lb__inner {
                 position: relative;
-                width: min(92vw, 1200px);
-                height: min(90vh, 820px);
-                border: 1px solid rgba(255, 255, 255, 0.15);
-                background: rgba(0, 0, 0, 0.35);
-                backdrop-filter: blur(6px);
+                overflow: hidden;
+                border-radius: 18px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                background:
+                  linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
+                  rgba(0, 0, 0, 0.65);
+                box-shadow:
+                  0 28px 80px rgba(0, 0, 0, 0.55),
+                  0 2px 0 rgba(255, 255, 255, 0.12) inset;
+              }
+              .lb__inner::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                background: radial-gradient(circle at center, transparent 45%, rgba(0, 0, 0, 0.25) 100%);
+              }
+              .lb__image {
+                padding: clamp(14px, 1.8vw, 24px);
               }
               .lb__close {
                 position: absolute;
-                top: 12px;
-                right: 14px;
-                width: 40px;
-                height: 40px;
+                top: 16px;
+                right: 16px;
+                width: 42px;
+                height: 42px;
                 display: grid;
                 place-items: center;
-                color: white;
+                z-index: 2;
+                color: #fff;
                 text-decoration: none;
-                font-size: 28px;
+                font-size: 30px;
                 line-height: 1;
-                border: 1px solid rgba(255, 255, 255, 0.25);
+                border-radius: 999px;
+                border: 1px solid rgba(255, 255, 255, 0.28);
                 background: rgba(0, 0, 0, 0.35);
+                backdrop-filter: blur(5px);
+                transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
               }
               .lb__nav {
                 position: absolute;
                 top: 50%;
                 transform: translateY(-50%);
-                width: 44px;
-                height: 44px;
+                width: 46px;
+                height: 46px;
                 display: grid;
                 place-items: center;
-                color: white;
+                z-index: 2;
+                color: #fff;
                 text-decoration: none;
-                font-size: 34px;
-                border: 1px solid rgba(255, 255, 255, 0.25);
-                background: rgba(0, 0, 0, 0.25);
+                font-size: 30px;
+                border-radius: 999px;
+                border: 1px solid rgba(255, 255, 255, 0.28);
+                background: rgba(0, 0, 0, 0.35);
+                backdrop-filter: blur(5px);
                 user-select: none;
+                transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
               }
               .lb__prev {
-                left: 12px;
+                left: 16px;
               }
               .lb__next {
-                right: 12px;
+                right: 16px;
+              }
+              .lb__strip {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 2px 0 0;
+              }
+              .lb__dot {
+                width: 22px;
+                height: 4px;
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.35);
+                transition: width 180ms ease, background-color 180ms ease, opacity 180ms ease;
+              }
+              .lb__dot.is-active {
+                width: 40px;
+                background: rgba(255, 255, 255, 0.95);
+              }
+              @media (hover: hover) {
+                .lb__close:hover,
+                .lb__nav:hover {
+                  border-color: rgba(255, 255, 255, 0.6);
+                  background: rgba(0, 0, 0, 0.55);
+                  transform: translateY(-50%) scale(1.04);
+                }
+                .lb__close:hover {
+                  transform: scale(1.04);
+                }
+                .lb__dot:hover {
+                  background: rgba(255, 255, 255, 0.65);
+                }
+              }
+              @keyframes lb-enter {
+                0% {
+                  opacity: 0;
+                  transform: translateY(8px) scale(0.985);
+                }
+                100% {
+                  opacity: 1;
+                  transform: translateY(0) scale(1);
+                }
               }
               @media (max-width: 640px) {
-                .lb {
-                  padding: 12px;
-                }
-                .lb__inner {
+                .lb__shell {
                   width: 96vw;
-                  height: 86vh;
+                  height: 92vh;
+                  gap: 10px;
+                }
+                .lb__meta {
+                  gap: 8px;
+                }
+                .lb__label {
+                  letter-spacing: 0.16em;
+                }
+                .lb__title {
+                  font-size: 12px;
+                  letter-spacing: 0.1em;
+                }
+                .lb__count {
+                  font-size: 10px;
+                }
+                .lb__close {
+                  top: 10px;
+                  right: 10px;
+                  width: 38px;
+                  height: 38px;
+                  font-size: 26px;
+                }
+                .lb__nav {
+                  width: 38px;
+                  height: 38px;
+                  font-size: 24px;
+                }
+                .lb__prev {
+                  left: 10px;
+                }
+                .lb__next {
+                  right: 10px;
+                }
+                .lb__dot {
+                  width: 16px;
+                }
+                .lb__dot.is-active {
+                  width: 30px;
                 }
               }
             `}</style>
