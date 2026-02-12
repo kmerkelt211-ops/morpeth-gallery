@@ -2,13 +2,13 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type Club = {
   id: string
   title: string
-  strand: 'Photography' | 'Art' | 'Mixed media'
-  format: 'Lunchtime' | 'After school'
+  strand: string
+  format: string
   day: string
   time: string
   location: string
@@ -21,8 +21,31 @@ type Club = {
   whatYoullDo: string[]
   goodFor: string[]
   kit: string[]
-  signup: 'Drop-in' | 'Sign-up'
-  accent: string
+  signup: string
+  ctaLabel: string
+  accent?: string
+}
+
+type SanityClub = {
+  _key?: string
+  title?: string
+  strand?: string
+  format?: string
+  day?: string
+  time?: string
+  location?: string
+  poster?: {
+    kicker?: string
+    headline?: string
+    subline?: string
+  }
+  summary?: string
+  whatYoullDo?: string[]
+  goodFor?: string[]
+  kit?: string[]
+  signup?: string
+  ctaLabel?: string
+  accent?: string
 }
 
 export type ClubsPageData = {
@@ -30,8 +53,19 @@ export type ClubsPageData = {
   kicker?: string
   headline?: string
   intro?: string
+  heroImageUrl?: string
+  heroImageAlt?: string
+  heroPanelColor?: string
+  heroPrimaryCtaLabel?: string
+  heroPrimaryCtaHref?: string
+  heroSecondaryCtaLabel?: string
+  heroSecondaryCtaHref?: string
   badges?: string[]
   note?: string
+  clubsSectionTitle?: string
+  clubs?: SanityClub[]
+  faqTitle?: string
+  faqItems?: FaqItem[]
 }
 
 type FaqItem = {
@@ -64,107 +98,8 @@ const CLUBS: Club[] = [
     goodFor: ['Beginners welcome', 'GCSE / A level support', 'Anyone who likes making things'],
     kit: ['We provide: film (limited), paper, chemicals', 'Bring: enthusiasm + a steady hand', 'Optional: your own 35mm camera'],
     signup: 'Sign-up',
+    ctaLabel: 'More info',
     accent: '#E7F0FF',
-  },
-  {
-    id: 'portrait-studio-lunch',
-    title: 'Portrait Studio',
-    strand: 'Photography',
-    format: 'Lunchtime',
-    day: 'Thursdays',
-    time: '12:45–1:25pm',
-    location: 'Studio Space (Room A1)',
-    poster: {
-      kicker: 'LUNCHTIME • PHOTO STUDIO',
-      headline: 'PORTRAITS',
-      subline: 'Light • Pose • Story',
-    },
-    summary:
-      'Fast, fun studio sessions: lighting basics, backgrounds, and portrait series that look properly professional.',
-    whatYoullDo: [
-      'Try softbox + reflector lighting (no scary jargon)',
-      'Direct a subject and build confidence behind the camera',
-      'Edit a mini series ready for Instagram + the gallery wall',
-    ],
-    goodFor: ['Anyone who wants to build confidence', 'Students who love people & storytelling', 'Year 7–13'],
-    kit: ['We provide: lights, backdrops, cameras (limited)', 'Bring: a friend to model (optional)', 'Optional: your own camera/phone'],
-    signup: 'Drop-in',
-    accent: '#F3D7E6',
-  },
-  {
-    id: 'street-photo-walks',
-    title: 'Street Photography Walks',
-    strand: 'Photography',
-    format: 'After school',
-    day: 'Fridays',
-    time: '3:30–5:00pm',
-    location: 'Meet: School Reception',
-    poster: {
-      kicker: 'AFTER SCHOOL • OUT & ABOUT',
-      headline: 'STREET',
-      subline: 'Observe • Capture • Curate',
-    },
-    summary:
-      'Short guided walks around Bethnal Green to build an eye for light, moments, and composition.',
-    whatYoullDo: [
-      'Practice framing + composition with quick prompts',
-      'Learn respectful street photography (confidence + care)',
-      'Make a weekly “best 10” edit for the digital exhibition',
-    ],
-    goodFor: ['Students who like exploring', 'Anyone building a portfolio', 'People who want creative headspace'],
-    kit: ['Bring: a phone or camera', 'Wear: comfy shoes', 'We provide: photo prompts + editing workflow'],
-    signup: 'Drop-in',
-    accent: '#E6F5ED',
-  },
-  {
-    id: 'zine-lab',
-    title: 'Zine & Print Lab',
-    strand: 'Mixed media',
-    format: 'Lunchtime',
-    day: 'Tuesdays',
-    time: '12:45–1:25pm',
-    location: 'Art Room 2',
-    poster: {
-      kicker: 'LUNCHTIME • MAKE A ZINE',
-      headline: 'ZINE LAB',
-      subline: 'Cut • Paste • Print',
-    },
-    summary:
-      'Make small publications: collage, drawing, photo, typography — then fold, staple, and swap.',
-    whatYoullDo: [
-      'Create a mini zine each half-term (themes + prompts)',
-      'Try collage, photo transfers, and type layouts',
-      'Print and trade — and submit to the gallery shop display',
-    ],
-    goodFor: ['Quiet makers', 'Big ideas people', 'Anyone who loves stickers and scissors'],
-    kit: ['We provide: paper, glue, staples, scrap materials', 'Bring: images you want to use (optional)', 'Optional: a favourite pen'],
-    signup: 'Drop-in',
-    accent: '#FFF1D6',
-  },
-  {
-    id: 'digital-collage',
-    title: 'Digital Collage & Editing',
-    strand: 'Art',
-    format: 'After school',
-    day: 'Wednesdays',
-    time: '3:30–5:00pm',
-    location: 'ICT Suite 3',
-    poster: {
-      kicker: 'AFTER SCHOOL • DIGITAL ART',
-      headline: 'COLLAGE',
-      subline: 'Layers • Texture • Mood',
-    },
-    summary:
-      'A chill creative session using Photoshop / Photopea-style tools to build bold poster art and photo edits.',
-    whatYoullDo: [
-      'Learn layers, masks, and “how to make it look good”',
-      'Build a poster for a real school event or exhibition',
-      'Create a final export ready for printing or digital screens',
-    ],
-    goodFor: ['Students who like design', 'Photography editors', 'Anyone who likes experimenting'],
-    kit: ['We provide: computers + files', 'Bring: your images (optional)', 'Optional: headphones for focus'],
-    signup: 'Sign-up',
-    accent: '#ECE6FF',
   },
 ]
 
@@ -232,6 +167,23 @@ export default function ClubsPageClient({
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
   const pageData = initialPageData
 
+  useEffect(() => {
+    if (!activeClub) return
+
+    const previousOverflow = document.body.style.overflow
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setActiveClub(null)
+    }
+
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleEscape)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleEscape)
+    }
+  }, [activeClub])
+
   const pageTitle = pageData?.title || 'Clubs • Art + Photography'
   const pageKicker = pageData?.kicker || 'CLUBS & STUDIOS'
   const pageHeadline =
@@ -239,7 +191,48 @@ export default function ClubsPageClient({
   const pageIntro =
     pageData?.intro ||
     'A practical, welcoming set of creative clubs — from darkroom printing to portrait studio sessions. Built to feed directly into exhibitions: print walls, digital displays, and the school gallery programme.'
-  const heroImageSrc = '/gallery%20snapshots/T16313_10.jpg'
+  const heroImageSrc = pageData?.heroImageUrl || '/gallery%20snapshots/T16313_10.jpg'
+  const heroImageAlt = pageData?.heroImageAlt || 'Exhibition image for clubs hero'
+  const heroPanelColor = pageData?.heroPanelColor || '#f1df23'
+  const heroPrimaryCtaLabel = pageData?.heroPrimaryCtaLabel || 'View clubs'
+  const heroPrimaryCtaHref = pageData?.heroPrimaryCtaHref || '#whats-running'
+  const heroSecondaryCtaLabel = pageData?.heroSecondaryCtaLabel || 'Club FAQ'
+  const heroSecondaryCtaHref = pageData?.heroSecondaryCtaHref || '#faq'
+  const badges = (pageData?.badges || []).filter((item) => item?.trim())
+  const note = pageData?.note?.trim()
+  const clubsSectionTitle = pageData?.clubsSectionTitle || "WHAT'S RUNNING"
+  const faqTitle = pageData?.faqTitle || 'FAQ'
+  const faqItems = (pageData?.faqItems || []).filter(
+    (item): item is FaqItem => Boolean(item?.question?.trim()) && Boolean(item?.answer?.trim())
+  )
+  const clubsFromSanity: Club[] = (pageData?.clubs || [])
+    .filter((club) => club?.title?.trim())
+    .map((club, index) => {
+      const fallbackId = `club-${index + 1}`
+      return {
+        id: club._key || fallbackId,
+        title: club.title || `Club ${index + 1}`,
+        strand: club.strand || 'Mixed media',
+        format: club.format || 'Lunchtime',
+        day: club.day || 'TBC',
+        time: club.time || 'TBC',
+        location: club.location || 'TBC',
+        poster: {
+          kicker: club.poster?.kicker || 'PORTMAN GALLERY',
+          headline: club.poster?.headline || (club.title || 'CLUB').toUpperCase(),
+          subline: club.poster?.subline || 'Create • Learn • Share',
+        },
+        summary: club.summary || 'Details coming soon.',
+        whatYoullDo: club.whatYoullDo?.filter(Boolean) || [],
+        goodFor: club.goodFor?.filter(Boolean) || [],
+        kit: club.kit?.filter(Boolean) || [],
+        signup: club.signup || 'Drop-in',
+        ctaLabel: club.ctaLabel || 'More info',
+        accent: club.accent,
+      }
+    })
+  const clubsToShow = clubsFromSanity.length ? clubsFromSanity : CLUBS
+  const faqToShow = faqItems.length ? faqItems : DEFAULT_FAQ
 
   return (
     <main className="relative min-h-screen bg-white text-neutral-900 px-6 py-16 md:px-10 lg:px-20">
@@ -259,7 +252,7 @@ export default function ClubsPageClient({
             <div className="relative min-h-[300px] bg-neutral-900 md:min-h-full">
               <Image
                 src={heroImageSrc}
-                alt="Exhibition image for clubs hero"
+                alt={heroImageAlt}
                 fill
                 priority
                 sizes="(min-width: 1280px) 50vw, (min-width: 768px) 52vw, 100vw"
@@ -267,7 +260,10 @@ export default function ClubsPageClient({
               />
             </div>
 
-            <div className="flex flex-col justify-center bg-[#f1df23] px-7 py-10 md:px-14 md:py-12 lg:px-16">
+            <div
+              className="flex flex-col justify-center px-7 py-10 md:px-14 md:py-12 lg:px-16"
+              style={{ backgroundColor: heroPanelColor }}
+            >
               <p className="font-exhibitions text-[11px] uppercase tracking-[0.22em] text-neutral-900">
                 {pageKicker}
               </p>
@@ -282,19 +278,27 @@ export default function ClubsPageClient({
 
               <div className="mt-9 flex flex-wrap gap-4">
                 <Link
-                  href="#whats-running"
+                  href={heroPrimaryCtaHref}
                   className="font-exhibitions inline-flex items-center gap-3 bg-black px-7 py-3 text-xs uppercase tracking-[0.18em] text-white"
                 >
-                  View clubs <span aria-hidden className="text-xl leading-none">→</span>
+                  {heroPrimaryCtaLabel} <span aria-hidden className="text-xl leading-none">→</span>
                 </Link>
                 <Link
-                  href="#faq"
+                  href={heroSecondaryCtaHref}
                   className="font-exhibitions inline-flex items-center gap-3 border border-neutral-900 px-7 py-3 text-xs uppercase tracking-[0.18em] text-neutral-900"
                 >
-                  Club FAQ <span aria-hidden className="text-xl leading-none">→</span>
+                  {heroSecondaryCtaLabel} <span aria-hidden className="text-xl leading-none">→</span>
                 </Link>
               </div>
 
+              {badges.length ? (
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {badges.map((badge) => (
+                    <Badge key={badge}>{badge}</Badge>
+                  ))}
+                </div>
+              ) : null}
+              {note ? <p className="mt-4 text-xs leading-relaxed text-neutral-800">{note}</p> : null}
             </div>
           </div>
         </header>
@@ -303,13 +307,13 @@ export default function ClubsPageClient({
           <div className="relative">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
               <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">
-                WHAT&apos;S RUNNING
+                {clubsSectionTitle}
               </h2>
               <p className="text-xs text-neutral-600">
               </p>
             </div>
             <div className="grid gap-8 md:grid-cols-3">
-              {CLUBS.map((club) => (
+              {clubsToShow.map((club) => (
                 <article
                   key={club.id}
                   className="group flex flex-col border border-neutral-200 bg-white shadow-[0_1px_0_rgba(0,0,0,0.03)]"
@@ -327,7 +331,7 @@ export default function ClubsPageClient({
                       onClick={() => setActiveClub(club)}
                       className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-3 py-2 text-[10px] uppercase tracking-[0.26em] text-neutral-900 group-hover:bg-neutral-900 group-hover:text-white"
                     >
-                      More info
+                      {club.ctaLabel}
                       <span aria-hidden>→</span>
                     </button>
                   </div>
@@ -337,27 +341,27 @@ export default function ClubsPageClient({
 
             {activeClub && (
               <div
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-10"
+                className="fixed inset-0 z-[120] bg-black/60"
                 onClick={() => setActiveClub(null)}
               >
                 <div
-                  className="relative max-h-full w-full max-w-5xl overflow-y-auto border border-neutral-900 bg-white shadow-2xl"
+                  className="absolute inset-0 bg-white"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
                     type="button"
                     onClick={() => setActiveClub(null)}
-                    className="absolute left-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-neutral-400 bg-white/95 text-sm leading-none text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
+                    className="absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-400 bg-white text-sm leading-none text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
                     aria-label="Close"
                   >
                     ×
                   </button>
 
-                  <article className="mt-10 grid gap-0 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-                    <div className="border-b border-neutral-200 md:border-b-0 md:border-r">
+                  <article className="grid h-full overflow-y-auto pt-20 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:pt-0">
+                    <div className="border-b border-neutral-200 md:border-b-0 md:border-r md:min-h-full">
                       <Poster club={activeClub} />
                     </div>
-                    <div className="relative p-6">
+                    <div className="relative p-6 pb-12 md:p-10 md:pb-16">
                       <div className="relative">
                         <h3 className="font-exhibitions text-lg tracking-[0.12em] text-neutral-900">
                           {activeClub.title}
@@ -431,11 +435,11 @@ export default function ClubsPageClient({
 
         <section id="faq" className="mt-16 border-t border-neutral-200 pt-12">
           <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">
-            FAQ
+            {faqTitle}
           </h2>
 
           <div className="mt-6 grid gap-8 md:grid-cols-3">
-            {DEFAULT_FAQ.map((item, index) => {
+            {faqToShow.map((item, index) => {
               const panelId = `faq-answer-${index}`
               const isOpen = openFaqIndex === index
 

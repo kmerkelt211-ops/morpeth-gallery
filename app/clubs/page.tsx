@@ -7,8 +7,42 @@ const clubsPageQuery = groq`*[_id == "page_clubs"][0]{
   kicker,
   headline,
   intro,
+  "heroImageUrl": heroImage.asset->url,
+  "heroImageAlt": heroImage.alt,
+  heroPanelColor,
+  heroPrimaryCtaLabel,
+  heroPrimaryCtaHref,
+  heroSecondaryCtaLabel,
+  heroSecondaryCtaHref,
   badges,
-  note
+  note,
+  clubsSectionTitle,
+  clubs[]{
+    _key,
+    title,
+    strand,
+    format,
+    day,
+    time,
+    location,
+    poster{
+      kicker,
+      headline,
+      subline
+    },
+    summary,
+    whatYoullDo,
+    goodFor,
+    kit,
+    signup,
+    ctaLabel,
+    accent
+  },
+  faqTitle,
+  faqItems[]{
+    question,
+    answer
+  }
 }`
 
 async function getClubsPageData(): Promise<ClubsPageData | null> {

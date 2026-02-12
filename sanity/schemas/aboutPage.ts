@@ -90,6 +90,13 @@ export default defineType({
               initialValue: 'More info',
             }),
             defineField({
+              name: 'href',
+              title: 'Card link (optional)',
+              type: 'string',
+              description:
+                'Optional custom link like /clubs or /exhibitions. If left empty, the linked exhibition below is used.',
+            }),
+            defineField({
               name: 'image',
               title: 'Card image',
               type: 'image',
@@ -104,7 +111,7 @@ export default defineType({
               title: 'Linked gallery exhibition',
               type: 'reference',
               to: [{ type: 'galleryExhibition' }],
-              validation: (r) => r.required(),
+              description: 'Optional if you set a custom card link above.',
             }),
           ],
           preview: {

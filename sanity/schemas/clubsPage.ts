@@ -122,27 +122,17 @@ export default defineType({
     }),
     defineField({
       name: 'clubs',
-      title: 'Club cards',
+      title: 'Clubs (add multiple)',
       type: 'array',
       group: 'clubs',
-      description: 'Cards shown in “What’s running” and full modal details.',
+      description: 'Add one item per club. These are shown on the Clubs page.',
+      validation: (r) => r.min(1),
       of: [
         defineField({
           name: 'club',
           title: 'Club',
           type: 'object',
           fields: [
-            defineField({
-              name: 'id',
-              title: 'ID',
-              type: 'string',
-              description: 'Stable slug-style id used in code (e.g. darkroom-film-lab).',
-              validation: (r) =>
-                r.required().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
-                  name: 'kebab-case',
-                  invert: false,
-                }),
-            }),
             defineField({
               name: 'title',
               title: 'Title',
@@ -283,7 +273,7 @@ export default defineType({
           preview: {
             select: {
               title: 'title',
-              subtitle: 'poster.kicker',
+              subtitle: 'day',
             },
           },
         }),

@@ -27,7 +27,7 @@ type WhatsOnCard = {
   ctaLabel?: string
   imageUrl?: string
   imageAlt?: string
-  slug?: string
+  href?: string
 }
 
 type AboutFeatureImage = {
@@ -78,7 +78,7 @@ const aboutPageQuery = groq`*[_id == "page_about"][0]{
     ctaLabel,
     "imageUrl": image.asset->url,
     "imageAlt": coalesce(image.alt, title),
-    "slug": exhibition->slug.current
+    "href": coalesce(href, select(defined(exhibition->slug.current) => "/" + exhibition->slug.current, null))
   },
   quickFacts[]{label, value},
   pastExhibitions,
@@ -267,7 +267,7 @@ type FeaturedCard =
     cta: string
     imageUrl: string
     imageAlt: string
-    slug?: string
+    href?: string
   }
 
 const featuredCards: FeaturedCard[] = [
@@ -277,7 +277,7 @@ const featuredCards: FeaturedCard[] = [
     kicker: 'Portman Gallery',
     title: 'Reference Wall: Movement',
     cta: 'More info',
-    slug: undefined,
+    href: undefined,
   },
   {
     imageUrl: abstractDiagonalImage.src,
@@ -285,7 +285,7 @@ const featuredCards: FeaturedCard[] = [
     kicker: 'Portman Gallery',
     title: 'Colour Study Session',
     cta: 'More info',
-    slug: undefined,
+    href: undefined,
   },
   {
     imageUrl: portraitStudyImage.src,
@@ -392,7 +392,7 @@ export default async function AboutPage() {
           cta: card.ctaLabel || 'More info',
           imageUrl: card.imageUrl || '',
           imageAlt: card.imageAlt || card.title || 'Featured card image',
-          slug: card.slug,
+          href: card.href,
         }))
       : featuredCards
   const featuredGridClass =
@@ -404,8 +404,8 @@ export default async function AboutPage() {
       ? 'sm:grid-cols-2'
       : 'grid-cols-1'
   const aboutFeatureImageToShow: AboutFeatureImage = {
-    imageUrl: colourFormImage.src,
-    alt: colourFormImage.alt,
+    imageUrl: data?.aboutFeatureImage?.imageUrl || colourFormImage.src,
+    alt: data?.aboutFeatureImage?.alt || colourFormImage.alt,
     title: data?.aboutFeatureImage?.title || colourFormImage.title,
     artist: data?.aboutFeatureImage?.artist || colourFormImage.artist,
     year: data?.aboutFeatureImage?.year || colourFormImage.year,
@@ -484,9 +484,9 @@ export default async function AboutPage() {
                       <h4 className="mt-2 text-4xl uppercase leading-[1.05] tracking-[0.01em]">
                         {card.title}
                       </h4>
-                      {card.slug ? (
+                      {card.href ? (
                         <Link
-                          href={`/${card.slug}`}
+                          href={card.href}
                           className="mt-6 inline-flex items-center bg-white px-4 py-2 text-3xl text-neutral-900"
                         >
                           {card.cta} →
