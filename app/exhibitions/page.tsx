@@ -5,6 +5,8 @@ import HomePageClient, {
   type HomePageCopy,
 } from '../home-page-client'
 
+export const dynamic = 'force-dynamic'
+
 const homePageQuery = groq`{
   "page": *[_id == "page_home"][0]{
     heroKicker,
@@ -21,7 +23,11 @@ const homePageQuery = groq`{
     description,
     slug,
     locationType,
-    exhibitorType,
+    "exhibitorType": select(
+      exhibitorType in ["student", "studentWork", "student-work"] => "student",
+      exhibitorType in ["staffVisiting", "guestArtists", "guestArtist", "guest-artists", "staff"] => "staffVisiting",
+      "other"
+    ),
     isCurrent,
     startDate,
     endDate,

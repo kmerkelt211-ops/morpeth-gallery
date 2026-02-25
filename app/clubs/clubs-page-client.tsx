@@ -17,6 +17,8 @@ type Club = {
     headline: string
     subline: string
   }
+  posterImageUrl?: string
+  posterImageAlt?: string
   summary: string
   whatYoullDo: string[]
   goodFor: string[]
@@ -39,6 +41,8 @@ type SanityClub = {
     headline?: string
     subline?: string
   }
+  posterImageUrl?: string
+  posterImageAlt?: string
   summary?: string
   whatYoullDo?: string[]
   goodFor?: string[]
@@ -132,6 +136,17 @@ function Badge({ children }: { children: React.ReactNode }) {
 function Poster({ club }: { club: Club }) {
   return (
     <div className="flex h-full flex-col bg-white p-6">
+      {club.posterImageUrl ? (
+        <div className="relative mb-4 h-44 w-full overflow-hidden border border-neutral-200 bg-neutral-100">
+          <Image
+            src={club.posterImageUrl}
+            alt={club.posterImageAlt || `${club.title} poster`}
+            fill
+            sizes="(min-width: 768px) 33vw, 100vw"
+            className="object-cover"
+          />
+        </div>
+      ) : null}
       <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-700">
         {club.poster.kicker}
       </div>
@@ -222,6 +237,8 @@ export default function ClubsPageClient({
           headline: club.poster?.headline || (club.title || 'CLUB').toUpperCase(),
           subline: club.poster?.subline || 'Create • Learn • Share',
         },
+        posterImageUrl: club.posterImageUrl,
+        posterImageAlt: club.posterImageAlt,
         summary: club.summary || 'Details coming soon.',
         whatYoullDo: club.whatYoullDo?.filter(Boolean) || [],
         goodFor: club.goodFor?.filter(Boolean) || [],

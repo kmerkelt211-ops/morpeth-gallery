@@ -141,16 +141,10 @@ export default defineType({
             }),
             defineField({
               name: 'strand',
-              title: 'Strand',
+              title: 'Club type',
               type: 'string',
-              options: {
-                list: [
-                  { title: 'Photography', value: 'Photography' },
-                  { title: 'Art', value: 'Art' },
-                  { title: 'Mixed media', value: 'Mixed media' },
-                ],
-                layout: 'radio',
-              },
+              description:
+                'Any type is fine (e.g. Art, Photography, Art + Photography, Mixed media, Digital, Ceramics).',
               validation: (r) => r.required(),
             }),
             defineField({
@@ -188,6 +182,7 @@ export default defineType({
               name: 'poster',
               title: 'Poster panel',
               type: 'object',
+              description: 'Text shown on the club poster block.',
               fields: [
                 defineField({
                   name: 'kicker',
@@ -206,6 +201,21 @@ export default defineType({
                   title: 'Poster subline',
                   type: 'string',
                   validation: (r) => r.required(),
+                }),
+              ],
+            }),
+            defineField({
+              name: 'posterImage',
+              title: 'Poster image (optional)',
+              type: 'image',
+              options: { hotspot: true },
+              description:
+                'Upload a poster image for this club. If empty, the text poster panel is shown.',
+              fields: [
+                defineField({
+                  name: 'alt',
+                  title: 'Alt text',
+                  type: 'string',
                 }),
               ],
             }),

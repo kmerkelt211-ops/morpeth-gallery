@@ -465,6 +465,11 @@ export default function HomePageClient({
                 </div>
               </article>
             ))}
+            {!whatsOnExhibitions.length ? (
+              <p className="md:col-span-3 text-sm text-neutral-600">
+                No What&apos;s On exhibitions are published in Sanity yet.
+              </p>
+            ) : null}
           </div>
         </div>
       </section>

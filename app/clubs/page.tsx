@@ -30,6 +30,8 @@ const clubsPageQuery = groq`*[_id == "page_clubs"][0]{
       headline,
       subline
     },
+    "posterImageUrl": posterImage.asset->url,
+    "posterImageAlt": coalesce(posterImage.alt, title),
     summary,
     whatYoullDo,
     goodFor,

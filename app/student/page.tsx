@@ -34,7 +34,7 @@ export default async function StudentWorkPage() {
     },
     "items": *[
       _type == "galleryExhibition" &&
-      exhibitorType == "student" &&
+      exhibitorType in ["student", "studentWork", "student-work"] &&
       defined(slug.current)
     ] | order(startDate desc) {
         _id,
@@ -63,8 +63,7 @@ export default async function StudentWorkPage() {
     randomStudentHeroPool.length > 0 ? randomStudentHeroPool[randomInt(randomStudentHeroPool.length)] : ''
   const heroImageUrl =
     randomStudentHeroImage ||
-    data.find((item) => Boolean(item.heroImageUrl))?.heroImageUrl ||
-    '/about-page/width-1200_TNCNkI1.jpg'
+    data.find((item) => Boolean(item.heroImageUrl))?.heroImageUrl
 
   return (
     <main className="relative min-h-screen bg-white px-6 py-16 text-neutral-900 md:px-10 lg:px-20">
@@ -86,14 +85,16 @@ export default async function StudentWorkPage() {
         <header className="mb-12 -mx-6 overflow-hidden border-y border-neutral-200 bg-white md:-mx-10 lg:-mx-20">
           <div className="grid md:min-h-[460px] md:grid-cols-2">
             <div className="relative min-h-[300px] bg-neutral-200 md:min-h-full">
-              <Image
-                src={heroImageUrl}
-                alt={page?.title || 'Student work hero image'}
-                fill
-                priority
-                sizes="(min-width: 1280px) 50vw, (min-width: 768px) 52vw, 100vw"
-                className="object-cover"
-              />
+              {heroImageUrl ? (
+                <Image
+                  src={heroImageUrl}
+                  alt={page?.title || 'Student work hero image'}
+                  fill
+                  priority
+                  sizes="(min-width: 1280px) 50vw, (min-width: 768px) 52vw, 100vw"
+                  className="object-cover"
+                />
+              ) : null}
             </div>
             <div
               className="flex flex-col justify-center px-7 py-10 md:px-14 md:py-12 lg:px-16"
@@ -140,6 +141,11 @@ export default async function StudentWorkPage() {
               </Link>
             ) : null
           )}
+          {!data.length ? (
+            <p className="md:col-span-3 text-sm text-neutral-600">
+              No student exhibitions are published in Sanity yet.
+            </p>
+          ) : null}
         </div>
       </div>
     </main>

@@ -39,6 +39,11 @@ type AboutFeatureImage = {
   caption?: string
 }
 
+type AboutHeroOverrideImage = {
+  imageUrl?: string
+  alt?: string
+}
+
 type AboutPageData = {
   title?: string
   intro?: string
@@ -46,6 +51,7 @@ type AboutPageData = {
   heroHeadline?: string
   heroSummary?: string
   heroBandColor?: string
+  heroImageOverride?: AboutHeroOverrideImage
   whatsOnTitle?: string
   whatsOnSubtitle?: string
   whatsOnCards?: WhatsOnCard[]
@@ -70,6 +76,10 @@ const aboutPageQuery = groq`*[_id == "page_about"][0]{
   heroHeadline,
   heroSummary,
   heroBandColor,
+  "heroImageOverride": heroImageOverride{
+    "imageUrl": image.asset->url,
+    "alt": image.alt
+  },
   whatsOnTitle,
   whatsOnSubtitle,
   whatsOnCards[]{
@@ -411,10 +421,23 @@ export default async function AboutPage() {
     year: data?.aboutFeatureImage?.year || colourFormImage.year,
     caption: data?.aboutFeatureImage?.caption || colourFormImage.caption,
   }
+  const fixedHeroImage = data?.heroImageOverride?.imageUrl
+    ? {
+        url: data.heroImageOverride.imageUrl,
+        alt: data.heroImageOverride.alt,
+      }
+    : null
   const randomSanityHeroImage = pickRandomSanityHeroImage(data, exhibitionHeroPool || [])
-  const aboutHeroImageUrl = randomSanityHeroImage?.url || aboutFeatureImageToShow.imageUrl || colourFormImage.src
+  const aboutHeroImageUrl =
+    fixedHeroImage?.url ||
+    randomSanityHeroImage?.url ||
+    aboutFeatureImageToShow.imageUrl ||
+    colourFormImage.src
   const aboutHeroImageAlt =
-    randomSanityHeroImage?.alt || aboutFeatureImageToShow.alt || colourFormImage.alt
+    fixedHeroImage?.alt ||
+    randomSanityHeroImage?.alt ||
+    aboutFeatureImageToShow.alt ||
+    colourFormImage.alt
   return (
     <main className="relative min-h-screen bg-white px-6 py-16 text-neutral-900 md:px-10 lg:px-20">
       <div aria-hidden className="pointer-events-none absolute inset-0 halftone-soft opacity-20" />

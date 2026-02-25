@@ -56,13 +56,27 @@ async function getExhibition(slug: string): Promise<GalleryExhibition | null> {
       description,
       body,
       slug,
-      locationType,
-      exhibitorType,
+      "locationType": select(
+        locationType in ["portman", "portmanGallery"] => "portman",
+        locationType in ["aroundSchool", "around-school", "around_school"] => "aroundSchool",
+        locationType in ["external", "externalGallery", "external-gallery", "offsite", "offSite"] => "external",
+        locationType in ["digital", "digitalOnly", "digital-only"] => "digital",
+        null
+      ),
+      "exhibitorType": select(
+        exhibitorType in ["student", "studentWork", "student-work"] => "student",
+        exhibitorType in ["staffVisiting", "guestArtists", "guestArtist", "guest-artists", "staff"] => "staffVisiting",
+        "other"
+      ),
       isCurrent,
       startDate,
       endDate,
       bgColor,
-      viewLayout,
+      "viewLayout": select(
+        viewLayout in ["whatsOn", "whats_on", "whatson", "event"] => "whatsOn",
+        viewLayout == "digitalGallery" => "digitalGallery",
+        null
+      ),
       eventUrl,
       eventUrlLabel,
       venueName,
@@ -110,7 +124,6 @@ export default async function GalleryExhibitionPage(props: {
 }) {
   const { slug } = await props.params
   const exhibition = await getExhibition(slug)
-
 
   if (!exhibition) {
     return (
