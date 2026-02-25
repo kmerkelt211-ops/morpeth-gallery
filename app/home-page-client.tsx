@@ -10,6 +10,7 @@ export type GalleryExhibition = {
   subtitle?: string
   description?: string
   slug?: { current?: string }
+  viewLayout?: 'digitalGallery' | 'whatsOn'
   locationType?: 'portman' | 'aroundSchool' | 'external' | 'digital'
   exhibitorType?: 'student' | 'staffVisiting' | 'other'
   isCurrent?: boolean
@@ -62,25 +63,19 @@ export default function HomePageClient({
   const touchDeltaXRef = useRef(0)
 
   const currentDigitalExhibitions = useMemo(
-    () => exhibitions.filter((ex) => ex.isCurrent && ex.locationType === 'digital'),
-    [exhibitions]
-  )
-
-  const currentFallbackExhibitions = useMemo(
-    () => exhibitions.filter((ex) => ex.isCurrent),
+    () =>
+      exhibitions.filter((ex) => {
+        if (!ex.isCurrent) return false
+        if (ex.viewLayout) return ex.viewLayout === 'digitalGallery'
+        return ex.locationType === 'digital'
+      }),
     [exhibitions]
   )
 
   const currentExhibitions = useMemo(
-    () =>
-      (currentDigitalExhibitions.length
-        ? currentDigitalExhibitions
-        : currentFallbackExhibitions
-      ).slice(0, 3),
-    [currentDigitalExhibitions, currentFallbackExhibitions]
+    () => currentDigitalExhibitions.slice(0, 3),
+    [currentDigitalExhibitions]
   )
-
-  const isDigitalStrip = currentDigitalExhibitions.length > 0
 
   const activeExhibition =
     currentExhibitions.length > 0
@@ -119,7 +114,10 @@ export default function HomePageClient({
   const whatsOnExhibitions = useMemo(
     () =>
       exhibitions
-        .filter((ex) => ex.locationType !== 'digital')
+        .filter((ex) => {
+          if (ex.viewLayout) return ex.viewLayout === 'whatsOn'
+          return ex.locationType !== 'digital'
+        })
         .sort((a, b) => {
           const aDate = a.startDate ? new Date(a.startDate).getTime() : 0
           const bDate = b.startDate ? new Date(b.startDate).getTime() : 0
@@ -235,55 +233,56 @@ export default function HomePageClient({
       </section>
 
       {/* CURRENT EXHIBITIONS STRIP (CAROUSEL) */}
-      <section
-        style={{ backgroundColor: activeExhibition?.bgColor || '#9EDFE6' }}
-        className="relative mt-16 touch-pan-y overflow-hidden border-y border-neutral-200 px-6 py-8 transition-colors duration-500 md:px-12 md:py-10 lg:px-20"
-        onMouseEnter={() => setIsCarouselPaused(true)}
-        onMouseLeave={() => setIsCarouselPaused(false)}
-        onFocusCapture={() => setIsCarouselPaused(true)}
-        onBlurCapture={() => setIsCarouselPaused(false)}
-        onTouchStart={handleStripTouchStart}
-        onTouchMove={handleStripTouchMove}
-        onTouchEnd={handleStripTouchEnd}
-      >
-        <div className="grid gap-6 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] md:items-center md:gap-8">
-          <div className="order-1 md:order-2 relative">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -top-8 -bottom-20 right-[-38%] hidden w-[180%] rotate-6 halftone-current-exhibitions opacity-95 md:-top-28 md:-bottom-56 md:right-[-52%] md:block md:w-[230%]"
-            />
-            <div className="relative z-10 grid gap-4 md:grid-cols-2">
-              {activeExhibitionImageUrl ? (
-                <div className="relative aspect-[4/3] bg-neutral-200 md:col-span-2">
-                  <Image
-                    src={activeExhibitionImageUrl}
-                    alt={activeExhibition?.title || 'Current exhibition image'}
-                    fill
-                    sizes="(min-width: 768px) 48vw, 100vw"
-                    className="object-cover"
-                  />
+      {currentExhibitions.length ? (
+        <section
+          style={{ backgroundColor: activeExhibition?.bgColor || '#9EDFE6' }}
+          className="relative mt-16 touch-pan-y overflow-hidden border-y border-neutral-200 px-6 py-8 transition-colors duration-500 md:px-12 md:py-10 lg:px-20"
+          onMouseEnter={() => setIsCarouselPaused(true)}
+          onMouseLeave={() => setIsCarouselPaused(false)}
+          onFocusCapture={() => setIsCarouselPaused(true)}
+          onBlurCapture={() => setIsCarouselPaused(false)}
+          onTouchStart={handleStripTouchStart}
+          onTouchMove={handleStripTouchMove}
+          onTouchEnd={handleStripTouchEnd}
+        >
+          <div
+            className={`grid gap-6 md:items-center md:gap-8 ${
+              activeExhibitionImageUrl ? 'md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]' : ''
+            }`}
+          >
+            {activeExhibitionImageUrl ? (
+              <div className="order-1 md:order-2 relative">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -top-8 -bottom-20 right-[-38%] hidden w-[180%] rotate-6 halftone-current-exhibitions opacity-95 md:-top-28 md:-bottom-56 md:right-[-52%] md:block md:w-[230%]"
+                />
+                <div className="relative z-10 grid gap-4 md:grid-cols-2">
+                  <div className="relative aspect-[4/3] bg-neutral-200 md:col-span-2">
+                    <Image
+                      src={activeExhibitionImageUrl}
+                      alt={activeExhibition?.title || 'Current exhibition image'}
+                      fill
+                      sizes="(min-width: 768px) 48vw, 100vw"
+                      className="object-cover"
+                    />
+                  </div>
                 </div>
-              ) : (
-                <div className="aspect-[4/3] bg-neutral-200 md:col-span-2" />
-              )}
-            </div>
-          </div>
+              </div>
+            ) : null}
 
-          <div className="order-2 md:order-1">
-            <p className="font-exhibitions text-[10px] tracking-[0.32em] text-neutral-800 sm:text-xs sm:tracking-[0.35em]">
-              {stripLabel}
-            </p>
-            {isDigitalStrip ? (
+            <div className={activeExhibitionImageUrl ? 'order-2 md:order-1' : ''}>
+              <p className="font-exhibitions text-[10px] tracking-[0.32em] text-neutral-800 sm:text-xs sm:tracking-[0.35em]">
+                {stripLabel}
+              </p>
               <p className="mt-2 text-[10px] uppercase tracking-[0.2em] text-neutral-700 sm:text-[11px] sm:tracking-[0.24em]">
                 {stripHelp}
               </p>
-            ) : null}
-            <h2
-              aria-live="polite"
-              className="font-exhibitions mt-3 text-3xl font-normal leading-tight tracking-[0.12em] text-neutral-900 sm:text-4xl md:mt-4 md:text-5xl"
-            >
-              {activeExhibition ? activeExhibition.title : 'No current exhibitions'}
-            </h2>
+              <h2
+                aria-live="polite"
+                className="font-exhibitions mt-3 text-3xl font-normal leading-tight tracking-[0.12em] text-neutral-900 sm:text-4xl md:mt-4 md:text-5xl"
+              >
+                {activeExhibition ? activeExhibition.title : 'No current exhibitions'}
+              </h2>
             {activeExhibition && (
               <>
                 {activeExhibition.subtitle && (
@@ -387,9 +386,10 @@ export default function HomePageClient({
                 Swipe left or right to flick through
               </p>
             ) : null}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* WHAT'S ON GRID (TATE-STYLE CARDS) */}
       <section className="relative px-6 py-20 md:px-12 lg:px-20">

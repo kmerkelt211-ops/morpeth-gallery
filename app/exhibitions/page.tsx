@@ -23,6 +23,11 @@ const homePageQuery = groq`{
     subtitle,
     description,
     slug,
+    "viewLayout": select(
+      viewLayout in ["whatsOn", "whats_on", "whatson", "event"] => "whatsOn",
+      viewLayout in ["digitalGallery", "digital_gallery", "digital"] => "digitalGallery",
+      null
+    ),
     locationType,
     "exhibitorType": select(
       exhibitorType in ["student", "studentWork", "student-work"] => "student",
