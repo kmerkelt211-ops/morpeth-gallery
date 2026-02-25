@@ -1,4 +1,5 @@
 import { groq } from 'next-sanity'
+import { randomInt } from 'node:crypto'
 import client from '../../sanity/lib/client'
 import HomePageClient, {
   type GalleryExhibition,
@@ -32,24 +33,20 @@ const homePageQuery = groq`{
     startDate,
     endDate,
     bgColor,
-    "heroImageUrl": heroImages[0].asset->url,
+    "heroImageUrl": coalesce(heroImages[0].asset->url, galleryImages[0].asset->url),
     "galleryImageUrls": galleryImages[].asset->url,
     "guidePdfUrl": guidePdf.asset->url
   }
 }`
 
 function pickFeaturedHeroImage(exhibitions: GalleryExhibition[]): string | null {
-  const galleryImage = exhibitions
-    .flatMap((ex) => ex.galleryImageUrls || [])
-    .find((url): url is string => Boolean(url))
+  const pool = exhibitions
+    .flatMap((ex) => [ex.heroImageUrl, ...(ex.galleryImageUrls || [])])
+    .filter((url): url is string => Boolean(url))
+    .filter((url, index, all) => all.indexOf(url) === index)
 
-  if (galleryImage) return galleryImage
-
-  const heroImage = exhibitions
-    .map((ex) => ex.heroImageUrl)
-    .find((url): url is string => Boolean(url))
-
-  return heroImage || null
+  if (!pool.length) return null
+  return pool[randomInt(pool.length)] || null
 }
 
 export default async function ExhibitionsPage() {

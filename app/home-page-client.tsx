@@ -50,6 +50,11 @@ export default function HomePageClient({
   pageCopy,
   heroImageUrl,
 }: HomePageClientProps) {
+  const getExhibitionImageUrl = (exhibition?: GalleryExhibition) =>
+    exhibition?.heroImageUrl ||
+    exhibition?.galleryImageUrls?.find((url): url is string => Boolean(url)) ||
+    null
+
   const [activeExhibitionIndex, setActiveExhibitionIndex] = useState(0)
   const [isCarouselPaused, setIsCarouselPaused] = useState(false)
   const autoAdvanceRef = useRef<number | null>(null)
@@ -81,6 +86,7 @@ export default function HomePageClient({
     currentExhibitions.length > 0
       ? currentExhibitions[Math.min(activeExhibitionIndex, currentExhibitions.length - 1)]
       : undefined
+  const activeExhibitionImageUrl = getExhibitionImageUrl(activeExhibition)
 
   const stripLabel = pageCopy?.currentStripLabel || DEFAULT_CURRENT_STRIP_LABEL
   const stripHelp = pageCopy?.currentStripHelp || DEFAULT_CURRENT_STRIP_HELP
@@ -247,11 +253,11 @@ export default function HomePageClient({
               className="pointer-events-none absolute -top-8 -bottom-20 right-[-38%] hidden w-[180%] rotate-6 halftone-current-exhibitions opacity-95 md:-top-28 md:-bottom-56 md:right-[-52%] md:block md:w-[230%]"
             />
             <div className="relative z-10 grid gap-4 md:grid-cols-2">
-              {activeExhibition?.heroImageUrl ? (
+              {activeExhibitionImageUrl ? (
                 <div className="relative aspect-[4/3] bg-neutral-200 md:col-span-2">
                   <Image
-                    src={activeExhibition.heroImageUrl}
-                    alt={activeExhibition.title}
+                    src={activeExhibitionImageUrl}
+                    alt={activeExhibition?.title || 'Current exhibition image'}
                     fill
                     sizes="(min-width: 768px) 48vw, 100vw"
                     className="object-cover"
@@ -401,18 +407,20 @@ export default function HomePageClient({
           </header>
 
           <div className="grid gap-10 md:grid-cols-3 items-stretch">
-            {whatsOnExhibitions.map((item) => (
+            {whatsOnExhibitions.map((item) => {
+              const itemImageUrl = getExhibitionImageUrl(item)
+              return (
               <article key={item._id} className="flex flex-col h-full">
                 <div className="relative aspect-[4/5] bg-neutral-100">
-                  {item.heroImageUrl && (
+                  {itemImageUrl ? (
                     <Image
-                      src={item.heroImageUrl}
+                      src={itemImageUrl}
                       alt={item.title}
                       fill
                       sizes="(min-width: 768px) 33vw, 100vw"
                       className="object-cover"
                     />
-                  )}
+                  ) : null}
                 </div>
                 <div className="mt-4 flex flex-1 flex-col">
                   <p className="font-exhibitions text-[11px] tracking-[0.3em] text-neutral-500">
@@ -464,7 +472,8 @@ export default function HomePageClient({
                   </div>
                 </div>
               </article>
-            ))}
+              )
+            })}
             {!whatsOnExhibitions.length ? (
               <p className="md:col-span-3 text-sm text-neutral-600">
                 No What&apos;s On exhibitions are published in Sanity yet.

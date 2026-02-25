@@ -4,6 +4,7 @@ import { groq } from 'next-sanity'
 import client from '../../sanity/lib/client'
 import { PortableText } from 'next-sanity'
 import type { PortableTextBlock } from 'sanity'
+import { randomInt } from 'node:crypto'
 import AboutInfoPanels from './about-info-panels'
 
 export const dynamic = 'force-dynamic'
@@ -347,7 +348,7 @@ function pickRandomSanityHeroImage(
   )
   if (!unique.length) return null
 
-  const randomIndex = Math.floor(Math.random() * unique.length)
+  const randomIndex = randomInt(unique.length)
   return unique[randomIndex] || null
 }
 
