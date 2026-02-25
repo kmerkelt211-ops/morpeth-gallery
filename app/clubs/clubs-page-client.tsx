@@ -193,30 +193,26 @@ export default function ClubsPageClient({
 }) {
   const [activeClub, setActiveClub] = useState<Club | null>(null)
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
-  const modalScrollRef = useRef<HTMLElement | null>(null)
+  const detailsRef = useRef<HTMLElement | null>(null)
   const pageData = initialPageData
 
   useEffect(() => {
     if (!activeClub) return
 
-    const previousOverflow = document.body.style.overflow
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setActiveClub(null)
     }
 
-    document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', handleEscape)
+    const rafId = window.requestAnimationFrame(() => {
+      if (!detailsRef.current) return
+      const detailsTop = detailsRef.current.getBoundingClientRect().top + window.scrollY - 92
+      window.scrollTo({ top: Math.max(0, detailsTop), behavior: 'smooth' })
+    })
 
     return () => {
-      document.body.style.overflow = previousOverflow
       window.removeEventListener('keydown', handleEscape)
-    }
-  }, [activeClub])
-
-  useEffect(() => {
-    if (!activeClub) return
-    if (modalScrollRef.current) {
-      modalScrollRef.current.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+      window.cancelAnimationFrame(rafId)
     }
   }, [activeClub])
 
@@ -387,64 +383,91 @@ export default function ClubsPageClient({
             </div>
 
             {activeClub && (
-              <div
-                className="fixed inset-0 z-[120] bg-black/60"
-                onClick={() => setActiveClub(null)}
+              <section
+                id="club-details"
+                ref={detailsRef}
+                className="mt-10 border border-neutral-200 bg-white"
               >
-                <div
-                  className="absolute inset-0 bg-white"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setActiveClub(null)}
-                    className="fixed right-4 top-4 z-[130] inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-400 bg-white text-sm leading-none text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
-                    aria-label="Close"
-                  >
-                    ×
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveClub(null)}
-                    className="fixed left-4 top-4 z-[130] inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-3 py-2 text-xs uppercase tracking-[0.2em] text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
-                  >
-                    ← Back
-                  </button>
+                <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
+                  <p className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
+                    Club details
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setActiveClub(null)}
+                      className="font-exhibitions inline-flex items-center gap-2 border border-neutral-300 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+                <article key={activeClub.id} className="grid md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                  <div className="border-b border-neutral-200 md:border-b-0 md:border-r md:min-h-full">
+                    <Poster club={activeClub} />
+                  </div>
+                  <div className="relative p-6 pb-12 md:p-10 md:pb-16">
+                    <div className="relative">
+                      <h3 className="font-exhibitions text-lg tracking-[0.12em] text-neutral-900">
+                        {activeClub.title}
+                      </h3>
 
-                  <article
-                    key={activeClub.id}
-                    ref={modalScrollRef}
-                    className="grid h-full overflow-y-auto pt-20 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:pt-0"
-                  >
-                    <div className="border-b border-neutral-200 md:border-b-0 md:border-r md:min-h-full">
-                      <Poster club={activeClub} />
-                    </div>
-                    <div className="relative p-6 pb-12 md:p-10 md:pb-16">
-                      <div className="relative">
-                        <h3 className="font-exhibitions text-lg tracking-[0.12em] text-neutral-900">
-                          {activeClub.title}
-                        </h3>
+                      <div className="mt-4 grid gap-3">
+                        <MetaRow label="When" value={`${activeClub.day} • ${activeClub.time}`} />
+                        <MetaRow label="Where" value={activeClub.location} />
+                        <MetaRow
+                          label="Type"
+                          value={`${activeClub.format} • ${activeClub.strand}`}
+                        />
+                      </div>
 
-                        <div className="mt-4 grid gap-3">
-                          <MetaRow label="When" value={`${activeClub.day} • ${activeClub.time}`} />
-                          <MetaRow label="Where" value={activeClub.location} />
-                          <MetaRow
-                            label="Type"
-                            value={`${activeClub.format} • ${activeClub.strand}`}
-                          />
+                      <p className="mt-4 text-sm leading-relaxed text-neutral-800">
+                        {activeClub.summary}
+                      </p>
+
+                      <div className="mt-5">
+                        <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
+                          You&apos;ll do
+                        </div>
+                        {activeClub.whatYoullDo.length ? (
+                          <ul className="mt-2 list-disc pl-5 text-sm text-neutral-800">
+                            {activeClub.whatYoullDo.map((x) => (
+                              <li key={x}>{x}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="mt-2 text-sm text-neutral-700">Details coming soon.</p>
+                        )}
+                      </div>
+
+                      <div className="mt-5 grid gap-5">
+                        <div>
+                          <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
+                            Good for
+                          </div>
+                          {activeClub.goodFor.length ? (
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {activeClub.goodFor.map((x) => (
+                                <span
+                                  key={x}
+                                  className="inline-flex items-center rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-800"
+                                >
+                                  {x}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="mt-2 text-sm text-neutral-700">Details coming soon.</p>
+                          )}
                         </div>
 
-                        <p className="mt-4 text-sm leading-relaxed text-neutral-800">
-                          {activeClub.summary}
-                        </p>
-
-                        <div className="mt-5">
+                        <div>
                           <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
-                            You&apos;ll do
+                            Kit
                           </div>
-                          {activeClub.whatYoullDo.length ? (
+                          {activeClub.kit.length ? (
                             <ul className="mt-2 list-disc pl-5 text-sm text-neutral-800">
-                              {activeClub.whatYoullDo.map((x) => (
+                              {activeClub.kit.map((x) => (
                                 <li key={x}>{x}</li>
                               ))}
                             </ul>
@@ -452,53 +475,16 @@ export default function ClubsPageClient({
                             <p className="mt-2 text-sm text-neutral-700">Details coming soon.</p>
                           )}
                         </div>
+                      </div>
 
-                        <div className="mt-5 grid gap-5">
-                          <div>
-                            <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
-                              Good for
-                            </div>
-                            {activeClub.goodFor.length ? (
-                              <div className="mt-2 flex flex-wrap gap-2">
-                                {activeClub.goodFor.map((x) => (
-                                  <span
-                                    key={x}
-                                    className="inline-flex items-center rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-800"
-                                  >
-                                    {x}
-                                  </span>
-                                ))}
-                              </div>
-                            ) : (
-                              <p className="mt-2 text-sm text-neutral-700">Details coming soon.</p>
-                            )}
-                          </div>
-
-                          <div>
-                            <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
-                              Kit
-                            </div>
-                            {activeClub.kit.length ? (
-                              <ul className="mt-2 list-disc pl-5 text-sm text-neutral-800">
-                                {activeClub.kit.map((x) => (
-                                  <li key={x}>{x}</li>
-                                ))}
-                              </ul>
-                            ) : (
-                              <p className="mt-2 text-sm text-neutral-700">Details coming soon.</p>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="mt-6 flex flex-wrap gap-2">
-                          <Badge>{activeClub.signup}</Badge>
-                          <Badge>{activeClub.day}</Badge>
-                        </div>
+                      <div className="mt-6 flex flex-wrap gap-2">
+                        <Badge>{activeClub.signup}</Badge>
+                        <Badge>{activeClub.day}</Badge>
                       </div>
                     </div>
-                  </article>
-                </div>
-              </div>
+                  </div>
+                </article>
+              </section>
             )}
           </div>
         </section>
