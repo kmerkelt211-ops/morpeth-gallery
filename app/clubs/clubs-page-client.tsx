@@ -2,141 +2,9 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
-
-type Club = {
-  id: string
-  title: string
-  strand: string
-  format: string
-  day: string
-  time: string
-  location: string
-  poster: {
-    kicker: string
-    headline: string
-    subline: string
-  }
-  posterImageUrl?: string
-  posterImageAlt?: string
-  summary: string
-  whatYoullDo: string[]
-  goodFor: string[]
-  kit: string[]
-  signup: string
-  ctaLabel: string
-  accent?: string
-}
-
-type SanityClub = {
-  _key?: string
-  title?: string
-  strand?: string
-  format?: string
-  day?: string
-  time?: string
-  location?: string
-  poster?: {
-    kicker?: string
-    headline?: string
-    subline?: string
-  }
-  posterImageUrl?: string
-  posterImageAlt?: string
-  summary?: string
-  whatYoullDo?: string[]
-  goodFor?: string[]
-  kit?: string[]
-  signup?: string
-  ctaLabel?: string
-  accent?: string
-}
-
-export type ClubsPageData = {
-  title?: string
-  kicker?: string
-  headline?: string
-  intro?: string
-  heroImageUrl?: string
-  heroImageAlt?: string
-  heroPanelColor?: string
-  heroPrimaryCtaLabel?: string
-  heroPrimaryCtaHref?: string
-  heroSecondaryCtaLabel?: string
-  heroSecondaryCtaHref?: string
-  badges?: string[]
-  note?: string
-  clubsSectionTitle?: string
-  clubs?: SanityClub[]
-  faqTitle?: string
-  faqItems?: FaqItem[]
-}
-
-type FaqItem = {
-  question: string
-  answer: string
-}
-
-function normalizeText(value: unknown, fallback = ''): string {
-  if (typeof value !== 'string') return fallback
-  const trimmed = value.trim()
-  return trimmed || fallback
-}
-
-function normalizeStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return []
-  return value
-    .map((item) => (typeof item === 'string' ? item.trim() : ''))
-    .filter(Boolean)
-}
-
-const CLUBS: Club[] = [
-  {
-    id: 'darkroom-film-lab',
-    title: 'Darkroom & Film Lab',
-    strand: 'Photography',
-    format: 'After school',
-    day: 'Tuesdays',
-    time: '3:30–5:00pm',
-    location: 'Portman Gallery (Darkroom)',
-    poster: {
-      kicker: 'AFTER SCHOOL • PHOTOGRAPHY',
-      headline: 'DARKROOM',
-      subline: 'Shoot • Develop • Print',
-    },
-    summary:
-      'Hands-on analogue photography: load film, develop negatives, and make your first silver-gelatin prints.',
-    whatYoullDo: [
-      'Learn how to use 35mm cameras safely and confidently',
-      'Develop black & white film (with supervision)',
-      'Create contact sheets + final prints you can exhibit',
-      'Experiment with photograms + chemigrams',
-    ],
-    goodFor: ['Beginners welcome', 'GCSE / A level support', 'Anyone who likes making things'],
-    kit: ['We provide: film (limited), paper, chemicals', 'Bring: enthusiasm + a steady hand', 'Optional: your own 35mm camera'],
-    signup: 'Sign-up',
-    ctaLabel: 'More info',
-    accent: '#E7F0FF',
-  },
-]
-
-const DEFAULT_FAQ: FaqItem[] = [
-  {
-    question: 'Do I need experience?',
-    answer:
-      "Nope. These are designed for complete beginners and confident makers. You'll get prompts, quick demos, and help as you go.",
-  },
-  {
-    question: "What if I don't have a camera?",
-    answer:
-      'A phone is perfect. We also have limited kit available for certain sessions. We can rotate equipment fairly so everyone gets a go.',
-  },
-  {
-    question: 'Can my work go in an exhibition?',
-    answer:
-      "Yes — that's the point. We'll do regular selections for the digital gallery and occasional print walls in school.",
-  },
-]
+import { useState } from 'react'
+import type { Club, ClubsPageData } from '../../lib/clubs'
+import { mapFaqItems, mapSanityClubs } from '../../lib/clubs'
 
 function Badge({ children }: { children: React.ReactNode }) {
   return (
@@ -174,47 +42,13 @@ function Poster({ club }: { club: Club }) {
   )
 }
 
-function MetaRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="grid grid-cols-[auto_1fr] gap-4 text-sm">
-      <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
-        {label}
-      </div>
-      <div className="text-neutral-900">{value}</div>
-    </div>
-  )
-}
-
-
 export default function ClubsPageClient({
   initialPageData,
 }: {
   initialPageData: ClubsPageData | null
 }) {
-  const [activeClub, setActiveClub] = useState<Club | null>(null)
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
-  const detailsRef = useRef<HTMLElement | null>(null)
   const pageData = initialPageData
-
-  useEffect(() => {
-    if (!activeClub) return
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setActiveClub(null)
-    }
-
-    window.addEventListener('keydown', handleEscape)
-    const rafId = window.requestAnimationFrame(() => {
-      if (!detailsRef.current) return
-      const detailsTop = detailsRef.current.getBoundingClientRect().top + window.scrollY - 92
-      window.scrollTo({ top: Math.max(0, detailsTop), behavior: 'smooth' })
-    })
-
-    return () => {
-      window.removeEventListener('keydown', handleEscape)
-      window.cancelAnimationFrame(rafId)
-    }
-  }, [activeClub])
 
   const pageTitle = pageData?.title || 'Clubs • Art + Photography'
   const pageKicker = pageData?.kicker || 'CLUBS & STUDIOS'
@@ -234,51 +68,11 @@ export default function ClubsPageClient({
   const note = pageData?.note?.trim()
   const clubsSectionTitle = pageData?.clubsSectionTitle || "WHAT'S RUNNING"
   const faqTitle = pageData?.faqTitle || 'FAQ'
-  const faqItems = (pageData?.faqItems || []).filter(
-    (item): item is FaqItem => Boolean(item?.question?.trim()) && Boolean(item?.answer?.trim())
-  )
-  const clubsFromSanity: Club[] = (pageData?.clubs || [])
-    .filter((club) => club?.title?.trim())
-    .map((club, index) => {
-      const fallbackId = `club-${index + 1}`
-      const title = normalizeText(club.title, `Club ${index + 1}`)
-      const posterKicker = normalizeText(club.poster?.kicker, 'PORTMAN GALLERY')
-      const posterHeadline = normalizeText(club.poster?.headline, title.toUpperCase())
-      const posterSubline = normalizeText(club.poster?.subline, 'Create • Learn • Share')
-      const whatYoullDo = normalizeStringArray(club.whatYoullDo)
-      const goodFor = normalizeStringArray(club.goodFor)
-      const kit = normalizeStringArray(club.kit)
-      const summary = normalizeText(club.summary, 'Details coming soon.')
-
-      return {
-        id: normalizeText(club._key, fallbackId),
-        title,
-        strand: normalizeText(club.strand, 'Mixed media'),
-        format: normalizeText(club.format, 'Lunchtime'),
-        day: normalizeText(club.day, 'TBC'),
-        time: normalizeText(club.time, 'TBC'),
-        location: normalizeText(club.location, 'TBC'),
-        poster: {
-          kicker: posterKicker,
-          headline: posterHeadline,
-          subline: posterSubline,
-        },
-        posterImageUrl: normalizeText(club.posterImageUrl) || undefined,
-        posterImageAlt: normalizeText(club.posterImageAlt) || undefined,
-        summary,
-        whatYoullDo,
-        goodFor,
-        kit,
-        signup: normalizeText(club.signup, 'Drop-in'),
-        ctaLabel: normalizeText(club.ctaLabel, 'More info'),
-        accent: normalizeText(club.accent) || undefined,
-      }
-    })
-  const clubsToShow = clubsFromSanity.length ? clubsFromSanity : CLUBS
-  const faqToShow = faqItems.length ? faqItems : DEFAULT_FAQ
+  const clubsToShow = mapSanityClubs(pageData)
+  const faqToShow = mapFaqItems(pageData)
 
   return (
-    <main className="relative min-h-screen bg-white text-neutral-900 px-6 py-16 md:px-10 lg:px-20">
+    <main className="relative min-h-screen bg-white px-6 py-16 text-neutral-900 md:px-10 lg:px-20">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 halftone-soft opacity-20"
@@ -324,13 +118,19 @@ export default function ClubsPageClient({
                   href={heroPrimaryCtaHref}
                   className="font-exhibitions inline-flex items-center gap-3 bg-black px-7 py-3 text-xs uppercase tracking-[0.18em] text-white"
                 >
-                  {heroPrimaryCtaLabel} <span aria-hidden className="text-xl leading-none">→</span>
+                  {heroPrimaryCtaLabel}{' '}
+                  <span aria-hidden className="text-xl leading-none">
+                    →
+                  </span>
                 </Link>
                 <Link
                   href={heroSecondaryCtaHref}
                   className="font-exhibitions inline-flex items-center gap-3 border border-neutral-900 px-7 py-3 text-xs uppercase tracking-[0.18em] text-neutral-900"
                 >
-                  {heroSecondaryCtaLabel} <span aria-hidden className="text-xl leading-none">→</span>
+                  {heroSecondaryCtaLabel}{' '}
+                  <span aria-hidden className="text-xl leading-none">
+                    →
+                  </span>
                 </Link>
               </div>
 
@@ -352,190 +152,90 @@ export default function ClubsPageClient({
               <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">
                 {clubsSectionTitle}
               </h2>
-              <p className="text-xs text-neutral-600">
-              </p>
-            </div>
-            <div className="grid gap-8 md:grid-cols-3">
-              {clubsToShow.map((club) => (
-                <article
-                  key={club.id}
-                  className="group flex flex-col border border-neutral-200 bg-white shadow-[0_1px_0_rgba(0,0,0,0.03)]"
-                >
-                  <div className="border-b border-neutral-200 bg-white">
-                    <Poster club={club} />
-                  </div>
-
-                  <div className="flex items-center justify-between px-5 py-4">
-                    <h3 className="font-exhibitions text-sm tracking-[0.16em] text-neutral-900 md:text-base">
-                      {club.title}
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={() => setActiveClub(club)}
-                      className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-3 py-2 text-[10px] uppercase tracking-[0.26em] text-neutral-900 group-hover:bg-neutral-900 group-hover:text-white"
-                    >
-                      {club.ctaLabel}
-                      <span aria-hidden>→</span>
-                    </button>
-                  </div>
-                </article>
-              ))}
             </div>
 
-            {activeClub && (
-              <section
-                id="club-details"
-                ref={detailsRef}
-                className="mt-10 border border-neutral-200 bg-white"
-              >
-                <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
-                  <p className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
-                    Club details
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setActiveClub(null)}
-                      className="font-exhibitions inline-flex items-center gap-2 border border-neutral-300 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-                <article key={activeClub.id} className="grid md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-                  <div className="border-b border-neutral-200 md:border-b-0 md:border-r md:min-h-full">
-                    <Poster club={activeClub} />
-                  </div>
-                  <div className="relative p-6 pb-12 md:p-10 md:pb-16">
-                    <div className="relative">
-                      <h3 className="font-exhibitions text-lg tracking-[0.12em] text-neutral-900">
-                        {activeClub.title}
-                      </h3>
-
-                      <div className="mt-4 grid gap-3">
-                        <MetaRow label="When" value={`${activeClub.day} • ${activeClub.time}`} />
-                        <MetaRow label="Where" value={activeClub.location} />
-                        <MetaRow
-                          label="Type"
-                          value={`${activeClub.format} • ${activeClub.strand}`}
-                        />
-                      </div>
-
-                      <p className="mt-4 text-sm leading-relaxed text-neutral-800">
-                        {activeClub.summary}
-                      </p>
-
-                      <div className="mt-5">
-                        <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
-                          You&apos;ll do
-                        </div>
-                        {activeClub.whatYoullDo.length ? (
-                          <ul className="mt-2 list-disc pl-5 text-sm text-neutral-800">
-                            {activeClub.whatYoullDo.map((x) => (
-                              <li key={x}>{x}</li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="mt-2 text-sm text-neutral-700">Details coming soon.</p>
-                        )}
-                      </div>
-
-                      <div className="mt-5 grid gap-5">
-                        <div>
-                          <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
-                            Good for
-                          </div>
-                          {activeClub.goodFor.length ? (
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              {activeClub.goodFor.map((x) => (
-                                <span
-                                  key={x}
-                                  className="inline-flex items-center rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-800"
-                                >
-                                  {x}
-                                </span>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="mt-2 text-sm text-neutral-700">Details coming soon.</p>
-                          )}
-                        </div>
-
-                        <div>
-                          <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
-                            Kit
-                          </div>
-                          {activeClub.kit.length ? (
-                            <ul className="mt-2 list-disc pl-5 text-sm text-neutral-800">
-                              {activeClub.kit.map((x) => (
-                                <li key={x}>{x}</li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p className="mt-2 text-sm text-neutral-700">Details coming soon.</p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="mt-6 flex flex-wrap gap-2">
-                        <Badge>{activeClub.signup}</Badge>
-                        <Badge>{activeClub.day}</Badge>
-                      </div>
+            {clubsToShow.length ? (
+              <div className="grid gap-8 md:grid-cols-3">
+                {clubsToShow.map((club) => (
+                  <article
+                    key={club.id}
+                    className="group flex flex-col border border-neutral-200 bg-white shadow-[0_1px_0_rgba(0,0,0,0.03)]"
+                  >
+                    <div className="border-b border-neutral-200 bg-white">
+                      <Poster club={club} />
                     </div>
-                  </div>
-                </article>
-              </section>
+
+                    <div className="flex items-center justify-between px-5 py-4">
+                      <h3 className="font-exhibitions text-sm tracking-[0.16em] text-neutral-900 md:text-base">
+                        {club.title}
+                      </h3>
+                      <Link
+                        href={`/clubs/${club.slug}`}
+                        className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-3 py-2 text-[10px] uppercase tracking-[0.26em] text-neutral-900 transition group-hover:bg-neutral-900 group-hover:text-white"
+                      >
+                        {club.ctaLabel}
+                        <span aria-hidden>→</span>
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="border border-dashed border-neutral-300 bg-white p-8 text-sm text-neutral-700">
+                No clubs are published yet.
+              </div>
             )}
           </div>
         </section>
 
-        <section id="faq" className="mt-16 border-t border-neutral-200 pt-12">
-          <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">
-            {faqTitle}
-          </h2>
+        {faqToShow.length ? (
+          <section id="faq" className="mt-16 border-t border-neutral-200 pt-12">
+            <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">
+              {faqTitle}
+            </h2>
 
-          <div className="mt-6 grid gap-8 md:grid-cols-3">
-            {faqToShow.map((item, index) => {
-              const panelId = `faq-answer-${index}`
-              const isOpen = openFaqIndex === index
+            <div className="mt-6 grid gap-8 md:grid-cols-3">
+              {faqToShow.map((item, index) => {
+                const panelId = `faq-answer-${index}`
+                const isOpen = openFaqIndex === index
 
-              return (
-                <div key={item.question} className="border border-neutral-200 bg-white p-6">
-                  <div className="md:hidden">
-                    <button
-                      type="button"
-                      onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                      aria-expanded={isOpen}
-                      aria-controls={panelId}
-                      className="w-full text-left"
-                    >
-                      <span className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
-                        {item.question}
-                      </span>
-                    </button>
+                return (
+                  <div key={item.question} className="border border-neutral-200 bg-white p-6">
+                    <div className="md:hidden">
+                      <button
+                        type="button"
+                        onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                        aria-expanded={isOpen}
+                        aria-controls={panelId}
+                        className="w-full text-left"
+                      >
+                        <span className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
+                          {item.question}
+                        </span>
+                      </button>
 
-                    <p
-                      id={panelId}
-                      className={`pt-3 text-sm leading-relaxed text-neutral-800 ${isOpen ? 'block' : 'hidden'}`}
-                    >
-                      {item.answer}
-                    </p>
-                  </div>
-
-                  <div className="hidden md:block">
-                    <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
-                      {item.question}
+                      <p
+                        id={panelId}
+                        className={`pt-3 text-sm leading-relaxed text-neutral-800 ${isOpen ? 'block' : 'hidden'}`}
+                      >
+                        {item.answer}
+                      </p>
                     </div>
-                    <p className="mt-3 text-sm leading-relaxed text-neutral-800">
-                      {item.answer}
-                    </p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </section>
 
+                    <div className="hidden md:block">
+                      <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
+                        {item.question}
+                      </div>
+                      <p className="mt-3 text-sm leading-relaxed text-neutral-800">
+                        {item.answer}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        ) : null}
       </div>
     </main>
   )
