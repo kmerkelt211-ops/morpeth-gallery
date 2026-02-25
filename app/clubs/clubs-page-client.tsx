@@ -77,6 +77,19 @@ type FaqItem = {
   answer: string
 }
 
+function normalizeText(value: unknown, fallback = ''): string {
+  if (typeof value !== 'string') return fallback
+  const trimmed = value.trim()
+  return trimmed || fallback
+}
+
+function normalizeStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value
+    .map((item) => (typeof item === 'string' ? item.trim() : ''))
+    .filter(Boolean)
+}
+
 const CLUBS: Club[] = [
   {
     id: 'darkroom-film-lab',
@@ -224,28 +237,37 @@ export default function ClubsPageClient({
     .filter((club) => club?.title?.trim())
     .map((club, index) => {
       const fallbackId = `club-${index + 1}`
+      const title = normalizeText(club.title, `Club ${index + 1}`)
+      const posterKicker = normalizeText(club.poster?.kicker, 'PORTMAN GALLERY')
+      const posterHeadline = normalizeText(club.poster?.headline, title.toUpperCase())
+      const posterSubline = normalizeText(club.poster?.subline, 'Create • Learn • Share')
+      const whatYoullDo = normalizeStringArray(club.whatYoullDo)
+      const goodFor = normalizeStringArray(club.goodFor)
+      const kit = normalizeStringArray(club.kit)
+      const summary = normalizeText(club.summary, 'Details coming soon.')
+
       return {
-        id: club._key || fallbackId,
-        title: club.title || `Club ${index + 1}`,
-        strand: club.strand || 'Mixed media',
-        format: club.format || 'Lunchtime',
-        day: club.day || 'TBC',
-        time: club.time || 'TBC',
-        location: club.location || 'TBC',
+        id: normalizeText(club._key, fallbackId),
+        title,
+        strand: normalizeText(club.strand, 'Mixed media'),
+        format: normalizeText(club.format, 'Lunchtime'),
+        day: normalizeText(club.day, 'TBC'),
+        time: normalizeText(club.time, 'TBC'),
+        location: normalizeText(club.location, 'TBC'),
         poster: {
-          kicker: club.poster?.kicker || 'PORTMAN GALLERY',
-          headline: club.poster?.headline || (club.title || 'CLUB').toUpperCase(),
-          subline: club.poster?.subline || 'Create • Learn • Share',
+          kicker: posterKicker,
+          headline: posterHeadline,
+          subline: posterSubline,
         },
-        posterImageUrl: club.posterImageUrl,
-        posterImageAlt: club.posterImageAlt,
-        summary: club.summary || 'Details coming soon.',
-        whatYoullDo: club.whatYoullDo?.filter(Boolean) || [],
-        goodFor: club.goodFor?.filter(Boolean) || [],
-        kit: club.kit?.filter(Boolean) || [],
-        signup: club.signup || 'Drop-in',
-        ctaLabel: club.ctaLabel || 'More info',
-        accent: club.accent,
+        posterImageUrl: normalizeText(club.posterImageUrl) || undefined,
+        posterImageAlt: normalizeText(club.posterImageAlt) || undefined,
+        summary,
+        whatYoullDo,
+        goodFor,
+        kit,
+        signup: normalizeText(club.signup, 'Drop-in'),
+        ctaLabel: normalizeText(club.ctaLabel, 'More info'),
+        accent: normalizeText(club.accent) || undefined,
       }
     })
   const clubsToShow = clubsFromSanity.length ? clubsFromSanity : CLUBS
@@ -373,6 +395,13 @@ export default function ClubsPageClient({
                   >
                     ×
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveClub(null)}
+                    className="absolute left-4 top-4 z-10 inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-3 py-2 text-xs uppercase tracking-[0.2em] text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
+                  >
+                    ← Back
+                  </button>
 
                   <article className="grid h-full overflow-y-auto pt-20 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:pt-0">
                     <div className="border-b border-neutral-200 md:border-b-0 md:border-r md:min-h-full">
@@ -401,11 +430,15 @@ export default function ClubsPageClient({
                           <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
                             You&apos;ll do
                           </div>
-                          <ul className="mt-2 list-disc pl-5 text-sm text-neutral-800">
-                            {activeClub.whatYoullDo.map((x) => (
-                              <li key={x}>{x}</li>
-                            ))}
-                          </ul>
+                          {activeClub.whatYoullDo.length ? (
+                            <ul className="mt-2 list-disc pl-5 text-sm text-neutral-800">
+                              {activeClub.whatYoullDo.map((x) => (
+                                <li key={x}>{x}</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="mt-2 text-sm text-neutral-700">Details coming soon.</p>
+                          )}
                         </div>
 
                         <div className="mt-5 grid gap-5">
@@ -413,27 +446,35 @@ export default function ClubsPageClient({
                             <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
                               Good for
                             </div>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              {activeClub.goodFor.map((x) => (
-                                <span
-                                  key={x}
-                                  className="inline-flex items-center rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-800"
-                                >
-                                  {x}
-                                </span>
-                              ))}
-                            </div>
+                            {activeClub.goodFor.length ? (
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                {activeClub.goodFor.map((x) => (
+                                  <span
+                                    key={x}
+                                    className="inline-flex items-center rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-800"
+                                  >
+                                    {x}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="mt-2 text-sm text-neutral-700">Details coming soon.</p>
+                            )}
                           </div>
 
                           <div>
                             <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
                               Kit
                             </div>
-                            <ul className="mt-2 list-disc pl-5 text-sm text-neutral-800">
-                              {activeClub.kit.map((x) => (
-                                <li key={x}>{x}</li>
-                              ))}
-                            </ul>
+                            {activeClub.kit.length ? (
+                              <ul className="mt-2 list-disc pl-5 text-sm text-neutral-800">
+                                {activeClub.kit.map((x) => (
+                                  <li key={x}>{x}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="mt-2 text-sm text-neutral-700">Details coming soon.</p>
+                            )}
                           </div>
                         </div>
 
