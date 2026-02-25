@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type Club = {
   id: string
@@ -193,6 +193,7 @@ export default function ClubsPageClient({
 }) {
   const [activeClub, setActiveClub] = useState<Club | null>(null)
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
+  const modalScrollRef = useRef<HTMLElement | null>(null)
   const pageData = initialPageData
 
   useEffect(() => {
@@ -209,6 +210,13 @@ export default function ClubsPageClient({
     return () => {
       document.body.style.overflow = previousOverflow
       window.removeEventListener('keydown', handleEscape)
+    }
+  }, [activeClub])
+
+  useEffect(() => {
+    if (!activeClub) return
+    if (modalScrollRef.current) {
+      modalScrollRef.current.scrollTo({ top: 0, left: 0, behavior: 'auto' })
     }
   }, [activeClub])
 
@@ -390,7 +398,7 @@ export default function ClubsPageClient({
                   <button
                     type="button"
                     onClick={() => setActiveClub(null)}
-                    className="absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-400 bg-white text-sm leading-none text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
+                    className="fixed right-4 top-4 z-[130] inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-400 bg-white text-sm leading-none text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
                     aria-label="Close"
                   >
                     ×
@@ -398,12 +406,16 @@ export default function ClubsPageClient({
                   <button
                     type="button"
                     onClick={() => setActiveClub(null)}
-                    className="absolute left-4 top-4 z-10 inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-3 py-2 text-xs uppercase tracking-[0.2em] text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
+                    className="fixed left-4 top-4 z-[130] inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-3 py-2 text-xs uppercase tracking-[0.2em] text-neutral-800 transition hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
                   >
                     ← Back
                   </button>
 
-                  <article className="grid h-full overflow-y-auto pt-20 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:pt-0">
+                  <article
+                    key={activeClub.id}
+                    ref={modalScrollRef}
+                    className="grid h-full overflow-y-auto pt-20 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:pt-0"
+                  >
                     <div className="border-b border-neutral-200 md:border-b-0 md:border-r md:min-h-full">
                       <Poster club={activeClub} />
                     </div>
