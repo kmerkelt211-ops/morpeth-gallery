@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import client from '../../sanity/lib/client'
 import LightboxKeyboardControls from '../components/lightbox-keyboard-controls'
+import RevealOnScroll from '../components/reveal-on-scroll'
 
 type PortableTextSpan = {
   _type: 'span'
@@ -225,7 +226,7 @@ export default async function GalleryExhibitionPage(props: {
 
           {/* Hero image */}
           {heroImageUrls && heroImageUrls.length > 0 && (
-            <div className="relative mb-10 aspect-[4/3] w-full bg-neutral-200">
+            <RevealOnScroll effect="scale-in" className="relative mb-10 aspect-[4/3] w-full bg-neutral-200">
               <Image
                 src={heroImageUrls[0]}
                 alt={title}
@@ -234,12 +235,12 @@ export default async function GalleryExhibitionPage(props: {
                 className="object-cover"
                 priority
               />
-            </div>
+            </RevealOnScroll>
           )}
 
           {/* Two-column layout: text + info panel (Whitechapel-style) */}
           <section className="grid gap-10 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] md:items-start">
-            <article>
+            <RevealOnScroll effect="fade-right">
               <p className="font-exhibitions text-xs tracking-[0.35em] text-neutral-800">
                 {label}
               </p>
@@ -274,9 +275,9 @@ export default async function GalleryExhibitionPage(props: {
                   ))}
                 </div>
               )}
-            </article>
+            </RevealOnScroll>
 
-            <aside className="space-y-6">
+            <RevealOnScroll effect="fade-left" delay={90} className="space-y-6">
               <div className="border border-neutral-200 bg-white p-6 text-sm text-neutral-800">
                 <h2 className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600">
                   Exhibition info
@@ -387,7 +388,7 @@ export default async function GalleryExhibitionPage(props: {
                   </div>
                 </div>
               )}
-            </aside>
+            </RevealOnScroll>
           </section>
         </div>
       </main>
@@ -420,7 +421,7 @@ export default async function GalleryExhibitionPage(props: {
         </div>
 
         <header className="grid gap-10 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] md:items-start">
-          <div>
+          <RevealOnScroll effect="fade-right">
             <p className="font-exhibitions text-xs tracking-[0.35em] text-neutral-800">
               {isDigital ? 'DIGITAL EXHIBITION' : 'EXHIBITION'}
             </p>
@@ -488,10 +489,10 @@ export default async function GalleryExhibitionPage(props: {
                 This is a digital-only exhibition. Explore the full series of works below.
               </p>
             )}
-          </div>
+          </RevealOnScroll>
 
           {heroImageUrls && heroImageUrls.length > 0 && (
-            <div className="grid gap-4 md:grid-cols-2">
+            <RevealOnScroll effect="fade-left" delay={90} className="grid gap-4 md:grid-cols-2">
               {heroImageUrls.slice(0, 2).map((src, i) => (
                 <a
                   key={`${src}-${i}`}
@@ -509,12 +510,12 @@ export default async function GalleryExhibitionPage(props: {
                   />
                 </a>
               ))}
-            </div>
+            </RevealOnScroll>
           )}
         </header>
 
         {bodyParas.length > 0 && (
-          <section className="mt-16 max-w-3xl">
+          <RevealOnScroll className="mt-16 max-w-3xl">
             <h2 className="font-exhibitions mb-6 text-xs tracking-[0.35em] text-neutral-700">
               ABOUT
             </h2>
@@ -523,30 +524,33 @@ export default async function GalleryExhibitionPage(props: {
                 <p key={idx}>{p}</p>
               ))}
             </div>
-          </section>
+          </RevealOnScroll>
         )}
 
         {seriesImages.length > 0 && (
           <section id="gallery" className="mt-16">
-            <h2 className="font-exhibitions mb-6 text-xs tracking-[0.35em] text-neutral-700">
-              IMAGE SERIES
-            </h2>
+            <RevealOnScroll>
+              <h2 className="font-exhibitions mb-6 text-xs tracking-[0.35em] text-neutral-700">
+                IMAGE SERIES
+              </h2>
+            </RevealOnScroll>
             <div className="grid gap-6 md:grid-cols-3">
               {seriesImages.map((src, i) => (
-                <a
-                  key={`${src}-${i}`}
-                  href={`#lb-${i + heroThumbs.length}`}
-                  className="group block relative aspect-[4/5] bg-neutral-200"
-                  aria-label={`Open image ${i + 1} fullscreen`}
-                >
-                  <Image
-                    src={src}
-                    alt={`${title} image ${i + 1}`}
-                    fill
-                    sizes="(min-width: 768px) 33vw, 100vw"
-                    className="object-cover"
-                  />
-                </a>
+                <RevealOnScroll key={`${src}-${i}`} delay={Math.min(i * 50, 250)}>
+                  <a
+                    href={`#lb-${i + heroThumbs.length}`}
+                    className="group block relative aspect-[4/5] bg-neutral-200"
+                    aria-label={`Open image ${i + 1} fullscreen`}
+                  >
+                    <Image
+                      src={src}
+                      alt={`${title} image ${i + 1}`}
+                      fill
+                      sizes="(min-width: 768px) 33vw, 100vw"
+                      className="object-cover"
+                    />
+                  </a>
+                </RevealOnScroll>
               ))}
             </div>
           </section>

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import type { Club, ClubsPageData } from '../../lib/clubs'
 import { mapFaqItems, mapSanityClubs } from '../../lib/clubs'
+import RevealOnScroll from '../components/reveal-on-scroll'
 
 function Badge({ children }: { children: React.ReactNode }) {
   return (
@@ -86,7 +87,7 @@ export default function ClubsPageClient({
 
         <header className="-mx-6 overflow-hidden border-y border-neutral-200 bg-white md:-mx-10 lg:-mx-20">
           <div className="grid md:min-h-[460px] md:grid-cols-2">
-            <div className="relative min-h-[300px] bg-neutral-900 md:min-h-full">
+            <RevealOnScroll effect="fade-left" className="relative min-h-[300px] bg-neutral-900 md:min-h-full">
               <Image
                 src={heroImageSrc}
                 alt={heroImageAlt}
@@ -95,9 +96,10 @@ export default function ClubsPageClient({
                 sizes="(min-width: 1280px) 50vw, (min-width: 768px) 52vw, 100vw"
                 className="object-cover"
               />
-            </div>
+            </RevealOnScroll>
 
-            <div
+            <RevealOnScroll
+              effect="fade-right"
               className="flex flex-col justify-center px-7 py-10 md:px-14 md:py-12 lg:px-16"
               style={{ backgroundColor: heroPanelColor }}
             >
@@ -142,23 +144,26 @@ export default function ClubsPageClient({
                 </div>
               ) : null}
               {note ? <p className="mt-4 text-xs leading-relaxed text-neutral-800">{note}</p> : null}
-            </div>
+            </RevealOnScroll>
           </div>
         </header>
 
         <section id="whats-running" className="relative mt-16">
           <div className="relative">
-            <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-              <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">
-                {clubsSectionTitle}
-              </h2>
-            </div>
+            <RevealOnScroll>
+              <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+                <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">
+                  {clubsSectionTitle}
+                </h2>
+              </div>
+            </RevealOnScroll>
 
             {clubsToShow.length ? (
               <div className="grid gap-8 md:grid-cols-3">
-                {clubsToShow.map((club) => (
-                  <article
+                {clubsToShow.map((club, index) => (
+                  <RevealOnScroll
                     key={club.id}
+                    delay={Math.min(index * 60, 240)}
                     className="group flex flex-col border border-neutral-200 bg-white shadow-[0_1px_0_rgba(0,0,0,0.03)]"
                   >
                     <div className="border-b border-neutral-200 bg-white">
@@ -177,7 +182,7 @@ export default function ClubsPageClient({
                         <span aria-hidden>→</span>
                       </Link>
                     </div>
-                  </article>
+                  </RevealOnScroll>
                 ))}
               </div>
             ) : (
@@ -190,9 +195,11 @@ export default function ClubsPageClient({
 
         {faqToShow.length ? (
           <section id="faq" className="mt-16 border-t border-neutral-200 pt-12">
-            <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">
-              {faqTitle}
-            </h2>
+            <RevealOnScroll>
+              <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">
+                {faqTitle}
+              </h2>
+            </RevealOnScroll>
 
             <div className="mt-6 grid gap-8 md:grid-cols-3">
               {faqToShow.map((item, index) => {
@@ -200,7 +207,7 @@ export default function ClubsPageClient({
                 const isOpen = openFaqIndex === index
 
                 return (
-                  <div key={item.question} className="border border-neutral-200 bg-white p-6">
+                  <RevealOnScroll key={item.question} delay={Math.min(index * 60, 240)} className="border border-neutral-200 bg-white p-6">
                     <div className="md:hidden">
                       <button
                         type="button"
@@ -230,7 +237,7 @@ export default function ClubsPageClient({
                         {item.answer}
                       </p>
                     </div>
-                  </div>
+                  </RevealOnScroll>
                 )
               })}
             </div>

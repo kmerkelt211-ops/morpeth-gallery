@@ -6,6 +6,7 @@ import { PortableText } from 'next-sanity'
 import type { PortableTextBlock } from 'sanity'
 import { randomInt } from 'node:crypto'
 import AboutInfoPanels from './about-info-panels'
+import RevealOnScroll from '../components/reveal-on-scroll'
 
 export const dynamic = 'force-dynamic'
 
@@ -452,7 +453,7 @@ export default async function AboutPage() {
 
         <header className="mb-16 -mx-6 overflow-hidden border-y border-neutral-200 bg-white md:-mx-10 lg:-mx-20">
           <div className="grid md:min-h-[460px] md:grid-cols-2">
-            <div className="relative min-h-[300px] bg-neutral-200 md:min-h-full">
+            <RevealOnScroll effect="fade-left" className="relative min-h-[300px] bg-neutral-200 md:min-h-full">
               <Image
                 src={aboutHeroImageUrl}
                 alt={aboutHeroImageAlt}
@@ -461,35 +462,42 @@ export default async function AboutPage() {
                 sizes="(min-width: 1280px) 50vw, (min-width: 768px) 52vw, 100vw"
                 className="object-cover"
               />
-            </div>
-            <div className="flex flex-col justify-center px-7 py-10 text-white md:px-14 md:py-12 lg:px-16" style={{ backgroundColor: heroBand }}>
+            </RevealOnScroll>
+            <RevealOnScroll
+              effect="fade-right"
+              className="flex flex-col justify-center px-7 py-10 text-white md:px-14 md:py-12 lg:px-16"
+              style={{ backgroundColor: heroBand }}
+            >
               <p className="font-exhibitions text-[11px] uppercase tracking-[0.22em] text-white/90">{kicker}</p>
               <h1 className="font-exhibitions mt-5 text-4xl uppercase tracking-[0.07em] text-white md:text-6xl md:leading-[1.02]">
                 {headline}
               </h1>
               <p className="mt-6 max-w-xl text-base leading-relaxed text-white md:text-lg">{summary}</p>
-            </div>
+            </RevealOnScroll>
           </div>
         </header>
 
         <section id="stories" className="space-y-10">
-          <article>
+          <RevealOnScroll>
             <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">ABOUT THE SPACE</h2>
             <p className="mt-4 text-sm leading-relaxed text-neutral-800">{leadParagraph}</p>
-          </article>
+          </RevealOnScroll>
 
           <div className="border-t border-neutral-200 pt-8">
-            <h3 className="font-exhibitions text-center text-4xl tracking-[0.12em] text-neutral-900 md:text-5xl">
-              {whatsOnHeading}
-            </h3>
-            <p className="font-exhibitions mt-8 text-center text-[10px] uppercase tracking-[0.32em] text-neutral-600">
-              {whatsOnSubheading}
-            </p>
+            <RevealOnScroll>
+              <h3 className="font-exhibitions text-center text-4xl tracking-[0.12em] text-neutral-900 md:text-5xl">
+                {whatsOnHeading}
+              </h3>
+              <p className="font-exhibitions mt-8 text-center text-[10px] uppercase tracking-[0.32em] text-neutral-600">
+                {whatsOnSubheading}
+              </p>
+            </RevealOnScroll>
             <div className={`mt-5 grid grid-cols-1 gap-[2px] bg-neutral-200 ${featuredGridClass}`}>
               {featuredCardsToShow.map((card, idx) => {
                 return (
-                  <article
+                  <RevealOnScroll
                     key={`featured-image-${idx}-${card.title}`}
+                    delay={Math.min(idx * 60, 240)}
                     className="relative h-[360px] overflow-hidden bg-neutral-100 sm:h-[400px] md:h-[420px]"
                   >
                     <Image
@@ -521,14 +529,14 @@ export default async function AboutPage() {
                         </span>
                       )}
                     </div>
-                  </article>
+                  </RevealOnScroll>
                 )
               })}
             </div>
           </div>
 
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-            <article className="space-y-4 text-sm leading-relaxed text-neutral-800">
+            <RevealOnScroll effect="fade-right" className="space-y-4 text-sm leading-relaxed text-neutral-800">
               {hasPortableBody ? (
                 <div className="prose prose-neutral max-w-none prose-p:leading-relaxed">
                   <PortableText value={data.body || []} />
@@ -559,23 +567,31 @@ export default async function AboutPage() {
                   </p>
                 </figcaption>
               </figure>
-            </article>
+            </RevealOnScroll>
 
-            <AboutInfoPanels
-              quickFacts={quickFactsToShow}
-              pastExhibitions={pastToShow}
-              futurePlans={futureToShow}
-              communityLinks={linksToShow}
-            />
+            <RevealOnScroll effect="fade-left" delay={90}>
+              <AboutInfoPanels
+                quickFacts={quickFactsToShow}
+                pastExhibitions={pastToShow}
+                futurePlans={futureToShow}
+                communityLinks={linksToShow}
+              />
+            </RevealOnScroll>
           </div>
         </section>
 
         <section className="mt-16 border-t border-neutral-200 pt-12">
-          <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">GALLERY SNAPSHOTS</h2>
+          <RevealOnScroll>
+            <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">GALLERY SNAPSHOTS</h2>
+          </RevealOnScroll>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             {snaps.length
               ? snaps.slice(0, 6).map((img: GallerySnapshot, idx: number) => (
-                  <figure key={idx} className="overflow-hidden border border-neutral-200 bg-white">
+                  <RevealOnScroll
+                    key={idx}
+                    delay={Math.min(idx * 50, 250)}
+                    className="overflow-hidden border border-neutral-200 bg-white"
+                  >
                     <div className="relative aspect-[4/3] bg-neutral-100">
                       {img.asset?.url ? (
                         <Image
@@ -594,7 +610,7 @@ export default async function AboutPage() {
                         {img.year ? `, ${img.year}` : ''}
                       </p>
                     </figcaption>
-                  </figure>
+                  </RevealOnScroll>
                 ))
               : null}
           </div>

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { groq } from 'next-sanity'
 import { randomInt } from 'node:crypto'
+import RevealOnScroll from '../components/reveal-on-scroll'
 
 export const dynamic = 'force-dynamic'
 
@@ -208,7 +209,7 @@ export default async function AlumniPage() {
 
         <header className="mb-12 -mx-6 overflow-hidden border-y border-neutral-200 bg-white md:-mx-10 lg:-mx-20">
           <div className="grid md:min-h-[460px] md:grid-cols-2">
-            <div className="relative min-h-[300px] bg-neutral-200 md:min-h-full">
+            <RevealOnScroll effect="fade-left" className="relative min-h-[300px] bg-neutral-200 md:min-h-full">
               {heroImageUrl ? (
                 <Image
                   src={heroImageUrl}
@@ -219,8 +220,9 @@ export default async function AlumniPage() {
                   className="object-cover"
                 />
               ) : null}
-            </div>
-            <div
+            </RevealOnScroll>
+            <RevealOnScroll
+              effect="fade-right"
               className="flex flex-col justify-center px-7 py-10 md:px-14 md:py-12 lg:px-16"
               style={{ backgroundColor: '#9EDFE6' }}
             >
@@ -237,7 +239,7 @@ export default async function AlumniPage() {
                 {page?.intro ||
                   'Former students of the Portman Gallery programme continue to make, exhibit and work in art and photography. This page celebrates their journeys and current practice.'}
               </p>
-            </div>
+            </RevealOnScroll>
           </div>
         </header>
 
@@ -251,8 +253,9 @@ export default async function AlumniPage() {
             </h3>
             <div className="mt-6 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
               {spotlights.map((person, index) => (
-                <article
+                <RevealOnScroll
                   key={`${person.name}-${index}`}
+                  delay={Math.min(index * 60, 300)}
                   className="flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white"
                 >
                   <div className="relative aspect-[4/5] bg-neutral-200">
@@ -304,13 +307,13 @@ export default async function AlumniPage() {
                       ) : null}
                     </div>
                   </div>
-                </article>
+                </RevealOnScroll>
               ))}
             </div>
           </section>
         ) : null}
 
-        <section className="mb-16" aria-labelledby="alumni-about-heading">
+        <RevealOnScroll className="mb-16" aria-labelledby="alumni-about-heading">
           <div className="grid gap-8 md:grid-cols-2">
             <div>
               <h3
@@ -325,14 +328,23 @@ export default async function AlumniPage() {
                 ))}
               </div>
               {aboutCtaLabel && aboutCtaLink ? (
-                <a
-                  href={aboutCtaLink}
-                  target={isExternalHref(aboutCtaLink) ? '_blank' : undefined}
-                  rel={isExternalHref(aboutCtaLink) ? 'noopener noreferrer' : undefined}
-                  className="font-exhibitions mt-6 inline-flex items-center gap-2 border border-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-neutral-900 transition hover:bg-neutral-900 hover:text-white"
-                >
-                  {aboutCtaLabel} <span aria-hidden>→</span>
-                </a>
+                isExternalHref(aboutCtaLink) ? (
+                  <a
+                    href={aboutCtaLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-exhibitions mt-6 inline-flex items-center gap-2 border border-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-neutral-900 transition hover:bg-neutral-900 hover:text-white"
+                  >
+                    {aboutCtaLabel} <span aria-hidden>→</span>
+                  </a>
+                ) : (
+                  <Link
+                    href={aboutCtaLink}
+                    className="font-exhibitions mt-6 inline-flex items-center gap-2 border border-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-neutral-900 transition hover:bg-neutral-900 hover:text-white"
+                  >
+                    {aboutCtaLabel} <span aria-hidden>→</span>
+                  </Link>
+                )
               ) : null}
             </div>
 
@@ -352,7 +364,7 @@ export default async function AlumniPage() {
               </div>
             ) : null}
           </div>
-        </section>
+        </RevealOnScroll>
 
         <section className="mb-16" aria-labelledby="alumni-exhibitions-heading">
           <h3
@@ -363,46 +375,57 @@ export default async function AlumniPage() {
           </h3>
           {data.length > 0 ? (
             <div className="mt-6 grid gap-10 md:grid-cols-3">
-              {data.map((ex) =>
+              {data.map((ex, index) =>
                 ex.slug?.current ? (
-                  <Link key={ex._id} href={`/${ex.slug.current}`} className="block">
-                    <div className="relative aspect-[4/5] bg-neutral-200">
-                      {ex.heroImageUrl && (
-                        <Image
-                          src={ex.heroImageUrl}
-                          alt={ex.title}
-                          fill
-                          sizes="(min-width: 768px) 33vw, 100vw"
-                          className="object-cover"
-                        />
-                      )}
-                    </div>
-                    <h3 className="font-exhibitions mt-4 text-lg tracking-[0.12em] text-neutral-900">
-                      {ex.title}
-                    </h3>
-                    {ex.description ? (
-                      <p className="mt-2 text-sm text-neutral-700">{ex.description}</p>
-                    ) : null}
-                  </Link>
+                  <RevealOnScroll key={ex._id} delay={Math.min(index * 45, 270)}>
+                    <Link href={`/${ex.slug.current}`} className="block">
+                      <div className="relative aspect-[4/5] bg-neutral-200">
+                        {ex.heroImageUrl && (
+                          <Image
+                            src={ex.heroImageUrl}
+                            alt={ex.title}
+                            fill
+                            sizes="(min-width: 768px) 33vw, 100vw"
+                            className="object-cover"
+                          />
+                        )}
+                      </div>
+                      <h3 className="font-exhibitions mt-4 text-lg tracking-[0.12em] text-neutral-900">
+                        {ex.title}
+                      </h3>
+                      {ex.description ? (
+                        <p className="mt-2 text-sm text-neutral-700">{ex.description}</p>
+                      ) : null}
+                    </Link>
+                  </RevealOnScroll>
                 ) : null
               )}
             </div>
           ) : (
-            <div className="mt-6 border border-dashed border-neutral-300 px-6 py-12 text-center md:px-12">
+            <RevealOnScroll effect="wipe-right" className="mt-6 border border-dashed border-neutral-300 px-6 py-12 text-center md:px-12">
               <p className="font-exhibitions text-[11px] uppercase tracking-[0.22em] text-neutral-500">
                 {comingSoonTitle}
               </p>
               <p className="mx-auto mt-4 max-w-2xl text-base text-neutral-700">{comingSoonBody}</p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 {comingSoonPrimaryCtaLabel && comingSoonPrimaryCtaLink ? (
-                  <a
-                    href={comingSoonPrimaryCtaLink}
-                    target={isExternalHref(comingSoonPrimaryCtaLink) ? '_blank' : undefined}
-                    rel={isExternalHref(comingSoonPrimaryCtaLink) ? 'noopener noreferrer' : undefined}
-                    className="font-exhibitions inline-flex items-center gap-2 bg-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-white"
-                  >
-                    {comingSoonPrimaryCtaLabel} <span aria-hidden>→</span>
-                  </a>
+                  isExternalHref(comingSoonPrimaryCtaLink) ? (
+                    <a
+                      href={comingSoonPrimaryCtaLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-exhibitions inline-flex items-center gap-2 bg-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-white"
+                    >
+                      {comingSoonPrimaryCtaLabel} <span aria-hidden>→</span>
+                    </a>
+                  ) : (
+                    <Link
+                      href={comingSoonPrimaryCtaLink}
+                      className="font-exhibitions inline-flex items-center gap-2 bg-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-white"
+                    >
+                      {comingSoonPrimaryCtaLabel} <span aria-hidden>→</span>
+                    </Link>
+                  )
                 ) : null}
                 {comingSoonSecondaryCtaLabel && comingSoonSecondaryCtaLink ? (
                   <Link
@@ -413,7 +436,7 @@ export default async function AlumniPage() {
                   </Link>
                 ) : null}
               </div>
-            </div>
+            </RevealOnScroll>
           )}
         </section>
 
@@ -421,7 +444,7 @@ export default async function AlumniPage() {
           <section aria-label="Related pages" className="border-t border-neutral-200 pt-10">
             <div className="grid gap-6 md:grid-cols-3">
               {relatedLinks.map((card, index) => (
-                <div key={index} className="border border-neutral-200 bg-neutral-50 p-6">
+                <RevealOnScroll key={index} delay={Math.min(index * 60, 240)} className="border border-neutral-200 bg-neutral-50 p-6">
                   <p className="font-exhibitions text-[11px] uppercase tracking-[0.2em] text-neutral-600">
                     {card.title}
                   </p>
@@ -445,7 +468,7 @@ export default async function AlumniPage() {
                       </Link>
                     )
                   ) : null}
-                </div>
+                </RevealOnScroll>
               ))}
             </div>
           </section>

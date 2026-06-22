@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import RevealOnScroll from './components/reveal-on-scroll'
 
 export type GalleryExhibition = {
   _id: string
@@ -171,7 +172,7 @@ export default function HomePageClient({
       <section className="px-6 pt-10 md:px-12 lg:px-20">
         <div className="grid overflow-hidden border border-neutral-200 md:grid-cols-2">
           {/* Image (left) */}
-          <div className="relative min-h-[320px] bg-neutral-100 md:min-h-[560px]">
+          <RevealOnScroll effect="fade-left" className="relative min-h-[320px] bg-neutral-100 md:min-h-[560px]">
             {heroImageUrl ? (
               <Image
                 src={heroImageUrl}
@@ -184,10 +185,10 @@ export default function HomePageClient({
             ) : (
               <div className="absolute inset-0 bg-neutral-200" />
             )}
-          </div>
+          </RevealOnScroll>
 
           {/* Text panel (right) */}
-          <div className="flex flex-col justify-between bg-black px-8 py-10 text-white md:px-12 md:py-14">
+          <RevealOnScroll effect="fade-right" className="flex flex-col justify-between bg-black px-8 py-10 text-white md:px-12 md:py-14">
             <div>
               <p className="font-exhibitions text-xs tracking-[0.4em] text-white/70">
                 {pageCopy?.heroKicker || 'PORTMAN GALLERY'}
@@ -228,13 +229,14 @@ export default function HomePageClient({
                 Guest artists <span aria-hidden>→</span>
               </Link>
             </div>
-          </div>
+          </RevealOnScroll>
         </div>
       </section>
 
       {/* CURRENT EXHIBITIONS STRIP (CAROUSEL) */}
       {currentExhibitions.length ? (
-        <section
+        <RevealOnScroll
+          effect="wipe-right"
           style={{ backgroundColor: activeExhibition?.bgColor || '#9EDFE6' }}
           className="relative mt-16 touch-pan-y overflow-hidden border-y border-neutral-200 px-6 py-8 transition-colors duration-500 md:px-12 md:py-10 lg:px-20"
           onMouseEnter={() => setIsCarouselPaused(true)}
@@ -388,7 +390,7 @@ export default function HomePageClient({
             ) : null}
             </div>
           </div>
-        </section>
+        </RevealOnScroll>
       ) : null}
 
       {/* WHAT'S ON GRID (TATE-STYLE CARDS) */}
@@ -397,20 +399,22 @@ export default function HomePageClient({
         <div className="pointer-events-none absolute inset-0 halftone-soft opacity-35" />
 
         <div className="relative">
-          <header className="mb-12 text-center md:text-left">
-            <p className="font-exhibitions text-xs tracking-[0.35em] text-neutral-500">
-              WHAT&apos;S ON
-            </p>
-            <p className="mt-3 max-w-xl text-sm text-neutral-700 md:text-base">
-              {pageCopy?.whatsOnIntro || DEFAULT_WHATS_ON_INTRO}
-            </p>
-          </header>
+          <RevealOnScroll>
+            <header className="mb-12 text-center md:text-left">
+              <p className="font-exhibitions text-xs tracking-[0.35em] text-neutral-500">
+                WHAT&apos;S ON
+              </p>
+              <p className="mt-3 max-w-xl text-sm text-neutral-700 md:text-base">
+                {pageCopy?.whatsOnIntro || DEFAULT_WHATS_ON_INTRO}
+              </p>
+            </header>
+          </RevealOnScroll>
 
           <div className="grid gap-10 md:grid-cols-3 items-stretch">
-            {whatsOnExhibitions.map((item) => {
+            {whatsOnExhibitions.map((item, index) => {
               const itemImageUrl = getExhibitionImageUrl(item)
               return (
-              <article key={item._id} className="flex flex-col h-full">
+              <RevealOnScroll key={item._id} delay={Math.min(index * 60, 300)} className="flex flex-col h-full">
                 <div className="relative aspect-[4/5] bg-neutral-100">
                   {itemImageUrl ? (
                     <Image
@@ -471,7 +475,7 @@ export default function HomePageClient({
                     )}
                   </div>
                 </div>
-              </article>
+              </RevealOnScroll>
               )
             })}
             {!whatsOnExhibitions.length ? (
@@ -486,7 +490,7 @@ export default function HomePageClient({
       {/* COLOUR BLOCKS / MEMBERSHIP-STYLE PROMOS */}
       <section className="bg-neutral-50 px-6 py-20 md:px-12 lg:px-20">
         <div className="grid gap-8 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-          <div className="flex flex-col justify-between bg-[#8CC1B2] px-8 py-10 text-white">
+          <RevealOnScroll effect="fade-up" className="flex flex-col justify-between bg-[#8CC1B2] px-8 py-10 text-white">
             <div>
               <p className="font-exhibitions text-xs tracking-[0.36em]">
                 PORTMAN GALLERY
@@ -508,10 +512,10 @@ export default function HomePageClient({
                 <span aria-hidden>→</span>
               </Link>
             </div>
-          </div>
+          </RevealOnScroll>
 
           <div className="grid gap-6 md:grid-rows-2">
-            <div className="flex flex-col justify-between bg-[#E89AB5] px-8 py-8 text-white">
+            <RevealOnScroll delay={60} className="flex flex-col justify-between bg-[#E89AB5] px-8 py-8 text-white">
               <div>
                 <p className="font-exhibitions text-xs tracking-[0.36em]">
                   AFTER-SCHOOL
@@ -530,9 +534,9 @@ export default function HomePageClient({
                 Explore clubs
                 <span aria-hidden>→</span>
               </Link>
-            </div>
+            </RevealOnScroll>
 
-            <div className="flex flex-col justify-between bg-neutral-900 px-8 py-8 text-white">
+            <RevealOnScroll delay={120} className="flex flex-col justify-between bg-neutral-900 px-8 py-8 text-white">
               <div>
                 <p className="font-exhibitions text-xs tracking-[0.36em] text-neutral-300">
                   SIXTH FORM
@@ -554,7 +558,7 @@ export default function HomePageClient({
                 Sixth Form information
                 <span aria-hidden>→</span>
               </button>
-            </div>
+            </RevealOnScroll>
           </div>
         </div>
       </section>
@@ -564,20 +568,22 @@ export default function HomePageClient({
         {/* Soft halftone band behind heading */}
         <div className="pointer-events-none absolute inset-x-0 top-10 mx-auto h-32 max-w-3xl halftone-soft opacity-35" />
         <div className="mx-auto max-w-5xl">
-          <h2 className="font-exhibitions text-center text-4xl font-normal leading-tight tracking-[0.12em] text-neutral-900 md:text-6xl">
-            SUPPORT THE GALLERY
-          </h2>
+          <RevealOnScroll effect="scale-in">
+            <h2 className="font-exhibitions text-center text-4xl font-normal leading-tight tracking-[0.12em] text-neutral-900 md:text-6xl">
+              SUPPORT THE GALLERY
+            </h2>
 
-          <p className="mx-auto mt-6 max-w-3xl text-center text-sm leading-relaxed text-neutral-700">
-            The Portman Gallery is Morpeth School&apos;s dedicated exhibition space. Shows change
-            throughout the year and are open to students, families and visitors by arrangement.
-            For visit enquiries, or to find out how you can support our programme, please contact
-            the school office or the Art &amp; Photography department.
-          </p>
+            <p className="mx-auto mt-6 max-w-3xl text-center text-sm leading-relaxed text-neutral-700">
+              The Portman Gallery is Morpeth School&apos;s dedicated exhibition space. Shows change
+              throughout the year and are open to students, families and visitors by arrangement.
+              For visit enquiries, or to find out how you can support our programme, please contact
+              the school office or the Art &amp; Photography department.
+            </p>
+          </RevealOnScroll>
 
           <div className="mt-12 grid md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
             {/* Text band (left) */}
-            <div className="flex flex-col justify-between px-8 py-10 text-neutral-900 md:px-10 md:py-12">
+            <RevealOnScroll effect="fade-right" className="flex flex-col justify-between px-8 py-10 text-neutral-900 md:px-10 md:py-12">
               <div>
                 <p className="font-exhibitions text-xs tracking-[0.36em] text-neutral-800">
                   SUPPORT
@@ -599,10 +605,10 @@ export default function HomePageClient({
                   <span aria-hidden>→</span>
                 </Link>
               </div>
-            </div>
+            </RevealOnScroll>
 
             {/* Image band (right) */}
-            <div className="relative min-h-[260px] md:min-h-[320px]">
+            <RevealOnScroll effect="fade-left" delay={90} className="relative min-h-[260px] md:min-h-[320px]">
               {heroImageUrl ? (
                 <Image
                   src={heroImageUrl}
@@ -614,7 +620,7 @@ export default function HomePageClient({
               ) : (
                 <div className="absolute inset-0 bg-neutral-200" />
               )}
-            </div>
+            </RevealOnScroll>
           </div>
         </div>
       </section>
