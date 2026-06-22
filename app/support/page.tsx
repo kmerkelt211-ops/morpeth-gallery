@@ -186,6 +186,11 @@ function isExternalHref(href: string): boolean {
   return /^https?:\/\//i.test(href)
 }
 
+function resolveFeaturedCtaHref(label: string, href: string): string {
+  if (label.trim().toLowerCase().includes('view all prints')) return '/shop'
+  return href
+}
+
 function resolvePrintHref(card: SupportPrintCard, title: string): string {
   if (card.purchaseUrl?.trim()) return card.purchaseUrl.trim()
   if (card.exhibitionSlug?.trim()) return `/${card.exhibitionSlug.trim()}`
@@ -367,7 +372,10 @@ export default async function SupportPage({
     pageData?.featuredPrintCtaLabel,
     FALLBACK_PAGE.featuredPrintCtaLabel
   )
-  const featuredPrintCtaLink = asHref(pageData?.featuredPrintCtaLink, FALLBACK_PAGE.featuredPrintCtaLink)
+  const featuredPrintCtaLink = resolveFeaturedCtaHref(
+    featuredPrintCtaLabel,
+    asHref(pageData?.featuredPrintCtaLink, FALLBACK_PAGE.featuredPrintCtaLink)
+  )
   const printCards = buildPrintCards(pageData?.printCards)
 
   const contactSectionTitle = asText(
