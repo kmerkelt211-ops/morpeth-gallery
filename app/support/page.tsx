@@ -18,6 +18,7 @@ type ResolvedPrintCard = {
   availability: string
   ctaLabel: string
   href: string
+  soldOut: boolean
 }
 
 const FALLBACK_PAGE: Required<
@@ -120,7 +121,8 @@ const FALLBACK_PRINT_CARDS: ResolvedPrintCard[] = [
     priceLabel: 'From £45',
     availability: 'Open edition print',
     ctaLabel: 'Buy print',
-    href: '#contact',
+    href: '/support?print=Reference%20Wall%3A%20Movement#contact',
+    soldOut: false,
   },
   {
     imageUrl: '/about-page/T16241_10.jpg',
@@ -131,7 +133,8 @@ const FALLBACK_PRINT_CARDS: ResolvedPrintCard[] = [
     priceLabel: 'From £45',
     availability: 'Open edition print',
     ctaLabel: 'Buy print',
-    href: '#contact',
+    href: '/support?print=Colour%20Study%20Session#contact',
+    soldOut: false,
   },
   {
     imageUrl: '/about-page/Benedict_Enwonwu_Black_Culture.width-1440.jpg',
@@ -142,7 +145,8 @@ const FALLBACK_PRINT_CARDS: ResolvedPrintCard[] = [
     priceLabel: 'From £60',
     availability: 'Limited run',
     ctaLabel: 'Buy print',
-    href: '#contact',
+    href: '/support?print=Figure%20and%20Symbol#contact',
+    soldOut: false,
   },
   {
     imageUrl: '/about-page/width-1200_TNCNkI1.jpg',
@@ -153,7 +157,8 @@ const FALLBACK_PRINT_CARDS: ResolvedPrintCard[] = [
     priceLabel: 'From £55',
     availability: 'Open edition print',
     ctaLabel: 'Buy print',
-    href: '#contact',
+    href: '/support?print=Studies%20on%20Colour%20and%20Form#contact',
+    soldOut: false,
   },
 ]
 
@@ -178,10 +183,14 @@ function isExternalHref(href: string): boolean {
   return /^https?:\/\//i.test(href)
 }
 
-function resolvePrintHref(card: SupportPrintCard): string {
+function resolvePrintHref(card: SupportPrintCard, title: string): string {
   if (card.purchaseUrl?.trim()) return card.purchaseUrl.trim()
   if (card.exhibitionSlug?.trim()) return `/${card.exhibitionSlug.trim()}`
-  return '#contact'
+  return `/support?print=${encodeURIComponent(title)}#contact`
+}
+
+function isSoldOut(availability: string): boolean {
+  return /sold out|unavailable|no longer available/i.test(availability)
 }
 
 function buildPathways(pathways: SupportPathway[] | undefined): SupportPathway[] {
@@ -194,17 +203,22 @@ function buildPrintCards(cards: SupportPrintCard[] | undefined): ResolvedPrintCa
   const validCards = (cards || [])
     .filter((item) => Boolean(item.imageUrl) && Boolean(item.title?.trim()))
     .slice(0, 8)
-    .map((item) => ({
-      imageUrl: item.imageUrl || FALLBACK_PRINT_CARDS[0].imageUrl,
-      alt: item.alt || `${item.title || 'Print'} image`,
-      title: item.title || 'Untitled print',
-      artist: item.artist || 'Portman Gallery',
-      year: item.year,
-      priceLabel: item.priceLabel || 'Price on request',
-      availability: item.availability || 'Availability varies',
-      ctaLabel: item.ctaLabel || 'More info',
-      href: resolvePrintHref(item),
-    }))
+    .map((item) => {
+      const title = item.title || 'Untitled print'
+      const availability = item.availability || 'Availability varies'
+      return {
+        imageUrl: item.imageUrl || FALLBACK_PRINT_CARDS[0].imageUrl,
+        alt: item.alt || `${title} image`,
+        title,
+        artist: item.artist || 'Portman Gallery',
+        year: item.year,
+        priceLabel: item.priceLabel || 'Price on request',
+        availability,
+        ctaLabel: item.ctaLabel || 'More info',
+        href: resolvePrintHref(item, title),
+        soldOut: isSoldOut(availability),
+      }
+    })
 
   return validCards.length ? validCards : FALLBACK_PRINT_CARDS
 }
@@ -308,7 +322,13 @@ function renderActionLink(
   )
 }
 
-export default async function SupportPage() {
+export default async function SupportPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ print?: string }>
+}) {
+  const resolvedSearchParams = await searchParams
+  const selectedPrint = resolvedSearchParams?.print?.trim() || ''
   const pageData = await getSupportPageData()
 
   const pageTitle = asText(pageData?.pageTitle, FALLBACK_PAGE.pageTitle)
@@ -518,8 +538,13 @@ export default async function SupportPage() {
                       alt={card.alt}
                       fill
                       sizes="(min-width: 1280px) 23vw, (min-width: 640px) 48vw, 100vw"
-                      className="object-cover"
+                      className={`object-cover ${card.soldOut ? 'opacity-60 grayscale' : ''}`}
                     />
+                    {card.soldOut ? (
+                      <span className="font-heading absolute left-3 top-3 inline-flex items-center bg-neutral-900 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-white">
+                        Sold out
+                      </span>
+                    ) : null}
                   </div>
                   <div className="space-y-2 border-t border-slate-200 bg-white px-4 py-4">
                     <h4 className="text-2xl leading-tight text-neutral-900">{card.title}</h4>
@@ -529,11 +554,20 @@ export default async function SupportPage() {
                         <p className="text-sm font-semibold text-neutral-900">{card.priceLabel}</p>
                         <p className="text-xs text-slate-600">{card.availability}</p>
                       </div>
-                      {renderActionLink(
-                        card.href,
-                        card.ctaLabel,
-                        'font-heading lux-underline inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-900',
-                        `${card.ctaLabel} for ${card.title}`
+                      {card.soldOut ? (
+                        <span
+                          aria-disabled="true"
+                          className="font-heading inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-slate-400"
+                        >
+                          Sold out
+                        </span>
+                      ) : (
+                        renderActionLink(
+                          card.href,
+                          card.ctaLabel,
+                          'font-heading lux-underline inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-900',
+                          `${card.ctaLabel} for ${card.title}`
+                        )
                       )}
                     </div>
                   </div>
@@ -586,7 +620,11 @@ export default async function SupportPage() {
             </RevealOnScroll>
 
             <RevealOnScroll delay={100} effect="fade-left">
-              <ContactForm submitLabel={formSubmitLabel} successMessage={formSuccessMessage} />
+              <ContactForm
+                submitLabel={formSubmitLabel}
+                successMessage={formSuccessMessage}
+                initialPrint={selectedPrint}
+              />
             </RevealOnScroll>
           </div>
         </div>
