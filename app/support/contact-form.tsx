@@ -31,6 +31,7 @@ type ContactApiResponse = {
 type ContactFormProps = {
   submitLabel?: string
   successMessage?: string
+  initialPrint?: string
 }
 
 const INITIAL_VALUES: ContactFormValues = {
@@ -46,6 +47,16 @@ const INITIAL_VALUES: ContactFormValues = {
   honeypot: '',
 }
 
+function buildPrintInitialValues(printTitle: string): ContactFormValues {
+  return {
+    ...INITIAL_VALUES,
+    enquiryType: 'Print purchase',
+    subject: `Print enquiry: ${printTitle}`,
+    message: `I'm interested in purchasing the print "${printTitle}". Please let me know about pricing and availability.`,
+    interests: ['Print purchases'],
+  }
+}
+
 const FIELD_WRAPPER_CLASS = 'block space-y-2'
 const FIELD_LABEL_CLASS = 'font-heading text-[10px] uppercase tracking-[0.22em] text-slate-600'
 const FIELD_CLASS =
@@ -59,12 +70,23 @@ function isValidEmail(value: string): boolean {
 export default function ContactForm({
   submitLabel = 'Send enquiry',
   successMessage = "Thanks - we'll get back to you.",
+  initialPrint = '',
 }: ContactFormProps) {
-  const [values, setValues] = useState<ContactFormValues>(INITIAL_VALUES)
+  const hasInitialPrint = Boolean(initialPrint.trim())
+  const [values, setValues] = useState<ContactFormValues>(() =>
+    hasInitialPrint ? buildPrintInitialValues(initialPrint.trim()) : INITIAL_VALUES
+  )
   const [errors, setErrors] = useState<ContactFormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [formMessage, setFormMessage] = useState('')
+  const [selectedPrint, setSelectedPrint] = useState(hasInitialPrint ? initialPrint.trim() : '')
+
+  const clearSelectedPrint = () => {
+    setSelectedPrint('')
+    setValues(INITIAL_VALUES)
+    setErrors({})
+  }
 
   const selectedInterestSet = useMemo(() => new Set(values.interests), [values.interests])
 
@@ -163,6 +185,21 @@ export default function ContactForm({
             className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"
           >
             {formMessage}
+          </div>
+        ) : null}
+
+        {!isSuccess && selectedPrint ? (
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-800">
+            <span>
+              Enquiring about: <strong>{selectedPrint}</strong>
+            </span>
+            <button
+              type="button"
+              onClick={clearSelectedPrint}
+              className="font-heading shrink-0 text-[10px] uppercase tracking-[0.18em] text-slate-600 underline-offset-2 hover:underline"
+            >
+              Clear
+            </button>
           </div>
         ) : null}
 

@@ -2,6 +2,7 @@
 // Keep this list minimal: one schema per site page, plus collections.
 
 import aboutPage from '../schemas/aboutPage'
+import alumniPage from '../schemas/alumniPage'
 import clubsPage from '../schemas/clubsPage'
 import galleryExhibition from '../schemas/galleryExhibition'
 import homePage from '../schemas/homePage'
@@ -13,6 +14,7 @@ export const schemaTypes = [
   homePage,
   studentPage,
   staffPage,
+  alumniPage,
   clubsPage,
   aboutPage,
   supportPage,
