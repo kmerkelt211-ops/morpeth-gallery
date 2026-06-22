@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { groq } from 'next-sanity'
 import { randomInt } from 'node:crypto'
+import RevealOnScroll from '../components/reveal-on-scroll'
 
 export const dynamic = 'force-dynamic'
 
@@ -84,7 +85,7 @@ export default async function StaffExhibitionsPage() {
 
         <header className="mb-12 -mx-6 overflow-hidden border-y border-neutral-200 bg-white md:-mx-10 lg:-mx-20">
           <div className="grid md:min-h-[460px] md:grid-cols-2">
-            <div className="relative min-h-[300px] bg-neutral-200 md:min-h-full">
+            <RevealOnScroll effect="fade-left" className="relative min-h-[300px] bg-neutral-200 md:min-h-full">
               {heroImageUrl ? (
                 <Image
                   src={heroImageUrl}
@@ -95,8 +96,9 @@ export default async function StaffExhibitionsPage() {
                   className="object-cover"
                 />
               ) : null}
-            </div>
-            <div
+            </RevealOnScroll>
+            <RevealOnScroll
+              effect="fade-right"
               className="flex flex-col justify-center px-7 py-10 md:px-14 md:py-12 lg:px-16"
               style={{ backgroundColor: '#d292b0' }}
             >
@@ -113,32 +115,34 @@ export default async function StaffExhibitionsPage() {
                 {page?.intro ||
                   'Guest artists and invited practitioners exhibit regularly in the Portman Gallery, sharing current practice, research and collaborative projects with students.'}
               </p>
-            </div>
+            </RevealOnScroll>
           </div>
         </header>
 
         <div className="grid gap-10 md:grid-cols-3">
-          {data.map((ex) =>
+          {data.map((ex, index) =>
             ex.slug?.current ? (
-              <Link key={ex._id} href={`/${ex.slug.current}`} className="block">
-                <div className="relative aspect-[4/5] bg-neutral-200">
-                  {ex.heroImageUrl && (
-                    <Image
-                      src={ex.heroImageUrl}
-                      alt={ex.title}
-                      fill
-                      sizes="(min-width: 768px) 33vw, 100vw"
-                      className="object-cover"
-                    />
-                  )}
-                </div>
-                <h3 className="font-exhibitions mt-4 text-lg tracking-[0.12em] text-neutral-900">
-                  {ex.title}
-                </h3>
-                {ex.description ? (
-                  <p className="mt-2 text-sm text-neutral-700">{ex.description}</p>
-                ) : null}
-              </Link>
+              <RevealOnScroll key={ex._id} delay={Math.min(index * 45, 270)}>
+                <Link href={`/${ex.slug.current}`} className="block">
+                  <div className="relative aspect-[4/5] bg-neutral-200">
+                    {ex.heroImageUrl && (
+                      <Image
+                        src={ex.heroImageUrl}
+                        alt={ex.title}
+                        fill
+                        sizes="(min-width: 768px) 33vw, 100vw"
+                        className="object-cover"
+                      />
+                    )}
+                  </div>
+                  <h3 className="font-exhibitions mt-4 text-lg tracking-[0.12em] text-neutral-900">
+                    {ex.title}
+                  </h3>
+                  {ex.description ? (
+                    <p className="mt-2 text-sm text-neutral-700">{ex.description}</p>
+                  ) : null}
+                </Link>
+              </RevealOnScroll>
             ) : null
           )}
           {!data.length ? (

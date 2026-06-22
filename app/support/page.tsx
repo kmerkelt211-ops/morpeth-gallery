@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import RevealOnScroll from '../components/reveal-on-scroll'
+import ScrollToHash from '../components/scroll-to-hash'
 import ContactForm from './contact-form'
 import PrintCard from './print-card'
 import {
@@ -385,6 +386,7 @@ export default async function SupportPage({
 
   return (
     <main className="bg-morpeth-offwhite text-neutral-900">
+      <ScrollToHash />
       <section className="border-y border-slate-200 bg-white">
         <div className="mx-auto w-full max-w-[1520px] px-0 sm:px-4 lg:px-8">
           <RevealOnScroll className="support-page-enter overflow-hidden border border-slate-200 bg-white" effect="fade-in">
