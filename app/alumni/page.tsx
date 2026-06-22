@@ -28,12 +28,66 @@ type AlumniSpotlight = {
   instagramHandle?: string
 }
 
+type RelatedLinkCard = {
+  title?: string
+  body?: string
+  linkLabel?: string
+  linkHref?: string
+}
+
 type AlumniPageCopy = {
   title?: string
   kicker?: string
   headline?: string
   intro?: string
   spotlights?: AlumniSpotlight[]
+  aboutTitle?: string
+  aboutBody?: string
+  aboutCtaLabel?: string
+  aboutCtaLink?: string
+  programmeListTitle?: string
+  programmeListItems?: string[]
+  comingSoonTitle?: string
+  comingSoonBody?: string
+  comingSoonPrimaryCtaLabel?: string
+  comingSoonPrimaryCtaLink?: string
+  comingSoonSecondaryCtaLabel?: string
+  comingSoonSecondaryCtaLink?: string
+  relatedLinks?: RelatedLinkCard[]
+}
+
+const FALLBACK_PROGRAMME_ITEMS = [
+  'BA Fine Art and Photography degrees',
+  'Professional photography practices',
+  'Graphic design and art direction',
+  'Film, TV and media production',
+  'Illustration and printmaking',
+  'Arts education and community work',
+]
+
+const FALLBACK_RELATED_LINKS: RelatedLinkCard[] = [
+  {
+    title: 'Are you an alum?',
+    body: "Share your practice, your path, and work made since Morpeth. We'd love to feature you.",
+    linkLabel: 'Get in touch',
+    linkHref: '/support#contact',
+  },
+  {
+    title: 'Current students',
+    body: 'See the work being made right now in the Portman Gallery by students across year groups.',
+    linkLabel: 'Student work',
+    linkHref: '/student',
+  },
+  {
+    title: 'Guest artists',
+    body: 'Visiting practitioners who have shown work and led sessions in the Portman Gallery.',
+    linkLabel: 'Guest artists',
+    linkHref: '/guest-artists',
+  },
+]
+
+function isExternalHref(href: string): boolean {
+  return /^https?:\/\//i.test(href)
 }
 
 export default async function AlumniPage() {
@@ -52,6 +106,24 @@ export default async function AlumniPage() {
         quote,
         portfolioUrl,
         instagramHandle
+      },
+      aboutTitle,
+      aboutBody,
+      aboutCtaLabel,
+      aboutCtaLink,
+      programmeListTitle,
+      programmeListItems,
+      comingSoonTitle,
+      comingSoonBody,
+      comingSoonPrimaryCtaLabel,
+      comingSoonPrimaryCtaLink,
+      comingSoonSecondaryCtaLabel,
+      comingSoonSecondaryCtaLink,
+      relatedLinks[]{
+        title,
+        body,
+        linkLabel,
+        linkHref
       }
     },
     "items": *[
@@ -80,6 +152,32 @@ export default async function AlumniPage() {
   const page = fetched?.page && !Array.isArray(fetched.page) ? fetched.page : null
   const data = Array.isArray(fetched?.items) ? fetched.items : []
   const spotlights = (page?.spotlights || []).filter((item) => Boolean(item.imageUrl && item.name))
+
+  const aboutTitle = page?.aboutTitle?.trim() || 'About the alumni programme'
+  const aboutBody =
+    page?.aboutBody?.trim() ||
+    "Morpeth School has a long tradition of students going on to art school, photography degrees, and creative careers. The alumni section of the Portman Gallery is a space to celebrate that work - showing where the practice went after school.\n\nIf you studied Art or Photography at Morpeth and would like your work featured here, please get in touch via the Support page."
+  const aboutParagraphs = aboutBody.split(/\n{2,}/).map((paragraph) => paragraph.trim()).filter(Boolean)
+  const aboutCtaLabel = page?.aboutCtaLabel?.trim() || 'Get in touch'
+  const aboutCtaLink = page?.aboutCtaLink?.trim() || '/support#contact'
+
+  const programmeListTitle = page?.programmeListTitle?.trim() || 'Alumni featured here have gone on to:'
+  const programmeListItems =
+    page?.programmeListItems && page.programmeListItems.length > 0
+      ? page.programmeListItems
+      : FALLBACK_PROGRAMME_ITEMS
+
+  const comingSoonTitle = page?.comingSoonTitle?.trim() || 'Coming soon'
+  const comingSoonBody =
+    page?.comingSoonBody?.trim() ||
+    "Alumni exhibitions will appear here once published. If you're a former student who wants to share your work, please get in touch."
+  const comingSoonPrimaryCtaLabel = page?.comingSoonPrimaryCtaLabel?.trim() || 'Submit your work'
+  const comingSoonPrimaryCtaLink = page?.comingSoonPrimaryCtaLink?.trim() || '/support#contact'
+  const comingSoonSecondaryCtaLabel = page?.comingSoonSecondaryCtaLabel?.trim() || 'Student work'
+  const comingSoonSecondaryCtaLink = page?.comingSoonSecondaryCtaLink?.trim() || '/student'
+
+  const relatedLinks =
+    page?.relatedLinks && page.relatedLinks.length > 0 ? page.relatedLinks : FALLBACK_RELATED_LINKS
 
   const randomHeroPool = data
     .flatMap((item) => [...(item.heroImageUrls || []), ...(item.galleryImageUrls || [])])
@@ -212,44 +310,146 @@ export default async function AlumniPage() {
           </section>
         ) : null}
 
-        <section aria-labelledby="alumni-exhibitions-heading">
+        <section className="mb-16" aria-labelledby="alumni-about-heading">
+          <div className="grid gap-8 md:grid-cols-2">
+            <div>
+              <h3
+                id="alumni-about-heading"
+                className="font-exhibitions text-[11px] uppercase tracking-[0.26em] text-neutral-600"
+              >
+                {aboutTitle}
+              </h3>
+              <div className="mt-5 space-y-4 text-base leading-relaxed text-neutral-800">
+                {aboutParagraphs.map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
+              {aboutCtaLabel && aboutCtaLink ? (
+                <a
+                  href={aboutCtaLink}
+                  target={isExternalHref(aboutCtaLink) ? '_blank' : undefined}
+                  rel={isExternalHref(aboutCtaLink) ? 'noopener noreferrer' : undefined}
+                  className="font-exhibitions mt-6 inline-flex items-center gap-2 border border-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-neutral-900 transition hover:bg-neutral-900 hover:text-white"
+                >
+                  {aboutCtaLabel} <span aria-hidden>→</span>
+                </a>
+              ) : null}
+            </div>
+
+            {programmeListItems.length > 0 ? (
+              <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-6 md:p-8">
+                <p className="font-exhibitions text-[11px] uppercase tracking-[0.2em] text-neutral-600">
+                  {programmeListTitle}
+                </p>
+                <ul className="mt-4 space-y-3 text-base text-neutral-800">
+                  {programmeListItems.map((item, index) => (
+                    <li key={index} className="flex gap-2">
+                      <span aria-hidden className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-neutral-500" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+        </section>
+
+        <section className="mb-16" aria-labelledby="alumni-exhibitions-heading">
           <h3
             id="alumni-exhibitions-heading"
             className="font-exhibitions text-[11px] uppercase tracking-[0.26em] text-neutral-600"
           >
             Alumni exhibitions
           </h3>
-          <div className="mt-6 grid gap-10 md:grid-cols-3">
-            {data.map((ex) =>
-              ex.slug?.current ? (
-                <Link key={ex._id} href={`/${ex.slug.current}`} className="block">
-                  <div className="relative aspect-[4/5] bg-neutral-200">
-                    {ex.heroImageUrl && (
-                      <Image
-                        src={ex.heroImageUrl}
-                        alt={ex.title}
-                        fill
-                        sizes="(min-width: 768px) 33vw, 100vw"
-                        className="object-cover"
-                      />
-                    )}
-                  </div>
-                  <h3 className="font-exhibitions mt-4 text-lg tracking-[0.12em] text-neutral-900">
-                    {ex.title}
-                  </h3>
-                  {ex.description ? (
-                    <p className="mt-2 text-sm text-neutral-700">{ex.description}</p>
-                  ) : null}
-                </Link>
-              ) : null
-            )}
-            {!data.length ? (
-              <p className="md:col-span-3 text-sm text-neutral-600">
-                No alumni exhibitions are published in Sanity yet.
+          {data.length > 0 ? (
+            <div className="mt-6 grid gap-10 md:grid-cols-3">
+              {data.map((ex) =>
+                ex.slug?.current ? (
+                  <Link key={ex._id} href={`/${ex.slug.current}`} className="block">
+                    <div className="relative aspect-[4/5] bg-neutral-200">
+                      {ex.heroImageUrl && (
+                        <Image
+                          src={ex.heroImageUrl}
+                          alt={ex.title}
+                          fill
+                          sizes="(min-width: 768px) 33vw, 100vw"
+                          className="object-cover"
+                        />
+                      )}
+                    </div>
+                    <h3 className="font-exhibitions mt-4 text-lg tracking-[0.12em] text-neutral-900">
+                      {ex.title}
+                    </h3>
+                    {ex.description ? (
+                      <p className="mt-2 text-sm text-neutral-700">{ex.description}</p>
+                    ) : null}
+                  </Link>
+                ) : null
+              )}
+            </div>
+          ) : (
+            <div className="mt-6 border border-dashed border-neutral-300 px-6 py-12 text-center md:px-12">
+              <p className="font-exhibitions text-[11px] uppercase tracking-[0.22em] text-neutral-500">
+                {comingSoonTitle}
               </p>
-            ) : null}
-          </div>
+              <p className="mx-auto mt-4 max-w-2xl text-base text-neutral-700">{comingSoonBody}</p>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                {comingSoonPrimaryCtaLabel && comingSoonPrimaryCtaLink ? (
+                  <a
+                    href={comingSoonPrimaryCtaLink}
+                    target={isExternalHref(comingSoonPrimaryCtaLink) ? '_blank' : undefined}
+                    rel={isExternalHref(comingSoonPrimaryCtaLink) ? 'noopener noreferrer' : undefined}
+                    className="font-exhibitions inline-flex items-center gap-2 bg-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-white"
+                  >
+                    {comingSoonPrimaryCtaLabel} <span aria-hidden>→</span>
+                  </a>
+                ) : null}
+                {comingSoonSecondaryCtaLabel && comingSoonSecondaryCtaLink ? (
+                  <Link
+                    href={comingSoonSecondaryCtaLink}
+                    className="font-exhibitions inline-flex items-center gap-2 border border-neutral-300 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-neutral-800"
+                  >
+                    {comingSoonSecondaryCtaLabel}
+                  </Link>
+                ) : null}
+              </div>
+            </div>
+          )}
         </section>
+
+        {relatedLinks.length > 0 ? (
+          <section aria-label="Related pages" className="border-t border-neutral-200 pt-10">
+            <div className="grid gap-6 md:grid-cols-3">
+              {relatedLinks.map((card, index) => (
+                <div key={index} className="border border-neutral-200 bg-neutral-50 p-6">
+                  <p className="font-exhibitions text-[11px] uppercase tracking-[0.2em] text-neutral-600">
+                    {card.title}
+                  </p>
+                  {card.body ? <p className="mt-3 text-sm leading-relaxed text-neutral-700">{card.body}</p> : null}
+                  {card.linkLabel && card.linkHref ? (
+                    isExternalHref(card.linkHref) ? (
+                      <a
+                        href={card.linkHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="lux-underline mt-4 inline-block text-[11px] uppercase tracking-[0.18em] text-neutral-900"
+                      >
+                        {card.linkLabel}
+                      </a>
+                    ) : (
+                      <Link
+                        href={card.linkHref}
+                        className="lux-underline mt-4 inline-block text-[11px] uppercase tracking-[0.18em] text-neutral-900"
+                      >
+                        {card.linkLabel}
+                      </Link>
+                    )
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
       </div>
     </main>
   )
