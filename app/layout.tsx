@@ -49,6 +49,7 @@ const mainNav = [
   { href: "/exhibitions", label: "Exhibitions" },
   { href: "/student", label: "Student" },
   { href: "/guest-artists", label: "Guest Artists" },
+  { href: "/alumni", label: "Alumni" },
   { href: "/clubs", label: "Clubs" },
   { href: "/support", label: "Support" },
 ];
