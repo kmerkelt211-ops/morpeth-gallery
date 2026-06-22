@@ -401,43 +401,43 @@ export default async function AlumniPage() {
                 ) : null
               )}
             </div>
-          ) : (
-            <RevealOnScroll effect="wipe-right" className="mt-6 border border-dashed border-neutral-300 px-6 py-12 text-center md:px-12">
-              <p className="font-exhibitions text-[11px] uppercase tracking-[0.22em] text-neutral-500">
-                {comingSoonTitle}
-              </p>
-              <p className="mx-auto mt-4 max-w-2xl text-base text-neutral-700">{comingSoonBody}</p>
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                {comingSoonPrimaryCtaLabel && comingSoonPrimaryCtaLink ? (
-                  isExternalHref(comingSoonPrimaryCtaLink) ? (
-                    <a
-                      href={comingSoonPrimaryCtaLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-exhibitions inline-flex items-center gap-2 bg-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-white"
-                    >
-                      {comingSoonPrimaryCtaLabel} <span aria-hidden>→</span>
-                    </a>
-                  ) : (
-                    <Link
-                      href={comingSoonPrimaryCtaLink}
-                      className="font-exhibitions inline-flex items-center gap-2 bg-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-white"
-                    >
-                      {comingSoonPrimaryCtaLabel} <span aria-hidden>→</span>
-                    </Link>
-                  )
-                ) : null}
-                {comingSoonSecondaryCtaLabel && comingSoonSecondaryCtaLink ? (
-                  <Link
-                    href={comingSoonSecondaryCtaLink}
-                    className="font-exhibitions inline-flex items-center gap-2 border border-neutral-300 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-neutral-800"
+          ) : null}
+
+          <RevealOnScroll effect="wipe-right" className="mt-6 border border-dashed border-neutral-300 px-6 py-12 text-center md:px-12">
+            <p className="font-exhibitions text-[11px] uppercase tracking-[0.22em] text-neutral-500">
+              {comingSoonTitle}
+            </p>
+            <p className="mx-auto mt-4 max-w-2xl text-base text-neutral-700">{comingSoonBody}</p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              {comingSoonPrimaryCtaLabel && comingSoonPrimaryCtaLink ? (
+                isExternalHref(comingSoonPrimaryCtaLink) ? (
+                  <a
+                    href={comingSoonPrimaryCtaLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-exhibitions inline-flex items-center gap-2 bg-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-white"
                   >
-                    {comingSoonSecondaryCtaLabel}
+                    {comingSoonPrimaryCtaLabel} <span aria-hidden>→</span>
+                  </a>
+                ) : (
+                  <Link
+                    href={comingSoonPrimaryCtaLink}
+                    className="font-exhibitions inline-flex items-center gap-2 bg-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-white"
+                  >
+                    {comingSoonPrimaryCtaLabel} <span aria-hidden>→</span>
                   </Link>
-                ) : null}
-              </div>
-            </RevealOnScroll>
-          )}
+                )
+              ) : null}
+              {comingSoonSecondaryCtaLabel && comingSoonSecondaryCtaLink ? (
+                <Link
+                  href={comingSoonSecondaryCtaLink}
+                  className="font-exhibitions inline-flex items-center gap-2 border border-neutral-300 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-neutral-800"
+                >
+                  {comingSoonSecondaryCtaLabel}
+                </Link>
+              ) : null}
+            </div>
+          </RevealOnScroll>
         </section>
 
         {relatedLinks.length > 0 ? (
