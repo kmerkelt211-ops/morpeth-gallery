@@ -36,9 +36,17 @@ export const structure: StructureResolver = (S) =>
         .title('Support the gallery')
         .child(S.document().schemaType('supportPage').documentId('page_support')),
 
+      S.listItem()
+        .title('Shop page')
+        .child(S.document().schemaType('shopPage').documentId('page_shop')),
+
       S.divider(),
 
       S.listItem()
         .title('Gallery Exhibitions')
         .child(S.documentTypeList('galleryExhibition').title('Gallery Exhibitions')),
+
+      S.listItem()
+        .title('Shop products')
+        .child(S.documentTypeList('product').title('Shop products')),
     ])
