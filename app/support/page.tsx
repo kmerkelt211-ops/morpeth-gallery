@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import RevealOnScroll from '../components/reveal-on-scroll'
 import ContactForm from './contact-form'
+import PrintCard from './print-card'
 import {
   getSupportPageData,
   type SupportPageData,
@@ -79,8 +80,9 @@ const FALLBACK_PAGE: Required<
   featuredPrintTitle: 'Collect work from the Portman Gallery programme',
   featuredPrintBody:
     'Explore limited runs and open editions connected to current and recent exhibitions.',
-  featuredPrintCtaLabel: 'View all prints',
-  featuredPrintCtaLink: '#contact',
+  featuredPrintCtaLabel: 'Enquire about this print',
+  featuredPrintCtaLink:
+    '/support?print=Collect%20work%20from%20the%20Portman%20Gallery%20programme#contact',
   contactSectionTitle: 'Contact the gallery',
   contactSectionIntro:
     'Tell us what you are interested in and we will reply with options, prices and next steps.',
@@ -474,7 +476,7 @@ export default async function SupportPage({
         </div>
       </section>
 
-      <section id="prints" className="border-b border-slate-200 bg-white">
+      <section id="prints" className="scroll-mt-24 border-b border-slate-200 bg-white">
         <div className="mx-auto max-w-[1520px] px-6 py-12 sm:px-8 lg:px-12 lg:py-16">
           <RevealOnScroll>
             <h2 className="font-heading text-3xl uppercase tracking-[0.1em] text-neutral-900 sm:text-4xl">
@@ -523,62 +525,21 @@ export default async function SupportPage({
           </RevealOnScroll>
 
           <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-            {printCards.map((card, index) => {
-              const lineTwo = [card.artist, card.year].filter(Boolean).join(', ')
-              return (
-                <RevealOnScroll
-                  key={`${card.title}-${index}`}
-                  delay={index * 60}
-                  effect="fade-up"
-                  className="lux-hover-rise overflow-hidden rounded-xl border border-slate-200 bg-[#f2f2f2]"
-                >
-                  <div className="relative aspect-[4/3] bg-neutral-200">
-                    <Image
-                      src={card.imageUrl}
-                      alt={card.alt}
-                      fill
-                      sizes="(min-width: 1280px) 23vw, (min-width: 640px) 48vw, 100vw"
-                      className={`object-cover ${card.soldOut ? 'opacity-60 grayscale' : ''}`}
-                    />
-                    {card.soldOut ? (
-                      <span className="font-heading absolute left-3 top-3 inline-flex items-center bg-neutral-900 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-white">
-                        Sold out
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="space-y-2 border-t border-slate-200 bg-white px-4 py-4">
-                    <h4 className="text-2xl leading-tight text-neutral-900">{card.title}</h4>
-                    {lineTwo ? <p className="text-sm text-slate-600">{lineTwo}</p> : null}
-                    <div className="flex items-center justify-between gap-3 pt-1">
-                      <div>
-                        <p className="text-sm font-semibold text-neutral-900">{card.priceLabel}</p>
-                        <p className="text-xs text-slate-600">{card.availability}</p>
-                      </div>
-                      {card.soldOut ? (
-                        <span
-                          aria-disabled="true"
-                          className="font-heading inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-slate-400"
-                        >
-                          Sold out
-                        </span>
-                      ) : (
-                        renderActionLink(
-                          card.href,
-                          card.ctaLabel,
-                          'font-heading lux-underline inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-900',
-                          `${card.ctaLabel} for ${card.title}`
-                        )
-                      )}
-                    </div>
-                  </div>
-                </RevealOnScroll>
-              )
-            })}
+            {printCards.map((card, index) => (
+              <RevealOnScroll
+                key={`${card.title}-${index}`}
+                delay={index * 60}
+                effect="fade-up"
+                className="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white"
+              >
+                <PrintCard card={card} />
+              </RevealOnScroll>
+            ))}
           </div>
         </div>
       </section>
 
-      <section id="contact" className="bg-morpeth-offwhite px-6 py-12 sm:px-8 lg:px-12 lg:py-16">
+      <section id="contact" className="scroll-mt-24 bg-morpeth-offwhite px-6 py-12 sm:px-8 lg:px-12 lg:py-16">
         <div className="mx-auto max-w-[1200px]">
           <RevealOnScroll>
             <h2 className="font-heading text-3xl uppercase tracking-[0.1em] text-neutral-900 sm:text-4xl">
