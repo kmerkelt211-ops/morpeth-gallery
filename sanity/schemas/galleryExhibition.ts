@@ -110,6 +110,14 @@ export default defineType({
     }),
 
     defineField({ name: 'isCurrent', type: 'boolean', initialValue: false }),
+    defineField({
+      name: 'featuredOnAbout',
+      title: 'Feature on About page',
+      type: 'boolean',
+      initialValue: false,
+      description:
+        'Turn on to show this exhibition in the "WHAT\'S ON AT PORTMAN" section on the About page.',
+    }),
     defineField({ name: 'startDate', type: 'date' }),
     defineField({ name: 'endDate', type: 'date' }),
 

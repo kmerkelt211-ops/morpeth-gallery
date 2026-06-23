@@ -32,6 +32,31 @@ type WhatsOnCard = {
   href?: string
 }
 
+type LocationType = 'portman' | 'aroundSchool' | 'external' | 'digital'
+
+type FeaturedExhibition = {
+  title?: string
+  slug?: string
+  locationType?: LocationType
+  venueName?: string
+  imageUrl?: string
+  imageAlt?: string
+}
+
+const locationLabels: Record<LocationType, string> = {
+  portman: 'Portman Gallery',
+  aroundSchool: 'Around the school',
+  external: 'Off-site gallery',
+  digital: 'Digital gallery',
+}
+
+function locationLabelFor(exhibition: FeaturedExhibition): string {
+  if (exhibition.locationType === 'external' && exhibition.venueName) {
+    return `Off-site — ${exhibition.venueName}`
+  }
+  return locationLabels[exhibition.locationType || 'portman']
+}
+
 type AboutFeatureImage = {
   imageUrl?: string
   alt?: string
@@ -117,6 +142,19 @@ const exhibitionHeroPoolQuery = groq`*[
 ]{
   "url": heroImages[0].asset->url,
   "alt": coalesce(heroImages[0].alt, title)
+}`
+
+const featuredExhibitionsQuery = groq`*[
+  _type == "galleryExhibition" &&
+  featuredOnAbout == true &&
+  defined(heroImages[0].asset->url)
+] | order(orderRank asc) {
+  title,
+  "slug": slug.current,
+  locationType,
+  venueName,
+  "imageUrl": heroImages[0].asset->url,
+  "imageAlt": coalesce(heroImages[0].alt, title)
 }`
 
 type PlacementImage = {
@@ -354,9 +392,10 @@ function pickRandomSanityHeroImage(
 }
 
 export default async function AboutPage() {
-  const [data, exhibitionHeroPool] = await Promise.all([
+  const [data, exhibitionHeroPool, featuredExhibitions] = await Promise.all([
     client.fetch<AboutPageData | null>(aboutPageQuery),
     client.fetch<HeroImageCandidate[]>(exhibitionHeroPoolQuery),
+    client.fetch<FeaturedExhibition[]>(featuredExhibitionsQuery),
   ])
 
   const heroBand = data?.heroBandColor || '#88B4A8'
@@ -391,13 +430,25 @@ export default async function AboutPage() {
   const leadParagraph = data?.intro || fallbackAboutParagraphs[0]
   const whatsOnHeading = data?.whatsOnTitle || "WHAT'S ON AT PORTMAN"
   const whatsOnSubheading = data?.whatsOnSubtitle || 'FEATURED'
+  const liveFeaturedExhibitions = (featuredExhibitions || []).filter(
+    (item): item is FeaturedExhibition => Boolean(item?.title?.trim()) && Boolean(item?.imageUrl?.trim())
+  )
   const sanityFeaturedCards =
     (data?.whatsOnCards || []).filter(
       (card): card is WhatsOnCard =>
         Boolean(card?.title?.trim()) && Boolean(card?.imageUrl?.trim())
     ) || []
   const featuredCardsToShow: FeaturedCard[] =
-    sanityFeaturedCards.length > 0
+    liveFeaturedExhibitions.length > 0
+      ? liveFeaturedExhibitions.map((exhibition) => ({
+          kicker: locationLabelFor(exhibition),
+          title: exhibition.title || 'Featured exhibition',
+          cta: 'More info',
+          imageUrl: exhibition.imageUrl || '',
+          imageAlt: exhibition.imageAlt || exhibition.title || 'Featured exhibition image',
+          href: exhibition.slug ? `/${exhibition.slug}` : undefined,
+        }))
+      : sanityFeaturedCards.length > 0
       ? sanityFeaturedCards.map((card) => ({
           kicker: card.kicker || 'Portman Gallery',
           title: card.title || 'Featured exhibition',
