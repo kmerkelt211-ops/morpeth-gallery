@@ -137,11 +137,25 @@ const aboutPageQuery = groq`*[_id == "page_about"][0]{
 }`
 
 const exhibitionHeroPoolQuery = groq`*[
-  _type == "galleryExhibition" &&
-  defined(heroImages[0].asset->url)
+  _type == "galleryExhibition"
 ]{
-  "url": heroImages[0].asset->url,
-  "alt": coalesce(heroImages[0].alt, title)
+  "title": title,
+  "heroUrls": heroImages[defined(asset->url)]{
+    "url": asset->url,
+    "alt": coalesce(alt, ^.title)
+  },
+  "galleryUrls": galleryImages[defined(asset->url)]{
+    "url": asset->url,
+    "alt": coalesce(alt, ^.title)
+  }
+}`
+
+const productImagePoolQuery = groq`*[
+  _type == "product" &&
+  defined(image.asset->url)
+]{
+  "url": image.asset->url,
+  "alt": coalesce(image.alt, title)
 }`
 
 const featuredExhibitionsQuery = groq`*[
@@ -391,12 +405,25 @@ function pickRandomSanityHeroImage(
   return unique[randomIndex] || null
 }
 
+type ExhibitionImagePool = {
+  title?: string
+  heroUrls?: HeroImageCandidate[]
+  galleryUrls?: HeroImageCandidate[]
+}
+
 export default async function AboutPage() {
-  const [data, exhibitionHeroPool, featuredExhibitions] = await Promise.all([
+  const [data, exhibitionImagePools, productImagePool, featuredExhibitions] = await Promise.all([
     client.fetch<AboutPageData | null>(aboutPageQuery),
-    client.fetch<HeroImageCandidate[]>(exhibitionHeroPoolQuery),
+    client.fetch<ExhibitionImagePool[]>(exhibitionHeroPoolQuery),
+    client.fetch<HeroImageCandidate[]>(productImagePoolQuery),
     client.fetch<FeaturedExhibition[]>(featuredExhibitionsQuery),
   ])
+
+  const exhibitionHeroPool: HeroImageCandidate[] = (exhibitionImagePools || []).flatMap((exhibition) => [
+    ...(exhibition.heroUrls || []),
+    ...(exhibition.galleryUrls || []),
+  ])
+  const sitewideImagePool: HeroImageCandidate[] = [...exhibitionHeroPool, ...(productImagePool || [])]
 
   const heroBand = data?.heroBandColor || '#88B4A8'
   const kicker = data?.heroKicker || 'PORTMAN GALLERY'
@@ -480,7 +507,7 @@ export default async function AboutPage() {
         alt: data.heroImageOverride.alt,
       }
     : null
-  const randomSanityHeroImage = pickRandomSanityHeroImage(data, exhibitionHeroPool || [])
+  const randomSanityHeroImage = pickRandomSanityHeroImage(data, sitewideImagePool)
   const aboutHeroImageUrl =
     fixedHeroImage?.url ||
     randomSanityHeroImage?.url ||
