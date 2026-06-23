@@ -44,6 +44,11 @@ export type SupportPageData = {
   featuredPrintCtaLabel?: string
   featuredPrintCtaLink?: string
   printCards?: SupportPrintCard[]
+  donateSectionTitle?: string
+  donateSectionIntro?: string
+  donateUrl?: string
+  donateCtaLabel?: string
+  donateNote?: string
   contactSectionTitle?: string
   contactSectionIntro?: string
   contactEmail?: string
@@ -92,6 +97,11 @@ export const supportPageQuery = groq`*[_id == "page_support"][0]{
     purchaseUrl,
     "exhibitionSlug": linkedExhibition->slug.current
   },
+  donateSectionTitle,
+  donateSectionIntro,
+  donateUrl,
+  donateCtaLabel,
+  donateNote,
   contactSectionTitle,
   contactSectionIntro,
   contactEmail,
