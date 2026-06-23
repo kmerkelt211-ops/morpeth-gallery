@@ -59,9 +59,11 @@ export default function HomePageClient({
 
   const [activeExhibitionIndex, setActiveExhibitionIndex] = useState(0)
   const [isCarouselPaused, setIsCarouselPaused] = useState(false)
+  const [isCarouselVisible, setIsCarouselVisible] = useState(false)
   const autoAdvanceRef = useRef<number | null>(null)
   const touchStartXRef = useRef<number | null>(null)
   const touchDeltaXRef = useRef(0)
+  const carouselSectionRef = useRef<HTMLDivElement | null>(null)
 
   const currentDigitalExhibitions = useMemo(
     () =>
@@ -88,8 +90,26 @@ export default function HomePageClient({
   const stripHelp = pageCopy?.currentStripHelp || DEFAULT_CURRENT_STRIP_HELP
 
   useEffect(() => {
+    // Only auto-advance while the strip is actually scrolled into view
+    if (typeof window === 'undefined' || !carouselSectionRef.current) return
+    if (!('IntersectionObserver' in globalThis)) {
+      const frameId = requestAnimationFrame(() => setIsCarouselVisible(true))
+      return () => cancelAnimationFrame(frameId)
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsCarouselVisible(entry.isIntersecting),
+      { threshold: 0.4 }
+    )
+    observer.observe(carouselSectionRef.current)
+
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
     // Auto-advance the "current exhibitions" strip
     if (isCarouselPaused) return
+    if (!isCarouselVisible) return
     if (currentExhibitions.length <= 1) return
 
     // Clear any existing timer
@@ -110,7 +130,7 @@ export default function HomePageClient({
         autoAdvanceRef.current = null
       }
     }
-  }, [isCarouselPaused, currentExhibitions.length])
+  }, [isCarouselPaused, isCarouselVisible, currentExhibitions.length])
 
   const whatsOnExhibitions = useMemo(
     () =>
@@ -235,6 +255,7 @@ export default function HomePageClient({
 
       {/* CURRENT EXHIBITIONS STRIP (CAROUSEL) */}
       {currentExhibitions.length ? (
+        <div ref={carouselSectionRef}>
         <RevealOnScroll
           effect="wipe-right"
           style={{ backgroundColor: activeExhibition?.bgColor || '#9EDFE6' }}
@@ -391,6 +412,7 @@ export default function HomePageClient({
             </div>
           </div>
         </RevealOnScroll>
+        </div>
       ) : null}
 
       {/* WHAT'S ON GRID (TATE-STYLE CARDS) */}
