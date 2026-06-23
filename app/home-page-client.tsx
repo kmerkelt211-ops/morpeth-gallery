@@ -539,25 +539,23 @@ export default function HomePageClient({
             <RevealOnScroll delay={120} className="flex flex-col justify-between bg-neutral-900 px-8 py-8 text-white">
               <div>
                 <p className="font-exhibitions text-xs tracking-[0.36em] text-neutral-300">
-                  SIXTH FORM
+                  ALUMNI
                 </p>
                 <h3 className="font-exhibitions mt-3 text-lg font-normal tracking-[0.14em]">
-                  Art &amp; Photography
+                  Where Morpeth artists go next
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-neutral-200">
-                  A level students exhibit every year in the Portman Gallery, building portfolios
-                  for art school, apprenticeships and creative careers.
+                  Former students continue to make, exhibit and work in art and photography -
+                  see their journeys and current practice.
                 </p>
               </div>
-              <button
-                type="button"
-                disabled
-                className="font-exhibitions mt-4 inline-flex w-fit cursor-not-allowed items-center justify-center gap-2 bg-white/70 px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900/70"
-                aria-disabled="true"
+              <Link
+                href="/alumni"
+                className="font-exhibitions mt-4 inline-flex w-fit items-center justify-center gap-2 bg-white px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
               >
-                Sixth Form information
+                Meet our alumni
                 <span aria-hidden>→</span>
-              </button>
+              </Link>
             </RevealOnScroll>
           </div>
         </div>
