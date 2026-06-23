@@ -80,10 +80,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 />
                 <div className="leading-tight">
                   <div className="font-heading text-xs uppercase tracking-[0.25em] text-morpeth-navy md:text-sm">
-                    Morpeth Gallery
+                    Portman Gallery
                   </div>
                   <div className="text-[11px] text-slate-500">
-                    Portman Gallery
+                    Morpeth School
                   </div>
                 </div>
               </Link>
