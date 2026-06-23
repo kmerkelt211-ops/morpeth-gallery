@@ -212,10 +212,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     />
                     <div>
                       <h2 className="font-heading text-lg uppercase tracking-[0.25em] text-morpeth-navy">
-                        Morpeth Gallery
+                        Portman Gallery
                       </h2>
                       <p className="mt-1 max-w-sm text-xs text-slate-600">
-                        Morpeth Gallery (Portman Gallery) showcases art and photography from students, guest artists and collaborators across the school year.
+                        Portman Gallery (Morpeth School) showcases art and photography from students, guest artists and collaborators across the school year.
                       </p>
                     </div>
                   </div>
