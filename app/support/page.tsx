@@ -48,6 +48,10 @@ const FALLBACK_PAGE: Required<
     | 'featuredPrintBody'
     | 'featuredPrintCtaLabel'
     | 'featuredPrintCtaLink'
+    | 'donateSectionTitle'
+    | 'donateSectionIntro'
+    | 'donateCtaLabel'
+    | 'donateNote'
     | 'contactSectionTitle'
     | 'contactSectionIntro'
     | 'contactEmail'
@@ -84,6 +88,11 @@ const FALLBACK_PAGE: Required<
   featuredPrintCtaLabel: 'Enquire about this print',
   featuredPrintCtaLink:
     '/support?print=Collect%20work%20from%20the%20Portman%20Gallery%20programme#contact',
+  donateSectionTitle: 'Make a donation',
+  donateSectionIntro:
+    'One-off and recurring donations help fund materials, framing and public events at the Portman Gallery.',
+  donateCtaLabel: 'Donate via PayPal',
+  donateNote: 'You will be taken to PayPal to complete your donation securely.',
   contactSectionTitle: 'Contact the gallery',
   contactSectionIntro:
     'Tell us what you are interested in and we will reply with options, prices and next steps.',
@@ -378,6 +387,12 @@ export default async function SupportPage({
   )
   const printCards = buildPrintCards(pageData?.printCards)
 
+  const donateSectionTitle = asText(pageData?.donateSectionTitle, FALLBACK_PAGE.donateSectionTitle)
+  const donateSectionIntro = asText(pageData?.donateSectionIntro, FALLBACK_PAGE.donateSectionIntro)
+  const donateCtaLabel = asText(pageData?.donateCtaLabel, FALLBACK_PAGE.donateCtaLabel)
+  const donateNote = asText(pageData?.donateNote, FALLBACK_PAGE.donateNote)
+  const donateUrl = pageData?.donateUrl?.trim() || ''
+
   const contactSectionTitle = asText(
     pageData?.contactSectionTitle,
     FALLBACK_PAGE.contactSectionTitle
@@ -472,7 +487,7 @@ export default async function SupportPage({
                 <div className="flex h-16 items-center justify-center">
                   <SupportPathwayIcon kind={resolveSupportPathwayIconKind(item.title || '', index)} />
                 </div>
-                <h3 className="mt-4 max-w-[16ch] font-heading text-[20px] uppercase leading-[1.25] tracking-[0.14em] text-neutral-800 sm:text-[24px]">
+                <h3 className="mt-4 flex min-h-[3.2rem] max-w-[16ch] items-center font-heading text-[20px] uppercase leading-[1.25] tracking-[0.14em] text-neutral-800 sm:min-h-[3.8rem] sm:text-[24px]">
                   {item.title}
                 </h3>
                 <div className="mt-5 max-w-[26ch]">
@@ -548,6 +563,36 @@ export default async function SupportPage({
           </div>
         </div>
       </section>
+
+      {donateUrl ? (
+        <section id="donate" className="scroll-mt-24 border-b border-slate-200 bg-[#f3f3f3]">
+          <div className="mx-auto max-w-[1200px] px-6 py-12 sm:px-8 lg:px-12 lg:py-16">
+            <RevealOnScroll
+              effect="wipe-right"
+              className="flex flex-col items-start gap-6 rounded-2xl border border-slate-200 bg-white p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"
+            >
+              <div>
+                <h2 className="font-heading text-2xl uppercase tracking-[0.1em] text-neutral-900 sm:text-3xl">
+                  {donateSectionTitle}
+                </h2>
+                <p className="mt-3 max-w-xl text-base leading-relaxed text-slate-700 sm:text-lg">
+                  {donateSectionIntro}
+                </p>
+                {donateNote ? (
+                  <p className="mt-3 text-sm text-slate-500">{donateNote}</p>
+                ) : null}
+              </div>
+
+              {renderActionLink(
+                donateUrl,
+                donateCtaLabel,
+                'font-heading lux-hover-rise inline-flex min-h-11 shrink-0 items-center gap-2 border border-neutral-900 bg-neutral-900 px-6 py-3 text-[11px] uppercase tracking-[0.24em] text-white',
+                'Donate via PayPal'
+              )}
+            </RevealOnScroll>
+          </div>
+        </section>
+      ) : null}
 
       <section id="contact" className="scroll-mt-24 bg-morpeth-offwhite px-6 py-12 sm:px-8 lg:px-12 lg:py-16">
         <div className="mx-auto max-w-[1200px]">

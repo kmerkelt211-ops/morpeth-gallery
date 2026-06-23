@@ -8,7 +8,8 @@ export default defineType({
     { name: 'hero', title: '1. Hero' },
     { name: 'support', title: '2. Ways to support' },
     { name: 'prints', title: '3. Print sales' },
-    { name: 'contact', title: '4. Contact' },
+    { name: 'donate', title: '4. Donate' },
+    { name: 'contact', title: '5. Contact' },
   ],
   initialValue: {
     pageTitle: 'SUPPORT THE GALLERY',
@@ -51,6 +52,11 @@ export default defineType({
       'Explore limited runs and open editions connected to current and recent exhibitions.',
     featuredPrintCtaLabel: 'View all prints',
     featuredPrintCtaLink: '#contact',
+    donateSectionTitle: 'Make a donation',
+    donateSectionIntro:
+      'One-off and recurring donations help fund materials, framing and public events at the Portman Gallery.',
+    donateCtaLabel: 'Donate via PayPal',
+    donateNote: 'You will be taken to PayPal to complete your donation securely.',
     contactSectionTitle: 'Contact the gallery',
     contactSectionIntro:
       'Tell us what you are interested in and we will reply with options, prices and next steps.',
@@ -302,6 +308,41 @@ export default defineType({
           },
         },
       ],
+    }),
+
+    defineField({
+      name: 'donateSectionTitle',
+      title: 'Donate section title',
+      type: 'string',
+      group: 'donate',
+    }),
+    defineField({
+      name: 'donateSectionIntro',
+      title: 'Donate section intro',
+      type: 'text',
+      rows: 3,
+      group: 'donate',
+    }),
+    defineField({
+      name: 'donateUrl',
+      title: 'PayPal donation link',
+      type: 'url',
+      group: 'donate',
+      description:
+        'Paste your PayPal.me link or PayPal donate button URL here. Leave blank to hide this section.',
+    }),
+    defineField({
+      name: 'donateCtaLabel',
+      title: 'Donate button label',
+      type: 'string',
+      group: 'donate',
+    }),
+    defineField({
+      name: 'donateNote',
+      title: 'Donate note',
+      type: 'text',
+      rows: 2,
+      group: 'donate',
     }),
 
     defineField({
