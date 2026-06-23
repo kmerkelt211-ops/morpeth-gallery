@@ -117,6 +117,7 @@ export default async function ShopPage() {
     'Explore limited runs and open editions connected to current and recent exhibitions. Every purchase feeds directly back into the gallery programme.'
   const featuredKicker = page?.featuredKicker?.trim() || 'Featured print'
   const note = page?.note?.trim()
+  const collectionNote = page?.collectionNote?.trim()
 
   return (
     <main className="relative min-h-screen bg-white px-6 py-16 text-neutral-900 md:px-10 lg:px-20">
@@ -183,6 +184,12 @@ export default async function ShopPage() {
               </div>
             </div>
           </RevealOnScroll>
+        ) : null}
+
+        {collectionNote ? (
+          <p className="mt-8 max-w-3xl border-l-2 border-neutral-900 pl-4 text-sm leading-relaxed text-neutral-800">
+            {collectionNote}
+          </p>
         ) : null}
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">

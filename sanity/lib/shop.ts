@@ -23,6 +23,7 @@ export type ShopPageData = {
   intro?: string
   featuredKicker?: string
   note?: string
+  collectionNote?: string
 }
 
 export const shopPageQuery = groq`{
@@ -31,7 +32,8 @@ export const shopPageQuery = groq`{
     headline,
     intro,
     featuredKicker,
-    note
+    note,
+    collectionNote
   },
   "products": *[_type == "product"]{
     _id,
