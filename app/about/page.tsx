@@ -9,7 +9,7 @@ import AboutInfoPanels from './about-info-panels'
 import RevealOnScroll from '../components/reveal-on-scroll'
 import { IMAGE_PARAMS } from '../../sanity/lib/image'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 type QuickFact = { label?: string; value?: string }
 
