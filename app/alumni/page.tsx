@@ -333,14 +333,14 @@ export default async function AlumniPage() {
                     href={aboutCtaLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-exhibitions mt-6 inline-flex items-center gap-2 border border-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-neutral-900 transition hover:bg-neutral-900 hover:text-white"
+                    className="lux-hover-rise font-exhibitions mt-6 inline-flex items-center gap-2 border border-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-neutral-900 transition hover:bg-neutral-900 hover:text-white"
                   >
                     {aboutCtaLabel} <span aria-hidden>→</span>
                   </a>
                 ) : (
                   <Link
                     href={aboutCtaLink}
-                    className="font-exhibitions mt-6 inline-flex items-center gap-2 border border-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-neutral-900 transition hover:bg-neutral-900 hover:text-white"
+                    className="lux-hover-rise font-exhibitions mt-6 inline-flex items-center gap-2 border border-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-neutral-900 transition hover:bg-neutral-900 hover:text-white"
                   >
                     {aboutCtaLabel} <span aria-hidden>→</span>
                   </Link>

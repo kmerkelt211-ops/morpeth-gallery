@@ -118,7 +118,7 @@ export default function ClubsPageClient({
               <div className="mt-9 flex flex-wrap gap-4">
                 <Link
                   href={heroPrimaryCtaHref}
-                  className="font-exhibitions inline-flex items-center gap-3 bg-black px-7 py-3 text-xs uppercase tracking-[0.18em] text-white"
+                  className="lux-hover-rise font-exhibitions inline-flex items-center gap-3 bg-black px-7 py-3 text-xs uppercase tracking-[0.18em] text-white"
                 >
                   {heroPrimaryCtaLabel}{' '}
                   <span aria-hidden className="text-xl leading-none">
@@ -127,7 +127,7 @@ export default function ClubsPageClient({
                 </Link>
                 <Link
                   href={heroSecondaryCtaHref}
-                  className="font-exhibitions inline-flex items-center gap-3 border border-neutral-900 px-7 py-3 text-xs uppercase tracking-[0.18em] text-neutral-900"
+                  className="lux-hover-rise font-exhibitions inline-flex items-center gap-3 border border-neutral-900 px-7 py-3 text-xs uppercase tracking-[0.18em] text-neutral-900"
                 >
                   {heroSecondaryCtaLabel}{' '}
                   <span aria-hidden className="text-xl leading-none">
@@ -164,7 +164,7 @@ export default function ClubsPageClient({
                   <RevealOnScroll
                     key={club.id}
                     delay={Math.min(index * 60, 240)}
-                    className="group flex flex-col border border-neutral-200 bg-white shadow-[0_1px_0_rgba(0,0,0,0.03)]"
+                    className="lux-hover-rise group flex flex-col border border-neutral-200 bg-white shadow-[0_1px_0_rgba(0,0,0,0.03)]"
                   >
                     <div className="border-b border-neutral-200 bg-white">
                       <Poster club={club} />

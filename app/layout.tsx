@@ -104,7 +104,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
               <button
                 type="button"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/70 text-slate-800 shadow-sm transition hover:bg-white md:hidden touch-manipulation"
+                className="lux-hover-rise inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/70 text-slate-800 shadow-sm transition hover:bg-white md:hidden touch-manipulation"
                 aria-label="Open menu"
                 aria-controls="mobile-drawer"
                 aria-expanded="false"
@@ -149,7 +149,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 </p>
                 <button
                   type="button"
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 shadow-sm transition hover:bg-slate-50 touch-manipulation"
+                  className="lux-hover-rise inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 shadow-sm transition hover:bg-slate-50 touch-manipulation"
                   aria-label="Close menu"
                   data-menu-close
                 >
@@ -324,7 +324,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               ) : null}
 
               <div className="mt-10 border-t border-slate-200 pt-4 text-center text-xs text-slate-500">
-                © {currentYear} Morpeth Gallery. All rights reserved.
+                © {currentYear} Portman Gallery. All rights reserved.
               </div>
             </div>
           </footer>

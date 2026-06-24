@@ -30,7 +30,7 @@ export default async function ClubDetailsPage(props: {
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
           <Link
             href="/clubs#whats-running"
-            className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
+            className="lux-hover-rise font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
           >
             ← Back to clubs
           </Link>
