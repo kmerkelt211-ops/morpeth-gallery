@@ -345,7 +345,7 @@ export default function HomePageClient({
                   href={activeExhibition.guidePdfUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-exhibitions inline-flex min-h-11 w-full items-center justify-center gap-2 border border-neutral-900/30 bg-white/20 px-5 py-3 text-center text-[11px] uppercase tracking-[0.22em] text-neutral-900 md:w-auto md:text-xs"
+                  className="lux-hover-rise font-exhibitions inline-flex min-h-11 w-full items-center justify-center gap-2 border border-neutral-900/30 bg-white/20 px-5 py-3 text-center text-[11px] uppercase tracking-[0.22em] text-neutral-900 md:w-auto md:text-xs"
                 >
                   Download exhibition guide
                 </a>
@@ -365,7 +365,7 @@ export default function HomePageClient({
                   type="button"
                   onClick={goToPrevious}
                   disabled={currentExhibitions.length < 2}
-                  className="font-exhibitions inline-flex h-9 w-9 items-center justify-center rounded-full border border-neutral-900/40 bg-white/35 text-neutral-900 transition hover:bg-neutral-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  className="lux-hover-rise font-exhibitions inline-flex h-9 w-9 items-center justify-center rounded-full border border-neutral-900/40 bg-white/35 text-neutral-900 transition hover:bg-neutral-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                   aria-label="Previous exhibition"
                 >
                   ←
@@ -374,7 +374,7 @@ export default function HomePageClient({
                   type="button"
                   onClick={goToNext}
                   disabled={currentExhibitions.length < 2}
-                  className="font-exhibitions inline-flex h-9 w-9 items-center justify-center rounded-full border border-neutral-900/40 bg-white/35 text-neutral-900 transition hover:bg-neutral-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  className="lux-hover-rise font-exhibitions inline-flex h-9 w-9 items-center justify-center rounded-full border border-neutral-900/40 bg-white/35 text-neutral-900 transition hover:bg-neutral-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
                   aria-label="Next exhibition"
                 >
                   →
@@ -481,7 +481,7 @@ export default function HomePageClient({
                     {item.slug?.current ? (
                       <Link
                         href={`/${item.slug.current}`}
-                        className="font-exhibitions inline-flex w-full items-center justify-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
+                        className="lux-hover-rise font-exhibitions inline-flex w-full items-center justify-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
                       >
                         View details
                         <span aria-hidden>→</span>

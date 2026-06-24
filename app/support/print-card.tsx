@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { AnimatePresence, motion } from 'framer-motion'
+import { X, ZoomIn } from 'lucide-react'
 
 type PrintCardData = {
   imageUrl: string
@@ -30,7 +32,7 @@ export default function PrintCard({ card }: { card: PrintCardData }) {
       <button
         type="button"
         onClick={() => setIsLightboxOpen(true)}
-        className="relative block aspect-[4/3] w-full cursor-zoom-in bg-neutral-200"
+        className="group relative block aspect-[4/3] w-full cursor-zoom-in overflow-hidden bg-neutral-200"
         aria-label={`View ${card.title} full size`}
       >
         <Image
@@ -38,8 +40,13 @@ export default function PrintCard({ card }: { card: PrintCardData }) {
           alt={card.alt}
           fill
           sizes="(min-width: 1280px) 23vw, (min-width: 640px) 48vw, 100vw"
-          className={`object-cover ${card.soldOut ? 'opacity-60 grayscale' : ''}`}
+          className={`object-cover transition duration-300 group-hover:scale-105 ${card.soldOut ? 'opacity-60 grayscale' : ''}`}
         />
+        <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/0 opacity-0 transition duration-200 group-hover:bg-neutral-900/30 group-hover:opacity-100">
+          <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white text-neutral-900 shadow-lg">
+            <ZoomIn className="h-5 w-5" />
+          </span>
+        </div>
         {card.soldOut ? (
           <span className="font-heading absolute left-3 top-3 inline-flex items-center bg-neutral-900 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-white">
             Sold out
@@ -78,33 +85,46 @@ export default function PrintCard({ card }: { card: PrintCardData }) {
         </div>
       </div>
 
-      {isLightboxOpen ? (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${card.title} full size view`}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-4 sm:p-8"
-          onClick={() => setIsLightboxOpen(false)}
-        >
-          <button
-            type="button"
+      <AnimatePresence>
+        {isLightboxOpen ? (
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${card.title} full size view`}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-2 sm:p-6"
             onClick={() => setIsLightboxOpen(false)}
-            aria-label="Close full size view"
-            className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
           >
-            ✕
-          </button>
-          <div className="relative h-full max-h-[85vh] w-full max-w-4xl" onClick={(event) => event.stopPropagation()}>
-            <Image
-              src={card.imageUrl}
-              alt={card.alt}
-              fill
-              sizes="90vw"
-              className="object-contain"
-            />
-          </div>
-        </div>
-      ) : null}
+            <button
+              type="button"
+              onClick={() => setIsLightboxOpen(false)}
+              aria-label="Close full size view"
+              className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-neutral-900 shadow-lg transition hover:bg-neutral-200"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <motion.div
+              className="relative h-full max-h-[96vh] w-full max-w-[96vw]"
+              onClick={(event) => event.stopPropagation()}
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.92 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
+            >
+              <Image
+                src={card.imageUrl}
+                alt={card.alt}
+                fill
+                sizes="96vw"
+                className="object-contain"
+              />
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   )
 }

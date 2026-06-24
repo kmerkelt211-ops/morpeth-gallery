@@ -144,7 +144,7 @@ export default async function GalleryExhibitionPage(props: {
           <div className="mt-8">
             <Link
               href="/"
-              className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em]"
+              className="lux-hover-rise font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em]"
             >
               ← Back to exhibitions
             </Link>
@@ -213,7 +213,7 @@ export default async function GalleryExhibitionPage(props: {
               </Link>
               <Link
                 href="/exhibitions"
-                className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-3 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
+                className="lux-hover-rise font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-3 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
               >
                 Exhibitions home
               </Link>
@@ -333,7 +333,7 @@ export default async function GalleryExhibitionPage(props: {
                       href={guidePdfUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
+                      className="lux-hover-rise font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
                     >
                       Download exhibition guide <span aria-hidden>→</span>
                     </a>
@@ -345,7 +345,7 @@ export default async function GalleryExhibitionPage(props: {
                       href={eventUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
+                      className="lux-hover-rise font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
                     >
                       {eventUrlLabel || 'View event on gallery site'}
                       <span aria-hidden>↗</span>
@@ -410,7 +410,7 @@ export default async function GalleryExhibitionPage(props: {
             </Link>
             <Link
               href="/exhibitions"
-              className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-3 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
+              className="lux-hover-rise font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-3 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
             >
               Exhibitions home
             </Link>
@@ -479,7 +479,7 @@ export default async function GalleryExhibitionPage(props: {
                   href={guidePdfUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
+                  className="lux-hover-rise font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-4 py-2 text-[11px] uppercase tracking-[0.26em] text-neutral-900"
                 >
                   Download exhibition guide <span aria-hidden>→</span>
                 </a>

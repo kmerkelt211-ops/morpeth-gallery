@@ -175,7 +175,7 @@ export default async function ShopPage() {
                       href={featured.href}
                       target={/^https?:\/\//i.test(featured.href) ? '_blank' : undefined}
                       rel={/^https?:\/\//i.test(featured.href) ? 'noopener noreferrer' : undefined}
-                      className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 bg-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-white"
+                      className="lux-hover-rise font-exhibitions inline-flex items-center gap-2 border border-neutral-900 bg-neutral-900 px-5 py-3 text-[11px] uppercase tracking-[0.24em] text-white"
                     >
                       {featured.ctaLabel} <span aria-hidden>→</span>
                     </a>
