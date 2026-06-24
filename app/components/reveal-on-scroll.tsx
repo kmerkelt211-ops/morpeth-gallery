@@ -8,12 +8,22 @@ import {
   type CSSProperties,
   type HTMLAttributes,
 } from 'react'
+import { usePathname } from 'next/navigation'
 
-function isBackForwardNavigation(): boolean {
-  const navigationEntry = window.performance?.getEntriesByType?.('navigation')[0] as
-    | PerformanceNavigationTiming
-    | undefined
-  return navigationEntry?.type === 'back_forward'
+function hasVisitedThisSession(pathname: string): boolean {
+  try {
+    return window.sessionStorage.getItem(`reveal-visited:${pathname}`) === 'true'
+  } catch {
+    return false
+  }
+}
+
+function markVisitedThisSession(pathname: string): void {
+  try {
+    window.sessionStorage.setItem(`reveal-visited:${pathname}`, 'true')
+  } catch {
+    // sessionStorage can throw in some private-browsing contexts; safe to ignore.
+  }
 }
 
 type RevealEffect = 'fade-up' | 'fade-in' | 'wipe-right' | 'fade-left' | 'fade-right' | 'scale-in'
@@ -36,14 +46,16 @@ export default function RevealOnScroll({
   const [isVisible, setIsVisible] = useState(false)
   const elementRef = useRef<HTMLDivElement | null>(null)
   const alreadyHandledRef = useRef(false)
+  const pathname = usePathname()
 
-  // On a back/forward navigation, anything already on screen should just be
+  // If this page was already visited earlier in the session (e.g. the user
+  // clicked a link then hit back), anything already on screen should just be
   // there, not replay its entrance animation. Anything still off-screen should
   // still reveal normally as the user scrolls to it. This runs before paint so
   // there's no flash of the hidden state for the on-screen case.
   useLayoutEffect(() => {
     if (typeof window === 'undefined' || !elementRef.current) return
-    if (!isBackForwardNavigation()) return
+    if (!hasVisitedThisSession(pathname)) return
 
     const rect = elementRef.current.getBoundingClientRect()
     const alreadyInViewport = rect.top < window.innerHeight && rect.bottom > 0
@@ -54,10 +66,12 @@ export default function RevealOnScroll({
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsVisible(true)
     }
-  }, [])
+  }, [pathname])
 
   useEffect(() => {
-    if (typeof window === 'undefined' || alreadyHandledRef.current) return
+    if (typeof window === 'undefined') return
+    markVisitedThisSession(pathname)
+    if (alreadyHandledRef.current) return
 
     let frameId = 0
     const showImmediately = () => {
@@ -97,7 +111,7 @@ export default function RevealOnScroll({
       window.cancelAnimationFrame(frameId)
       observer.disconnect()
     }
-  }, [once])
+  }, [once, pathname])
 
   const mergedStyle: CSSProperties = {
     ...style,
