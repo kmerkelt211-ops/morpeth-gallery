@@ -44,6 +44,14 @@ export default function RevealOnScroll({
       return () => window.cancelAnimationFrame(frameId)
     }
 
+    const navigationEntry = window.performance?.getEntriesByType?.('navigation')[0] as
+      | PerformanceNavigationTiming
+      | undefined
+    if (navigationEntry?.type === 'back_forward') {
+      showImmediately()
+      return () => window.cancelAnimationFrame(frameId)
+    }
+
     if (!('IntersectionObserver' in window) || !elementRef.current) {
       showImmediately()
       return () => window.cancelAnimationFrame(frameId)
