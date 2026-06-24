@@ -613,12 +613,12 @@ export default async function GalleryExhibitionPage(props: {
                             className={`lb__thumb ${stripIndex === i ? 'is-active' : ''}`}
                             aria-label={`Go to image ${stripIndex + 1}`}
                           >
-                            <Image
-                              src={thumbSrc}
+                            <img
+                              src={`${thumbSrc}?w=112&h=112&fit=crop&auto=format`}
                               alt=""
-                              fill
-                              sizes="64px"
-                              className="object-cover"
+                              loading="lazy"
+                              decoding="async"
+                              className="absolute inset-0 h-full w-full object-cover"
                             />
                           </a>
                         ))}
