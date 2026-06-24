@@ -2,7 +2,6 @@
 
 import {
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -10,24 +9,11 @@ import {
 } from 'react'
 import { usePathname } from 'next/navigation'
 
-// Tracks the last scroll position seen on each pathname, keyed in memory so
-// it survives Next.js's client-side back/forward navigation (no full page
-// reload). Presence of an entry means the page was visited earlier in this
-// session. We compare element position against this *saved* scroll value
-// rather than the live one, because on back navigation the browser hasn't
-// necessarily restored window.scrollY yet by the time this component's
-// layout effect runs — comparing against a stale "0" scroll would make
-// already-visible elements look off-screen and replay their animation.
-const lastScrollByPath = new Map<string, number>()
-
-function trackScrollPosition(): void {
-  if (typeof window === 'undefined') return
-  lastScrollByPath.set(window.location.pathname, window.scrollY)
-}
-
-if (typeof window !== 'undefined') {
-  window.addEventListener('scroll', trackScrollPosition, { passive: true })
-}
+// Pages already visited this session. On a revisit (e.g. clicking a link
+// then hitting back), anything already on screen should appear instantly
+// with no animation; anything still off-screen should still reveal
+// normally as the user scrolls to it.
+const visitedPaths = new Set<string>()
 
 type RevealEffect = 'fade-up' | 'fade-in' | 'wipe-right' | 'fade-left' | 'fade-right' | 'scale-in'
 
@@ -48,47 +34,38 @@ export default function RevealOnScroll({
 }: RevealOnScrollProps) {
   const [isVisible, setIsVisible] = useState(false)
   const elementRef = useRef<HTMLDivElement | null>(null)
-  const alreadyHandledRef = useRef(false)
   const pathname = usePathname()
 
-  // If this page was already visited earlier in the session (e.g. the user
-  // clicked a link then hit back), anything already on screen should just be
-  // there, not replay its entrance animation. Anything still off-screen should
-  // still reveal normally as the user scrolls to it. This runs before paint so
-  // there's no flash of the hidden state for the on-screen case.
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (typeof window === 'undefined' || !elementRef.current) return
 
-    const savedScrollY = lastScrollByPath.get(pathname)
-    if (savedScrollY === undefined) return
-
-    // Use document-relative position (independent of the *current* live
-    // scroll, which may not be restored yet) and compare it against the
-    // scroll position that was last recorded for this page.
-    const rect = elementRef.current.getBoundingClientRect()
-    const elementTop = rect.top + window.scrollY
-    const elementBottom = elementTop + rect.height
-    const alreadyInViewport =
-      elementBottom > savedScrollY && elementTop < savedScrollY + window.innerHeight
-    if (alreadyInViewport) {
-      alreadyHandledRef.current = true
-      // Synchronous so React flushes before the browser paints, otherwise
-      // the hidden state would flash for a frame.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsVisible(true)
-    }
-  }, [pathname])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    trackScrollPosition()
-    if (alreadyHandledRef.current) return
+    const isRevisit = visitedPaths.has(pathname)
+    visitedPaths.add(pathname)
 
     let frameId = 0
+    let settleFrameId = 0
+    let observer: IntersectionObserver | null = null
+
+    const setupObserver = () => {
+      if (!elementRef.current) return
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setIsVisible(true)
+              if (once) observer?.unobserve(entry.target)
+            } else if (!once) {
+              setIsVisible(false)
+            }
+          })
+        },
+        { threshold: 0.16, rootMargin: '0px 0px -8% 0px' }
+      )
+      observer.observe(elementRef.current)
+    }
+
     const showImmediately = () => {
-      frameId = window.requestAnimationFrame(() => {
-        setIsVisible(true)
-      })
+      frameId = window.requestAnimationFrame(() => setIsVisible(true))
     }
 
     const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -97,30 +74,41 @@ export default function RevealOnScroll({
       return () => window.cancelAnimationFrame(frameId)
     }
 
-    if (!('IntersectionObserver' in window) || !elementRef.current) {
+    if (!('IntersectionObserver' in window)) {
       showImmediately()
       return () => window.cancelAnimationFrame(frameId)
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
+    if (isRevisit) {
+      // Give the browser a couple of frames to restore the previous scroll
+      // position before checking whether this element is already on screen.
+      settleFrameId = window.requestAnimationFrame(() => {
+        settleFrameId = window.requestAnimationFrame(() => {
+          const el = elementRef.current
+          if (!el) return
+
+          const rect = el.getBoundingClientRect()
+          const alreadyInViewport = rect.top < window.innerHeight && rect.bottom > 0
+          if (alreadyInViewport) {
+            const previousTransition = el.style.transition
+            el.style.transition = 'none'
             setIsVisible(true)
-            if (once) observer.unobserve(entry.target)
-          } else if (!once) {
-            setIsVisible(false)
+            window.requestAnimationFrame(() => {
+              el.style.transition = previousTransition
+            })
+          } else {
+            setupObserver()
           }
         })
-      },
-      { threshold: 0.16, rootMargin: '0px 0px -8% 0px' }
-    )
-
-    observer.observe(elementRef.current)
+      })
+    } else {
+      setupObserver()
+    }
 
     return () => {
       window.cancelAnimationFrame(frameId)
-      observer.disconnect()
+      window.cancelAnimationFrame(settleFrameId)
+      observer?.disconnect()
     }
   }, [once, pathname])
 
