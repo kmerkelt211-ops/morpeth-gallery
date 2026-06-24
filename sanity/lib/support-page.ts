@@ -61,7 +61,7 @@ export type SupportPageData = {
 export const supportPageQuery = groq`*[_id == "page_support"][0]{
   pageTitle,
   pageIntro,
-  "heroImageUrl": heroImage.asset->url,
+  "heroImageUrl": heroImage.asset->url + "?w=1600&auto=format&q=82",
   "heroImageAlt": heroImage.alt,
   heroPanelColor,
   heroKicker,
@@ -78,7 +78,7 @@ export const supportPageQuery = groq`*[_id == "page_support"][0]{
   },
   printsSectionTitle,
   printsSectionIntro,
-  "featuredPrintImageUrl": featuredPrintImage.asset->url,
+  "featuredPrintImageUrl": featuredPrintImage.asset->url + "?w=1600&auto=format&q=82",
   "featuredPrintImageAlt": featuredPrintImage.alt,
   featuredPrintKicker,
   featuredPrintTitle,
@@ -86,7 +86,7 @@ export const supportPageQuery = groq`*[_id == "page_support"][0]{
   featuredPrintCtaLabel,
   featuredPrintCtaLink,
   printCards[]{
-    "imageUrl": image.asset->url,
+    "imageUrl": image.asset->url + "?w=1600&auto=format&q=82",
     "alt": image.alt,
     title,
     artist,

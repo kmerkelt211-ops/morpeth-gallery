@@ -84,8 +84,8 @@ async function getExhibition(slug: string): Promise<GalleryExhibition | null> {
       venueName,
       venueAddress,
       venueWebsite,
-      "heroImageUrls": heroImages[].asset->url,
-      "galleryImageUrls": galleryImages[].asset->url,
+      "heroImageUrls": heroImages[].asset->url + "?w=1600&auto=format&q=82",
+      "galleryImageUrls": galleryImages[].asset->url + "?w=1600&auto=format&q=82",
       "guidePdfUrl": guidePdf.asset->url
     }
   `

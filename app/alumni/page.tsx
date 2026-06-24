@@ -99,7 +99,7 @@ export default async function AlumniPage() {
       headline,
       intro,
       spotlights[]{
-        "imageUrl": image.asset->url,
+        "imageUrl": image.asset->url + "?w=1600&auto=format&q=82",
         "alt": image.alt,
         name,
         graduationYear,
@@ -137,9 +137,9 @@ export default async function AlumniPage() {
         subtitle,
         description,
         slug,
-        "heroImageUrl": heroImages[0].asset->url,
-        "heroImageUrls": heroImages[].asset->url,
-        "galleryImageUrls": galleryImages[].asset->url
+        "heroImageUrl": heroImages[0].asset->url + "?w=1600&auto=format&q=82",
+        "heroImageUrls": heroImages[].asset->url + "?w=1600&auto=format&q=82",
+        "galleryImageUrls": galleryImages[].asset->url + "?w=1600&auto=format&q=82"
       }
   }`
 

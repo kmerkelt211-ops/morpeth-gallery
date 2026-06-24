@@ -18,7 +18,7 @@ export const client: SanityLikeClient = projectId
       projectId,
       dataset,
       apiVersion,
-      useCdn: false,
+      useCdn: true,
       perspective: 'published',
     })
   : fallbackClient
