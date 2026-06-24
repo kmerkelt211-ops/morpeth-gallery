@@ -236,7 +236,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <div className="md:pl-4">
                   <h3 className="sr-only">Find us</h3>
                   <div className="mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md">
-                    <div className="hidden md:block h-72 sm:h-80 md:h-[22rem] lg:h-[24rem]">
+                    <div className="h-56 sm:h-72 md:h-80 lg:h-[24rem]">
                       <iframe
                         title="Map showing Morpeth School location"
                         src="https://www.openstreetmap.org/export/embed.html?bbox=-0.052694%2C51.521544%2C-0.042694%2C51.531544&layer=mapnik&marker=51.526544%2C-0.047694"
@@ -245,14 +245,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                         referrerPolicy="no-referrer-when-downgrade"
                         allowFullScreen
                       />
-                    </div>
-                    <div className="md:hidden h-56 flex items-center justify-center bg-slate-100">
-                      <div className="px-6 text-center">
-                        <p className="text-sm font-semibold text-morpeth-navy">Map preview</p>
-                        <p className="mt-1 text-xs text-slate-600">
-                          Tap a link below to open directions.
-                        </p>
-                      </div>
                     </div>
                     <div className="border-t border-slate-200/70 px-4 py-3 text-xs text-slate-600 flex flex-wrap items-center gap-x-5 gap-y-2">
                       <Link
