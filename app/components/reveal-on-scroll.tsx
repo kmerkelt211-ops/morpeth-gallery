@@ -2,11 +2,19 @@
 
 import {
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
   type HTMLAttributes,
 } from 'react'
+
+function isBackForwardNavigation(): boolean {
+  const navigationEntry = window.performance?.getEntriesByType?.('navigation')[0] as
+    | PerformanceNavigationTiming
+    | undefined
+  return navigationEntry?.type === 'back_forward'
+}
 
 type RevealEffect = 'fade-up' | 'fade-in' | 'wipe-right' | 'fade-left' | 'fade-right' | 'scale-in'
 
@@ -27,9 +35,29 @@ export default function RevealOnScroll({
 }: RevealOnScrollProps) {
   const [isVisible, setIsVisible] = useState(false)
   const elementRef = useRef<HTMLDivElement | null>(null)
+  const alreadyHandledRef = useRef(false)
+
+  // On a back/forward navigation, anything already on screen should just be
+  // there, not replay its entrance animation. Anything still off-screen should
+  // still reveal normally as the user scrolls to it. This runs before paint so
+  // there's no flash of the hidden state for the on-screen case.
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined' || !elementRef.current) return
+    if (!isBackForwardNavigation()) return
+
+    const rect = elementRef.current.getBoundingClientRect()
+    const alreadyInViewport = rect.top < window.innerHeight && rect.bottom > 0
+    if (alreadyInViewport) {
+      alreadyHandledRef.current = true
+      // Synchronous so React flushes before the browser paints, otherwise
+      // the hidden state would flash for a frame.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsVisible(true)
+    }
+  }, [])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined' || alreadyHandledRef.current) return
 
     let frameId = 0
     const showImmediately = () => {
@@ -40,14 +68,6 @@ export default function RevealOnScroll({
 
     const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     if (reducedMotionQuery.matches) {
-      showImmediately()
-      return () => window.cancelAnimationFrame(frameId)
-    }
-
-    const navigationEntry = window.performance?.getEntriesByType?.('navigation')[0] as
-      | PerformanceNavigationTiming
-      | undefined
-    if (navigationEntry?.type === 'back_forward') {
       showImmediately()
       return () => window.cancelAnimationFrame(frameId)
     }
