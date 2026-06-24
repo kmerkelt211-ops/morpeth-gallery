@@ -4,6 +4,11 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { useRef, useState } from 'react'
 
+function thumbnailUrl(src: string): string {
+  const [base] = src.split('?')
+  return `${base}?w=112&h=112&fit=crop&auto=format`
+}
+
 type LightboxModalProps = {
   images: string[]
   title: string
@@ -154,7 +159,7 @@ export default function LightboxModal({
                 }`}
               >
                 <img
-                  src={`${thumbSrc}?w=112&h=112&fit=crop&auto=format`}
+                  src={thumbnailUrl(thumbSrc)}
                   alt=""
                   loading="lazy"
                   decoding="async"
