@@ -49,6 +49,10 @@ const nextConfig: NextConfig = {
         source: "/:path((?!studio).*)",
         headers: [{ key: "Content-Security-Policy", value: contentSecurityPolicy }],
       },
+      {
+        source: "/studio/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
     ];
   },
 };

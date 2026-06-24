@@ -6,11 +6,31 @@ import Script from "next/script";
 import type { ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { siteUrl } from "./site-config";
+
+const title = "Morpeth Gallery | Portman Gallery";
+const description =
+  "Morpeth Gallery (Portman Gallery) showcases art and photography from students, guest artists and collaborators across the school year.";
 
 export const metadata: Metadata = {
-  title: "Morpeth Gallery | Portman Gallery",
-  description:
-    "Morpeth Gallery (Portman Gallery) showcases art and photography from students, guest artists and collaborators across the school year.",
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
+
+  openGraph: {
+    title,
+    description,
+    siteName: "Portman Gallery",
+    type: "website",
+    images: [{ url: "/morpeth-logo.png" }],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["/morpeth-logo.png"],
+  },
 
   // Keep root fallbacks for browser conventions, but point everything else at the tidy folder.
   manifest: "/morpeth-icon-pack/site.webmanifest",
