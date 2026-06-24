@@ -5,7 +5,7 @@ import RevealOnScroll from '../components/reveal-on-scroll'
 import PrintCard from '../support/print-card'
 import { getShopData, shuffle, type ShopProduct } from '../../sanity/lib/shop'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 type ResolvedCard = {
   imageUrl: string

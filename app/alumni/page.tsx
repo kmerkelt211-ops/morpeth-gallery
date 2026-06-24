@@ -4,19 +4,10 @@ import Link from 'next/link'
 import { groq } from 'next-sanity'
 import { randomInt } from 'node:crypto'
 import RevealOnScroll from '../components/reveal-on-scroll'
+import { exhibitionCardProjection, type ExhibitionCard } from '../../sanity/lib/exhibition-card'
+import { IMAGE_PARAMS } from '../../sanity/lib/image'
 
-export const dynamic = 'force-dynamic'
-
-type AlumniExhibition = {
-  _id: string
-  title: string
-  subtitle?: string
-  description?: string
-  slug?: { current?: string }
-  heroImageUrl?: string
-  heroImageUrls?: string[]
-  galleryImageUrls?: string[]
-}
+export const revalidate = 60
 
 type AlumniSpotlight = {
   imageUrl?: string
@@ -99,7 +90,7 @@ export default async function AlumniPage() {
       headline,
       intro,
       spotlights[]{
-        "imageUrl": image.asset->url + "?w=1600&auto=format&q=82",
+        "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
         "alt": image.alt,
         name,
         graduationYear,
@@ -132,23 +123,19 @@ export default async function AlumniPage() {
       exhibitorType == "alumni" &&
       defined(slug.current)
     ] | order(startDate desc) {
-        _id,
-        title,
-        subtitle,
-        description,
-        slug,
-        "heroImageUrl": heroImages[0].asset->url + "?w=1600&auto=format&q=82",
-        "heroImageUrls": heroImages[]{ "url": asset->url + "?w=1600&auto=format&q=82" }.url,
-        "galleryImageUrls": galleryImages[]{ "url": asset->url + "?w=1600&auto=format&q=82" }.url
+        ${exhibitionCardProjection}
       }
   }`
 
   const fetched = await client
     .fetch<{
       page?: AlumniPageCopy | null
-      items?: AlumniExhibition[]
+      items?: ExhibitionCard[]
     }>(query)
-    .catch(() => null)
+    .catch((err) => {
+      console.error('Failed to fetch alumni page', err)
+      return null
+    })
 
   const page = fetched?.page && !Array.isArray(fetched.page) ? fetched.page : null
   const data = Array.isArray(fetched?.items) ? fetched.items : []

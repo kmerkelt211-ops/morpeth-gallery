@@ -1,5 +1,6 @@
 import { groq } from 'next-sanity'
 import client from '../../sanity/lib/client'
+import { IMAGE_PARAMS } from '../../sanity/lib/image'
 import type { ClubsPageData } from '../../lib/clubs'
 
 const clubsPageQuery = groq`*[_id == "page_clubs"][0]{
@@ -7,7 +8,7 @@ const clubsPageQuery = groq`*[_id == "page_clubs"][0]{
   kicker,
   headline,
   intro,
-  "heroImageUrl": heroImage.asset->url + "?w=1600&auto=format&q=82",
+  "heroImageUrl": heroImage.asset->url + "${IMAGE_PARAMS}",
   "heroImageAlt": heroImage.alt,
   heroPanelColor,
   heroPrimaryCtaLabel,
@@ -30,7 +31,7 @@ const clubsPageQuery = groq`*[_id == "page_clubs"][0]{
       headline,
       subline
     },
-    "posterImageUrl": posterImage.asset->url + "?w=1600&auto=format&q=82",
+    "posterImageUrl": posterImage.asset->url + "${IMAGE_PARAMS}",
     "posterImageAlt": coalesce(posterImage.alt, title),
     summary,
     whatYoullDo,

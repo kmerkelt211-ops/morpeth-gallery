@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import client from '../../sanity/lib/client'
+import { IMAGE_PARAMS } from '../../sanity/lib/image'
 import LightboxProvider from '../components/lightbox-context'
 import LightboxTrigger from '../components/lightbox-trigger'
 import RevealOnScroll from '../components/reveal-on-scroll'
@@ -84,8 +85,8 @@ async function getExhibition(slug: string): Promise<GalleryExhibition | null> {
       venueName,
       venueAddress,
       venueWebsite,
-      "heroImageUrls": heroImages[]{ "url": asset->url + "?w=1600&auto=format&q=82" }.url,
-      "galleryImageUrls": galleryImages[]{ "url": asset->url + "?w=1600&auto=format&q=82" }.url,
+      "heroImageUrls": heroImages[]{ "url": asset->url + "${IMAGE_PARAMS}" }.url,
+      "galleryImageUrls": galleryImages[]{ "url": asset->url + "${IMAGE_PARAMS}" }.url,
       "guidePdfUrl": guidePdf.asset->url
     }
   `

@@ -1,5 +1,6 @@
 import { groq } from 'next-sanity'
 import client from './client'
+import { IMAGE_PARAMS } from './image'
 
 export type ShopProduct = {
   _id?: string
@@ -37,7 +38,7 @@ export const shopPageQuery = groq`{
   },
   "products": *[_type == "product"]{
     _id,
-    "imageUrl": image.asset->url + "?w=1600&auto=format&q=82",
+    "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
     "alt": image.alt,
     title,
     artist,

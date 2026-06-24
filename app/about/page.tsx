@@ -7,8 +7,9 @@ import type { PortableTextBlock } from 'sanity'
 import { randomInt } from 'node:crypto'
 import AboutInfoPanels from './about-info-panels'
 import RevealOnScroll from '../components/reveal-on-scroll'
+import { IMAGE_PARAMS } from '../../sanity/lib/image'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 type QuickFact = { label?: string; value?: string }
 
@@ -104,7 +105,7 @@ const aboutPageQuery = groq`*[_id == "page_about"][0]{
   heroSummary,
   heroBandColor,
   "heroImageOverride": heroImageOverride{
-    "imageUrl": image.asset->url + "?w=1600&auto=format&q=82",
+    "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
     "alt": image.alt
   },
   whatsOnTitle,
@@ -113,7 +114,7 @@ const aboutPageQuery = groq`*[_id == "page_about"][0]{
     kicker,
     title,
     ctaLabel,
-    "imageUrl": image.asset->url + "?w=1600&auto=format&q=82",
+    "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
     "imageAlt": coalesce(image.alt, title),
     "href": coalesce(href, select(defined(exhibition->slug.current) => "/" + exhibition->slug.current, null))
   },
@@ -130,7 +131,7 @@ const aboutPageQuery = groq`*[_id == "page_about"][0]{
     year,
     caption,
     "alt": image.alt,
-    "imageUrl": image.asset->url + "?w=1600&auto=format&q=82"
+    "imageUrl": image.asset->url + "${IMAGE_PARAMS}"
   },
   gallerySnapshots[]{alt, title, artist, year, caption, asset->{url}},
   body
@@ -154,7 +155,7 @@ const productImagePoolQuery = groq`*[
   _type == "product" &&
   defined(image.asset->url)
 ]{
-  "url": image.asset->url + "?w=1600&auto=format&q=82",
+  "url": image.asset->url + "${IMAGE_PARAMS}",
   "alt": coalesce(image.alt, title)
 }`
 
@@ -167,7 +168,7 @@ const featuredExhibitionsQuery = groq`*[
   "slug": slug.current,
   locationType,
   venueName,
-  "imageUrl": heroImages[0].asset->url + "?w=1600&auto=format&q=82",
+  "imageUrl": heroImages[0].asset->url + "${IMAGE_PARAMS}",
   "imageAlt": coalesce(heroImages[0].alt, title)
 }`
 
@@ -413,10 +414,10 @@ type ExhibitionImagePool = {
 
 export default async function AboutPage() {
   const [data, exhibitionImagePools, productImagePool, featuredExhibitions] = await Promise.all([
-    client.fetch<AboutPageData | null>(aboutPageQuery),
-    client.fetch<ExhibitionImagePool[]>(exhibitionHeroPoolQuery),
-    client.fetch<HeroImageCandidate[]>(productImagePoolQuery),
-    client.fetch<FeaturedExhibition[]>(featuredExhibitionsQuery),
+    client.fetch<AboutPageData | null>(aboutPageQuery).catch(() => null),
+    client.fetch<ExhibitionImagePool[]>(exhibitionHeroPoolQuery).catch(() => []),
+    client.fetch<HeroImageCandidate[]>(productImagePoolQuery).catch(() => []),
+    client.fetch<FeaturedExhibition[]>(featuredExhibitionsQuery).catch(() => []),
   ])
 
   const exhibitionHeroPool: HeroImageCandidate[] = (exhibitionImagePools || []).flatMap((exhibition) => [

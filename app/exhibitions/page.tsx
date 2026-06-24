@@ -1,12 +1,13 @@
 import { groq } from 'next-sanity'
 import { randomInt } from 'node:crypto'
 import client from '../../sanity/lib/client'
+import { IMAGE_PARAMS } from '../../sanity/lib/image'
 import HomePageClient, {
   type GalleryExhibition,
   type HomePageCopy,
 } from '../home-page-client'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 const homePageQuery = groq`{
   "page": *[_id == "page_home"][0]{
@@ -38,8 +39,8 @@ const homePageQuery = groq`{
     startDate,
     endDate,
     bgColor,
-    "heroImageUrl": coalesce(heroImages[0].asset->url + "?w=1600&auto=format&q=82", galleryImages[0].asset->url + "?w=1600&auto=format&q=82"),
-    "galleryImageUrls": galleryImages[]{ "url": asset->url + "?w=1600&auto=format&q=82" }.url,
+    "heroImageUrl": coalesce(heroImages[0].asset->url + "${IMAGE_PARAMS}", galleryImages[0].asset->url + "${IMAGE_PARAMS}"),
+    "galleryImageUrls": galleryImages[]{ "url": asset->url + "${IMAGE_PARAMS}" }.url,
     "guidePdfUrl": guidePdf.asset->url
   }
 }`
@@ -55,10 +56,15 @@ function pickFeaturedHeroImage(exhibitions: GalleryExhibition[]): string | null 
 }
 
 export default async function ExhibitionsPage() {
-  const fetched = await client.fetch<{
-    page?: HomePageCopy | null
-    exhibitions?: GalleryExhibition[]
-  }>(homePageQuery)
+  const fetched = await client
+    .fetch<{
+      page?: HomePageCopy | null
+      exhibitions?: GalleryExhibition[]
+    }>(homePageQuery)
+    .catch((err) => {
+      console.error('Failed to fetch exhibitions page', err)
+      return null
+    })
 
   const pageCopy = fetched?.page && !Array.isArray(fetched.page) ? fetched.page : null
   const exhibitions = Array.isArray(fetched?.exhibitions) ? fetched.exhibitions : []

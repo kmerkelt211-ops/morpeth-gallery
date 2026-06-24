@@ -1,5 +1,6 @@
 import { groq } from 'next-sanity'
 import client from './client'
+import { IMAGE_PARAMS } from './image'
 
 export type SupportPathway = {
   title?: string
@@ -61,7 +62,7 @@ export type SupportPageData = {
 export const supportPageQuery = groq`*[_id == "page_support"][0]{
   pageTitle,
   pageIntro,
-  "heroImageUrl": heroImage.asset->url + "?w=1600&auto=format&q=82",
+  "heroImageUrl": heroImage.asset->url + "${IMAGE_PARAMS}",
   "heroImageAlt": heroImage.alt,
   heroPanelColor,
   heroKicker,
@@ -78,7 +79,7 @@ export const supportPageQuery = groq`*[_id == "page_support"][0]{
   },
   printsSectionTitle,
   printsSectionIntro,
-  "featuredPrintImageUrl": featuredPrintImage.asset->url + "?w=1600&auto=format&q=82",
+  "featuredPrintImageUrl": featuredPrintImage.asset->url + "${IMAGE_PARAMS}",
   "featuredPrintImageAlt": featuredPrintImage.alt,
   featuredPrintKicker,
   featuredPrintTitle,
@@ -86,7 +87,7 @@ export const supportPageQuery = groq`*[_id == "page_support"][0]{
   featuredPrintCtaLabel,
   featuredPrintCtaLink,
   printCards[]{
-    "imageUrl": image.asset->url + "?w=1600&auto=format&q=82",
+    "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
     "alt": image.alt,
     title,
     artist,
