@@ -7,13 +7,23 @@ import {
   type CSSProperties,
   type HTMLAttributes,
 } from 'react'
-import { usePathname } from 'next/navigation'
-
-// Pages already visited this session. On a revisit (e.g. clicking a link
-// then hitting back), anything already on screen should appear instantly
-// with no animation; anything still off-screen should still reveal
-// normally as the user scrolls to it.
-const visitedPaths = new Set<string>()
+// `popstate` is the one signal the browser reliably fires for an actual
+// back/forward button press, even for Next.js App Router's client-side
+// navigation (unlike Performance Navigation Timing, which never reports
+// back_forward for SPA route changes). When it fires, anything already on
+// screen should appear instantly with no animation; anything still
+// off-screen should still reveal normally as the user scrolls to it.
+let justNavigatedBackForward = false
+let resetTimer: number | undefined
+if (typeof window !== 'undefined') {
+  window.addEventListener('popstate', () => {
+    justNavigatedBackForward = true
+    if (resetTimer) window.clearTimeout(resetTimer)
+    resetTimer = window.setTimeout(() => {
+      justNavigatedBackForward = false
+    }, 1000)
+  })
+}
 
 type RevealEffect = 'fade-up' | 'fade-in' | 'wipe-right' | 'fade-left' | 'fade-right' | 'scale-in'
 
@@ -34,13 +44,11 @@ export default function RevealOnScroll({
 }: RevealOnScrollProps) {
   const [isVisible, setIsVisible] = useState(false)
   const elementRef = useRef<HTMLDivElement | null>(null)
-  const pathname = usePathname()
 
   useEffect(() => {
     if (typeof window === 'undefined' || !elementRef.current) return
 
-    const isRevisit = visitedPaths.has(pathname)
-    visitedPaths.add(pathname)
+    const isRevisit = justNavigatedBackForward
 
     let frameId = 0
     let settleFrameId = 0
@@ -110,7 +118,7 @@ export default function RevealOnScroll({
       window.cancelAnimationFrame(settleFrameId)
       observer?.disconnect()
     }
-  }, [once, pathname])
+  }, [once])
 
   const mergedStyle: CSSProperties = {
     ...style,
