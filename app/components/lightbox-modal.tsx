@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { useRef, useState } from 'react'
 
-function thumbnailUrl(src: string): string {
+export function thumbnailUrl(src: string): string {
   const [base] = src.split('?')
   return `${base}?w=112&h=112&fit=crop&auto=format`
 }
