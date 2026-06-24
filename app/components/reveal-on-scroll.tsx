@@ -21,7 +21,7 @@ if (typeof window !== 'undefined') {
     if (resetTimer) window.clearTimeout(resetTimer)
     resetTimer = window.setTimeout(() => {
       justNavigatedBackForward = false
-    }, 1000)
+    }, 5000)
   })
 }
 
@@ -51,7 +51,7 @@ export default function RevealOnScroll({
     const isRevisit = justNavigatedBackForward
 
     let frameId = 0
-    let settleFrameId = 0
+    let settleTimer: number | undefined
     let observer: IntersectionObserver | null = null
 
     const setupObserver = () => {
@@ -88,34 +88,34 @@ export default function RevealOnScroll({
     }
 
     if (isRevisit) {
-      // Give the browser a couple of frames to restore the previous scroll
-      // position before checking whether this element is already on screen.
-      settleFrameId = window.requestAnimationFrame(() => {
-        settleFrameId = window.requestAnimationFrame(() => {
-          const el = elementRef.current
-          if (!el) return
+      // Give the browser time to finish restoring the previous scroll
+      // position (and, on Mac, to finish the trackpad swipe-back gesture
+      // animation) before checking whether this element is already on
+      // screen. A couple of animation frames isn't enough for that gesture.
+      settleTimer = window.setTimeout(() => {
+        const el = elementRef.current
+        if (!el) return
 
-          const rect = el.getBoundingClientRect()
-          const alreadyInViewport = rect.top < window.innerHeight && rect.bottom > 0
-          if (alreadyInViewport) {
-            const previousTransition = el.style.transition
-            el.style.transition = 'none'
-            setIsVisible(true)
-            window.requestAnimationFrame(() => {
-              el.style.transition = previousTransition
-            })
-          } else {
-            setupObserver()
-          }
-        })
-      })
+        const rect = el.getBoundingClientRect()
+        const alreadyInViewport = rect.top < window.innerHeight && rect.bottom > 0
+        if (alreadyInViewport) {
+          const previousTransition = el.style.transition
+          el.style.transition = 'none'
+          setIsVisible(true)
+          window.requestAnimationFrame(() => {
+            el.style.transition = previousTransition
+          })
+        } else {
+          setupObserver()
+        }
+      }, 150)
     } else {
       setupObserver()
     }
 
     return () => {
       window.cancelAnimationFrame(frameId)
-      window.cancelAnimationFrame(settleFrameId)
+      window.clearTimeout(settleTimer)
       observer?.disconnect()
     }
   }, [once])
