@@ -2,21 +2,10 @@ import client from '../../sanity/lib/client'
 import Image from 'next/image'
 import Link from 'next/link'
 import { groq } from 'next-sanity'
-import { randomInt } from 'node:crypto'
 import RevealOnScroll from '../components/reveal-on-scroll'
+import { exhibitionCardProjection, pickRandomHeroImage, type ExhibitionCard } from '../../sanity/lib/exhibition-card'
 
-export const dynamic = 'force-dynamic'
-
-type StaffExhibition = {
-  _id: string
-  title: string
-  subtitle?: string
-  description?: string
-  slug?: { current?: string }
-  heroImageUrl?: string
-  heroImageUrls?: string[]
-  galleryImageUrls?: string[]
-}
+export const revalidate = 60
 
 type StaffPageCopy = {
   title?: string
@@ -25,45 +14,37 @@ type StaffPageCopy = {
   intro?: string
 }
 
-export default async function StaffExhibitionsPage() {
-  const query = groq`{
-    "page": *[_id == "page_staff"][0]{
-      title,
-      kicker,
-      headline,
-      intro
-    },
-    "items": *[
-      _type == "galleryExhibition" &&
-      exhibitorType in ["staffVisiting", "guestArtists", "guestArtist", "guest-artists", "staff"] &&
-      defined(slug.current)
-    ] | order(startDate desc) {
-        _id,
-        title,
-        subtitle,
-        description,
-        slug,
-        "heroImageUrl": heroImages[0].asset->url + "?w=1600&auto=format&q=82",
-        "heroImageUrls": heroImages[]{ "url": asset->url + "?w=1600&auto=format&q=82" }.url,
-        "galleryImageUrls": galleryImages[]{ "url": asset->url + "?w=1600&auto=format&q=82" }.url
-      }
-  }`
+const query = groq`{
+  "page": *[_id == "page_staff"][0]{
+    title,
+    kicker,
+    headline,
+    intro
+  },
+  "items": *[
+    _type == "galleryExhibition" &&
+    exhibitorType in ["staffVisiting", "guestArtists", "guestArtist", "guest-artists", "staff"] &&
+    defined(slug.current)
+  ] | order(startDate desc) {
+      ${exhibitionCardProjection}
+    }
+}`
 
-  const fetched = await client.fetch<{
-    page?: StaffPageCopy | null
-    items?: StaffExhibition[]
-  }>(query)
+export default async function StaffExhibitionsPage() {
+  const fetched = await client
+    .fetch<{
+      page?: StaffPageCopy | null
+      items?: ExhibitionCard[]
+    }>(query)
+    .catch((err) => {
+      console.error('Failed to fetch staff exhibitions page', err)
+      return null
+    })
 
   const page = fetched?.page && !Array.isArray(fetched.page) ? fetched.page : null
   const data = Array.isArray(fetched?.items) ? fetched.items : []
-  const randomGuestHeroPool = data
-    .flatMap((item) => [...(item.heroImageUrls || []), ...(item.galleryImageUrls || [])])
-    .filter((url): url is string => Boolean(url))
-    .filter((url, index, all) => all.indexOf(url) === index)
-  const randomGuestHeroImage =
-    randomGuestHeroPool.length > 0 ? randomGuestHeroPool[randomInt(randomGuestHeroPool.length)] : ''
   const heroImageUrl =
-    randomGuestHeroImage ||
+    pickRandomHeroImage(data) ||
     data.find((item) => Boolean(item.heroImageUrl))?.heroImageUrl
 
   return (
