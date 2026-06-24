@@ -10,20 +10,23 @@ import {
 } from 'react'
 import { usePathname } from 'next/navigation'
 
-function hasVisitedThisSession(pathname: string): boolean {
-  try {
-    return window.sessionStorage.getItem(`reveal-visited:${pathname}`) === 'true'
-  } catch {
-    return false
-  }
+// Tracks the last scroll position seen on each pathname, keyed in memory so
+// it survives Next.js's client-side back/forward navigation (no full page
+// reload). Presence of an entry means the page was visited earlier in this
+// session. We compare element position against this *saved* scroll value
+// rather than the live one, because on back navigation the browser hasn't
+// necessarily restored window.scrollY yet by the time this component's
+// layout effect runs — comparing against a stale "0" scroll would make
+// already-visible elements look off-screen and replay their animation.
+const lastScrollByPath = new Map<string, number>()
+
+function trackScrollPosition(): void {
+  if (typeof window === 'undefined') return
+  lastScrollByPath.set(window.location.pathname, window.scrollY)
 }
 
-function markVisitedThisSession(pathname: string): void {
-  try {
-    window.sessionStorage.setItem(`reveal-visited:${pathname}`, 'true')
-  } catch {
-    // sessionStorage can throw in some private-browsing contexts; safe to ignore.
-  }
+if (typeof window !== 'undefined') {
+  window.addEventListener('scroll', trackScrollPosition, { passive: true })
 }
 
 type RevealEffect = 'fade-up' | 'fade-in' | 'wipe-right' | 'fade-left' | 'fade-right' | 'scale-in'
@@ -55,10 +58,18 @@ export default function RevealOnScroll({
   // there's no flash of the hidden state for the on-screen case.
   useLayoutEffect(() => {
     if (typeof window === 'undefined' || !elementRef.current) return
-    if (!hasVisitedThisSession(pathname)) return
 
+    const savedScrollY = lastScrollByPath.get(pathname)
+    if (savedScrollY === undefined) return
+
+    // Use document-relative position (independent of the *current* live
+    // scroll, which may not be restored yet) and compare it against the
+    // scroll position that was last recorded for this page.
     const rect = elementRef.current.getBoundingClientRect()
-    const alreadyInViewport = rect.top < window.innerHeight && rect.bottom > 0
+    const elementTop = rect.top + window.scrollY
+    const elementBottom = elementTop + rect.height
+    const alreadyInViewport =
+      elementBottom > savedScrollY && elementTop < savedScrollY + window.innerHeight
     if (alreadyInViewport) {
       alreadyHandledRef.current = true
       // Synchronous so React flushes before the browser paints, otherwise
@@ -70,7 +81,7 @@ export default function RevealOnScroll({
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    markVisitedThisSession(pathname)
+    trackScrollPosition()
     if (alreadyHandledRef.current) return
 
     let frameId = 0
