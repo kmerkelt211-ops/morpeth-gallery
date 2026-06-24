@@ -7,7 +7,7 @@ const clubsPageQuery = groq`*[_id == "page_clubs"][0]{
   kicker,
   headline,
   intro,
-  "heroImageUrl": heroImage.asset->url,
+  "heroImageUrl": heroImage.asset->url + "?w=1600&auto=format&q=82",
   "heroImageAlt": heroImage.alt,
   heroPanelColor,
   heroPrimaryCtaLabel,
@@ -30,7 +30,7 @@ const clubsPageQuery = groq`*[_id == "page_clubs"][0]{
       headline,
       subline
     },
-    "posterImageUrl": posterImage.asset->url,
+    "posterImageUrl": posterImage.asset->url + "?w=1600&auto=format&q=82",
     "posterImageAlt": coalesce(posterImage.alt, title),
     summary,
     whatYoullDo,

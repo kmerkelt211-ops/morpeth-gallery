@@ -36,12 +36,12 @@ export const metadata: Metadata = {
 
   other: {
     "msapplication-config": "/morpeth-icon-pack/browserconfig.xml",
-    "msapplication-TileColor": "#0d2a45",
+    "msapplication-TileColor": "#0D1F61",
   },
 };
 
 export const viewport = {
-  themeColor: "#0d2a45",
+  themeColor: "#0D1F61",
 };
 
 const mainNav = [

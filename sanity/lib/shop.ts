@@ -37,7 +37,7 @@ export const shopPageQuery = groq`{
   },
   "products": *[_type == "product"]{
     _id,
-    "imageUrl": image.asset->url,
+    "imageUrl": image.asset->url + "?w=1600&auto=format&q=82",
     "alt": image.alt,
     title,
     artist,

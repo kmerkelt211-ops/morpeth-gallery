@@ -1,6 +1,6 @@
 {
-  "name": "Morpeth School",
-  "short_name": "Morpeth",
+  "name": "Portman Gallery",
+  "short_name": "Portman Gallery",
   "icons": [
     {
       "src": "/morpeth-icon-pack/android-chrome-192x192.png",
@@ -13,7 +13,7 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#0d2a45",
-  "background_color": "#0d2a45",
+  "theme_color": "#0D1F61",
+  "background_color": "#0D1F61",
   "display": "standalone"
 }

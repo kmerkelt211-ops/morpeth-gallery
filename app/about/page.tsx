@@ -104,7 +104,7 @@ const aboutPageQuery = groq`*[_id == "page_about"][0]{
   heroSummary,
   heroBandColor,
   "heroImageOverride": heroImageOverride{
-    "imageUrl": image.asset->url,
+    "imageUrl": image.asset->url + "?w=1600&auto=format&q=82",
     "alt": image.alt
   },
   whatsOnTitle,
@@ -113,7 +113,7 @@ const aboutPageQuery = groq`*[_id == "page_about"][0]{
     kicker,
     title,
     ctaLabel,
-    "imageUrl": image.asset->url,
+    "imageUrl": image.asset->url + "?w=1600&auto=format&q=82",
     "imageAlt": coalesce(image.alt, title),
     "href": coalesce(href, select(defined(exhibition->slug.current) => "/" + exhibition->slug.current, null))
   },
@@ -130,7 +130,7 @@ const aboutPageQuery = groq`*[_id == "page_about"][0]{
     year,
     caption,
     "alt": image.alt,
-    "imageUrl": image.asset->url
+    "imageUrl": image.asset->url + "?w=1600&auto=format&q=82"
   },
   gallerySnapshots[]{alt, title, artist, year, caption, asset->{url}},
   body
@@ -154,7 +154,7 @@ const productImagePoolQuery = groq`*[
   _type == "product" &&
   defined(image.asset->url)
 ]{
-  "url": image.asset->url,
+  "url": image.asset->url + "?w=1600&auto=format&q=82",
   "alt": coalesce(image.alt, title)
 }`
 
@@ -167,7 +167,7 @@ const featuredExhibitionsQuery = groq`*[
   "slug": slug.current,
   locationType,
   venueName,
-  "imageUrl": heroImages[0].asset->url,
+  "imageUrl": heroImages[0].asset->url + "?w=1600&auto=format&q=82",
   "imageAlt": coalesce(heroImages[0].alt, title)
 }`
 

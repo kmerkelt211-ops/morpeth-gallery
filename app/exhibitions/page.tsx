@@ -38,8 +38,8 @@ const homePageQuery = groq`{
     startDate,
     endDate,
     bgColor,
-    "heroImageUrl": coalesce(heroImages[0].asset->url, galleryImages[0].asset->url),
-    "galleryImageUrls": galleryImages[].asset->url,
+    "heroImageUrl": coalesce(heroImages[0].asset->url + "?w=1600&auto=format&q=82", galleryImages[0].asset->url + "?w=1600&auto=format&q=82"),
+    "galleryImageUrls": galleryImages[].asset->url + "?w=1600&auto=format&q=82",
     "guidePdfUrl": guidePdf.asset->url
   }
 }`
