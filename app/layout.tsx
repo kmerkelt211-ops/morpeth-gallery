@@ -61,7 +61,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: "#0D1F61",
+  themeColor: [
+    { media: "(max-width: 767px)", color: "#0D1F61" },
+    { media: "(min-width: 768px)", color: "#F7F8FC" },
+  ],
 };
 
 const mainNav = [

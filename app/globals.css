@@ -16,7 +16,6 @@
 /* Global body reset */
 html {
   background-color: var(--color-morpeth-offwhite);
-  overscroll-behavior-y: none;
 }
 
 body {
