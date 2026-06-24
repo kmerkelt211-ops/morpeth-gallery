@@ -563,6 +563,16 @@ export default async function GalleryExhibitionPage(props: {
               const prev = i === 0 ? lightboxImages.length - 1 : i - 1
               const next = i === lightboxImages.length - 1 ? 0 : i + 1
 
+              const stripWindow = 9
+              const half = Math.floor(stripWindow / 2)
+              let stripStart = Math.max(0, i - half)
+              const stripEnd = Math.min(lightboxImages.length, stripStart + stripWindow)
+              stripStart = Math.max(0, stripEnd - stripWindow)
+              const stripIndexes = Array.from(
+                { length: stripEnd - stripStart },
+                (_, idx) => stripStart + idx
+              )
+
               return (
                 <div key={`lb-${src}-${i}`} id={`lb-${i}`} className="lb" role="dialog" aria-modal="true">
                   <a href="#exhibition-top" className="lb__backdrop" aria-label="Close fullscreen view" />
@@ -606,7 +616,7 @@ export default async function GalleryExhibitionPage(props: {
 
                     {lightboxImages.length > 1 && (
                       <div className="lb__strip" aria-label="Image navigation">
-                        {lightboxImages.map((thumbSrc, stripIndex) => (
+                        {stripIndexes.map((stripIndex) => (
                           <a
                             key={`lb-strip-${stripIndex}`}
                             href={`#lb-${stripIndex}`}
@@ -614,7 +624,7 @@ export default async function GalleryExhibitionPage(props: {
                             aria-label={`Go to image ${stripIndex + 1}`}
                           >
                             <img
-                              src={`${thumbSrc}?w=112&h=112&fit=crop&auto=format`}
+                              src={`${lightboxImages[stripIndex]}?w=112&h=112&fit=crop&auto=format`}
                               alt=""
                               loading="lazy"
                               decoding="async"
