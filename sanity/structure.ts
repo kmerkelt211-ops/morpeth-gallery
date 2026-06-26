@@ -44,7 +44,49 @@ export const structure: StructureResolver = (S) =>
 
       S.listItem()
         .title('Gallery Exhibitions')
-        .child(S.documentTypeList('galleryExhibition').title('Gallery Exhibitions')),
+        .child(
+          S.list()
+            .title('Gallery Exhibitions')
+            .items([
+              S.listItem()
+                .title('All exhibitions')
+                .child(S.documentTypeList('galleryExhibition').title('All exhibitions')),
+
+              S.divider(),
+
+              S.listItem()
+                .title('Alumni')
+                .child(
+                  S.documentTypeList('galleryExhibition')
+                    .title('Alumni')
+                    .filter('_type == "galleryExhibition" && exhibitorType == "alumni"')
+                ),
+
+              S.listItem()
+                .title('Student work')
+                .child(
+                  S.documentTypeList('galleryExhibition')
+                    .title('Student work')
+                    .filter('_type == "galleryExhibition" && exhibitorType == "student"')
+                ),
+
+              S.listItem()
+                .title('Guest artists')
+                .child(
+                  S.documentTypeList('galleryExhibition')
+                    .title('Guest artists')
+                    .filter('_type == "galleryExhibition" && exhibitorType == "staffVisiting"')
+                ),
+
+              S.listItem()
+                .title('Collaborative / other')
+                .child(
+                  S.documentTypeList('galleryExhibition')
+                    .title('Collaborative / other')
+                    .filter('_type == "galleryExhibition" && exhibitorType == "other"')
+                ),
+            ])
+        ),
 
       S.listItem()
         .title('Shop products')
