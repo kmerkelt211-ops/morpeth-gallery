@@ -37,7 +37,8 @@ const query = groq`{
   "items": *[
     _type == "galleryExhibition" &&
     exhibitorType in ["student", "studentWork", "student-work"] &&
-    defined(slug.current)
+    defined(slug.current) &&
+    !(${ARCHIVED_FILTER})
   ] | order(startDate desc) {
       ${exhibitionCardProjection}
     },

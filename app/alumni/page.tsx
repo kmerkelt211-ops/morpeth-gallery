@@ -139,7 +139,8 @@ export default async function AlumniPage() {
     "items": *[
       _type == "galleryExhibition" &&
       exhibitorType == "alumni" &&
-      defined(slug.current)
+      defined(slug.current) &&
+      !(${ARCHIVED_FILTER})
     ] | order(startDate desc) {
         ${exhibitionCardProjection}
       },
