@@ -89,10 +89,10 @@ export default defineType({
     }),
     defineField({
       name: 'whatsOnCards',
-      title: "What's On cards",
+      title: "What's On cards (fallback only)",
       type: 'array',
       description:
-        'Add 3-4 featured cards. Each card can have custom text/image and links to any Gallery Exhibition.',
+        'Fallback only - these are ignored if any Gallery Exhibition has "Feature on About page" turned on, which is the normal way to fill this section. Use this array only if you want fully custom cards with no linked exhibition.',
       validation: (r) => r.max(8),
       of: [
         {
