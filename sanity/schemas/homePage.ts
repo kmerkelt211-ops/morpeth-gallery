@@ -30,6 +30,34 @@ export default defineType({
       rows: 3,
     }),
     defineField({
+      name: 'heroImageOverride',
+      title: 'Hero image override',
+      type: 'object',
+      description:
+        'Optional fixed hero image for the top of the Exhibitions page. If set, this is used instead of random images.',
+      fields: [
+        defineField({
+          name: 'image',
+          title: 'Image',
+          type: 'image',
+          options: { hotspot: true },
+          fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+        }),
+      ],
+      preview: {
+        select: {
+          media: 'image',
+          title: 'image.alt',
+        },
+        prepare({ media, title }) {
+          return {
+            media,
+            title: title || 'Exhibitions hero override image',
+          }
+        },
+      },
+    }),
+    defineField({
       name: 'currentStripLabel',
       title: 'Current strip label',
       type: 'string',

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { groq } from 'next-sanity'
 import RevealOnScroll from '../components/reveal-on-scroll'
 import { exhibitionCardProjection, pickRandomHeroImage, type ExhibitionCard } from '../../sanity/lib/exhibition-card'
+import { IMAGE_PARAMS } from '../../sanity/lib/image'
 
 export const revalidate = 60
 
@@ -12,6 +13,10 @@ type StudentPageCopy = {
   kicker?: string
   headline?: string
   intro?: string
+  heroImageOverride?: {
+    imageUrl?: string
+    alt?: string
+  }
 }
 
 const query = groq`{
@@ -19,7 +24,11 @@ const query = groq`{
     title,
     kicker,
     headline,
-    intro
+    intro,
+    "heroImageOverride": heroImageOverride{
+      "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
+      "alt": image.alt
+    }
   },
   "items": *[
     _type == "galleryExhibition" &&
@@ -44,6 +53,7 @@ export default async function StudentWorkPage() {
   const page = fetched?.page && !Array.isArray(fetched.page) ? fetched.page : null
   const data = Array.isArray(fetched?.items) ? fetched.items : []
   const heroImageUrl =
+    page?.heroImageOverride?.imageUrl ||
     pickRandomHeroImage(data) ||
     data.find((item) => Boolean(item.heroImageUrl))?.heroImageUrl
 

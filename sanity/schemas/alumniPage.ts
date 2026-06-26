@@ -43,6 +43,35 @@ export default defineType({
         'Former students of the Portman Gallery programme continue to make, exhibit and work in art and photography. This page celebrates their journeys and current practice.',
     }),
     defineField({
+      name: 'heroImageOverride',
+      title: 'Hero image override',
+      type: 'object',
+      group: 'hero',
+      description:
+        'Optional fixed hero image for the top of the Alumni page. If set, this is used instead of random images.',
+      fields: [
+        defineField({
+          name: 'image',
+          title: 'Image',
+          type: 'image',
+          options: { hotspot: true },
+          fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+        }),
+      ],
+      preview: {
+        select: {
+          media: 'image',
+          title: 'image.alt',
+        },
+        prepare({ media, title }) {
+          return {
+            media,
+            title: title || 'Alumni hero override image',
+          }
+        },
+      },
+    }),
+    defineField({
       name: 'spotlights',
       title: 'Alumni spotlights',
       description: 'Short profiles of former students - their journey since leaving Morpeth.',

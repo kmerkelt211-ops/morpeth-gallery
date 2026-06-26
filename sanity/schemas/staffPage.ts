@@ -29,5 +29,33 @@ export default defineType({
       type: 'text',
       rows: 4,
     }),
+    defineField({
+      name: 'heroImageOverride',
+      title: 'Hero image override',
+      type: 'object',
+      description:
+        'Optional fixed hero image for the top of the Guest Artists page. If set, this is used instead of random images.',
+      fields: [
+        defineField({
+          name: 'image',
+          title: 'Image',
+          type: 'image',
+          options: { hotspot: true },
+          fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+        }),
+      ],
+      preview: {
+        select: {
+          media: 'image',
+          title: 'image.alt',
+        },
+        prepare({ media, title }) {
+          return {
+            media,
+            title: title || 'Guest artists hero override image',
+          }
+        },
+      },
+    }),
   ],
 })

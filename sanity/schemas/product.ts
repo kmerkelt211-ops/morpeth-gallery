@@ -51,7 +51,8 @@ export default defineType({
       name: 'isFeatured',
       title: 'Feature on shop hero',
       type: 'boolean',
-      description: 'Eligible to be shown as the rotating "Featured print" banner.',
+      description:
+        'Pin this print as the "Featured print" banner instead of letting it rotate randomly. If more than one product has this on, the first one found is used.',
       initialValue: false,
     }),
     defineField({

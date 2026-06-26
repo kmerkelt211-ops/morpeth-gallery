@@ -14,6 +14,10 @@ const homePageQuery = groq`{
     heroKicker,
     heroHeadline,
     heroSummary,
+    "heroImageOverride": heroImageOverride{
+      "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
+      "alt": image.alt
+    },
     currentStripLabel,
     currentStripHelp,
     whatsOnIntro
@@ -68,7 +72,7 @@ export default async function ExhibitionsPage() {
 
   const pageCopy = fetched?.page && !Array.isArray(fetched.page) ? fetched.page : null
   const exhibitions = Array.isArray(fetched?.exhibitions) ? fetched.exhibitions : []
-  const heroImageUrl = pickFeaturedHeroImage(exhibitions)
+  const heroImageUrl = pageCopy?.heroImageOverride?.imageUrl || pickFeaturedHeroImage(exhibitions)
 
   return (
     <HomePageClient
