@@ -109,14 +109,29 @@ export default defineType({
       validation: r => r.required(),
     }),
 
-    defineField({ name: 'isCurrent', type: 'boolean', initialValue: false }),
     defineField({
-      name: 'featuredOnAbout',
-      title: 'Feature on About page',
+      name: 'isCurrent',
+      title: "Show in 'Current digital exhibitions' carousel",
       type: 'boolean',
       initialValue: false,
       description:
-        'Turn on to show this exhibition in the "WHAT\'S ON AT PORTMAN" section on the About page.',
+        'Only matters when Layout type above is "Digital gallery." Turn on to feature this exhibition in the rotating "Current digital exhibitions" carousel on the home/exhibitions page.',
+    }),
+    defineField({
+      name: 'showInWhatsOn',
+      title: "Show in 'What's On' grid",
+      type: 'boolean',
+      initialValue: true,
+      description:
+        'Only matters when Layout type above is "What\'s on / event." Controls whether this exhibition appears in the "WHAT\'S ON" grid on the home/exhibitions page. Turn off to manually hide it from that grid even if its dates would otherwise show it there.',
+    }),
+    defineField({
+      name: 'featuredOnAbout',
+      title: 'Feature on About page (latest news)',
+      type: 'boolean',
+      initialValue: false,
+      description:
+        'Turn on to show this exhibition as a "latest news" style card in the "WHAT\'S ON AT PORTMAN" section on the About page. Separate from the "What\'s On" grid and carousel above, which live on the home/exhibitions page.',
     }),
     defineField({ name: 'startDate', type: 'date' }),
     defineField({ name: 'endDate', type: 'date' }),

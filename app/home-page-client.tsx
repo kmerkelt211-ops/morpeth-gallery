@@ -15,6 +15,8 @@ export type GalleryExhibition = {
   locationType?: 'portman' | 'aroundSchool' | 'external' | 'digital'
   exhibitorType?: 'student' | 'staffVisiting' | 'other'
   isCurrent?: boolean
+  showInWhatsOn?: boolean
+  archived?: boolean
   startDate?: string
   endDate?: string
   bgColor?: string
@@ -140,8 +142,11 @@ export default function HomePageClient({
     () =>
       exhibitions
         .filter((ex) => {
-          if (ex.viewLayout) return ex.viewLayout === 'whatsOn'
-          return ex.locationType !== 'digital'
+          const isWhatsOnLayout = ex.viewLayout ? ex.viewLayout === 'whatsOn' : ex.locationType !== 'digital'
+          if (!isWhatsOnLayout) return false
+          if (ex.showInWhatsOn === false) return false
+          if (ex.archived) return false
+          return true
         })
         .sort((a, b) => {
           const aDate = a.startDate ? new Date(a.startDate).getTime() : 0
