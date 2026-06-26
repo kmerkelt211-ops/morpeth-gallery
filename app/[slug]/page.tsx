@@ -203,6 +203,7 @@ export default async function GalleryExhibitionPage(props: {
 
     return (
       <main className="min-h-screen bg-neutral-50 px-6 py-16 md:px-10 lg:px-20">
+        <LightboxProvider images={lightboxImages} title={title}>
         <div className="mx-auto max-w-6xl">
           <div className="mb-6 flex items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-3">
@@ -374,18 +375,14 @@ export default async function GalleryExhibitionPage(props: {
                   </h3>
                   <div className="mt-4 grid gap-3 md:grid-cols-2">
                     {seriesImages.slice(0, 4).map((src, i) => (
-                      <div
+                      <LightboxTrigger
                         key={`${src}-${i}`}
-                        className="relative aspect-[4/3] w-full bg-neutral-100"
-                      >
-                        <Image
-                          src={src}
-                          alt={`${title} image ${i + 1}`}
-                          fill
-                          sizes="(min-width: 768px) 20vw, 50vw"
-                          className="object-cover"
-                        />
-                      </div>
+                        index={i + heroThumbs.length}
+                        src={src}
+                        alt={`${title} image ${i + 1}`}
+                        sizes="(min-width: 768px) 20vw, 50vw"
+                        aspectClassName="aspect-[4/3]"
+                      />
                     ))}
                   </div>
                 </div>
@@ -393,6 +390,7 @@ export default async function GalleryExhibitionPage(props: {
             </RevealOnScroll>
           </section>
         </div>
+        </LightboxProvider>
       </main>
     )
   }
