@@ -86,6 +86,12 @@ function isExternalHref(href: string): boolean {
   return /^https?:\/\//i.test(href)
 }
 
+function normalizeInstagramHandle(raw: string): string {
+  const trimmed = raw.trim()
+  const withoutUrl = trimmed.replace(/^https?:\/\/(www\.)?instagram\.com\//i, '')
+  return withoutUrl.replace(/^@/, '').replace(/\/+$/, '')
+}
+
 export default async function AlumniPage() {
   const query = groq`{
     "page": *[_id == "page_alumni"][0]{
@@ -292,14 +298,19 @@ export default async function AlumniPage() {
                         </a>
                       ) : null}
                       {person.instagramHandle ? (
-                        <a
-                          href={`https://instagram.com/${person.instagramHandle}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="lux-underline text-neutral-900"
-                        >
-                          @{person.instagramHandle}
-                        </a>
+                        (() => {
+                          const handle = normalizeInstagramHandle(person.instagramHandle)
+                          return handle ? (
+                            <a
+                              href={`https://instagram.com/${handle}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="lux-underline text-neutral-900"
+                            >
+                              @{handle}
+                            </a>
+                          ) : null
+                        })()
                       ) : null}
                     </div>
                   </div>

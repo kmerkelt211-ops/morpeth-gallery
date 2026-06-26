@@ -124,7 +124,7 @@ export default defineType({
               name: 'instagramHandle',
               title: 'Instagram handle (optional)',
               type: 'string',
-              description: 'Without the @ symbol.',
+              description: 'Just the username, e.g. "morpethschool" - not the full instagram.com link.',
             }),
           ],
           preview: {
