@@ -5,6 +5,8 @@ import { groq } from 'next-sanity'
 import RevealOnScroll from '../components/reveal-on-scroll'
 import { exhibitionCardProjection, pickRandomHeroImage, type ExhibitionCard } from '../../sanity/lib/exhibition-card'
 import { IMAGE_PARAMS } from '../../sanity/lib/image'
+import { ARCHIVED_FILTER } from '../../sanity/lib/exhibition-status'
+import PastExhibitionsSection, { type PastExhibitionItem } from '../components/past-exhibitions-section'
 
 export const revalidate = 60
 
@@ -38,7 +40,15 @@ const query = groq`{
     defined(slug.current)
   ] | order(startDate desc) {
       ${exhibitionCardProjection}
-    }
+    },
+  "past": *[
+    _type == "galleryExhibition" &&
+    exhibitorType in ["staffVisiting", "guestArtists", "guestArtist", "guest-artists", "staff"] &&
+    defined(slug.current) &&
+    (${ARCHIVED_FILTER})
+  ] | order(coalesce(endDate, startDate) desc) [0...4] {
+    _id, title, slug, startDate, endDate
+  }
 }`
 
 export default async function StaffExhibitionsPage() {
@@ -46,6 +56,7 @@ export default async function StaffExhibitionsPage() {
     .fetch<{
       page?: StaffPageCopy | null
       items?: ExhibitionCard[]
+      past?: PastExhibitionItem[]
     }>(query)
     .catch((err) => {
       console.error('Failed to fetch staff exhibitions page', err)
@@ -54,6 +65,7 @@ export default async function StaffExhibitionsPage() {
 
   const page = fetched?.page && !Array.isArray(fetched.page) ? fetched.page : null
   const data = Array.isArray(fetched?.items) ? fetched.items : []
+  const pastExhibitions = Array.isArray(fetched?.past) ? fetched.past : []
   const heroImageUrl =
     page?.heroImageOverride?.imageUrl ||
     pickRandomHeroImage(data) ||
@@ -143,6 +155,10 @@ export default async function StaffExhibitionsPage() {
               No guest artist exhibitions are published in Sanity yet.
             </p>
           ) : null}
+        </div>
+
+        <div className="mt-16">
+          <PastExhibitionsSection items={pastExhibitions} />
         </div>
       </div>
     </main>

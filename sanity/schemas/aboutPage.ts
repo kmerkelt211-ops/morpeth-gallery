@@ -212,7 +212,8 @@ export default defineType({
       title: 'Past exhibitions',
       type: 'array',
       of: [{ type: 'string' }],
-      description: 'Simple list of past exhibition lines.',
+      description:
+        'Optional curated list of past exhibition lines. Leave empty to automatically show the most recent archived exhibitions instead.',
     }),
 
     defineField({
