@@ -2,6 +2,7 @@ import { groq } from 'next-sanity'
 import { randomInt } from 'node:crypto'
 import client from '../../sanity/lib/client'
 import { IMAGE_PARAMS } from '../../sanity/lib/image'
+import { ARCHIVED_FILTER } from '../../sanity/lib/exhibition-status'
 import HomePageClient, {
   type GalleryExhibition,
   type HomePageCopy,
@@ -40,6 +41,8 @@ const homePageQuery = groq`{
       "other"
     ),
     isCurrent,
+    "showInWhatsOn": coalesce(showInWhatsOn, true),
+    "archived": (${ARCHIVED_FILTER}),
     startDate,
     endDate,
     bgColor,
