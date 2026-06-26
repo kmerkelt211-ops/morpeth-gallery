@@ -286,7 +286,7 @@ export default async function AlumniPage() {
                     {person.quote ? (
                       <p className="mt-1 text-sm leading-relaxed text-neutral-600">&ldquo;{person.quote}&rdquo;</p>
                     ) : null}
-                    <div className="mt-auto flex flex-wrap gap-3 pt-3 text-[11px] uppercase tracking-[0.18em]">
+                    <div className="mt-auto flex flex-col gap-2 pt-3 text-[11px] uppercase tracking-[0.18em]">
                       {person.portfolioUrl ? (
                         <a
                           href={person.portfolioUrl}
@@ -294,7 +294,7 @@ export default async function AlumniPage() {
                           rel="noopener noreferrer"
                           className="lux-underline text-neutral-900"
                         >
-                          Portfolio
+                          Website: {person.portfolioUrl.replace(/^https?:\/\//i, '').replace(/\/+$/, '')}
                         </a>
                       ) : null}
                       {person.instagramHandle ? (
@@ -307,7 +307,7 @@ export default async function AlumniPage() {
                               rel="noopener noreferrer"
                               className="lux-underline text-neutral-900"
                             >
-                              @{handle}
+                              Instagram: @{handle}
                             </a>
                           ) : null
                         })()
