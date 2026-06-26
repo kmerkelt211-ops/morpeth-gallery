@@ -173,6 +173,7 @@ const archivedExhibitionsQuery = groq`*[
 const featuredExhibitionsQuery = groq`*[
   _type == "galleryExhibition" &&
   featuredOnAbout == true &&
+  !(${ARCHIVED_FILTER}) &&
   defined(heroImages[0].asset->url)
 ] | order(orderRank asc) {
   title,
