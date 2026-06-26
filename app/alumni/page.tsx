@@ -32,6 +32,7 @@ type AlumniPageCopy = {
   kicker?: string
   headline?: string
   intro?: string
+  heroBandColor?: string
   heroImageOverride?: {
     imageUrl?: string
     alt?: string
@@ -99,6 +100,7 @@ export default async function AlumniPage() {
       kicker,
       headline,
       intro,
+      heroBandColor,
       "heroImageOverride": heroImageOverride{
         "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
         "alt": image.alt
@@ -226,7 +228,7 @@ export default async function AlumniPage() {
             <RevealOnScroll
               effect="fade-right"
               className="flex flex-col justify-center px-7 py-10 md:px-14 md:py-12 lg:px-16"
-              style={{ backgroundColor: '#9EDFE6' }}
+              style={{ backgroundColor: page?.heroBandColor || '#F2A65A' }}
             >
               <p className="font-exhibitions text-[11px] uppercase tracking-[0.22em] text-neutral-900/80">
                 {page?.kicker || 'ALUMNI'}

@@ -13,6 +13,7 @@ type StudentPageCopy = {
   kicker?: string
   headline?: string
   intro?: string
+  heroBandColor?: string
   heroImageOverride?: {
     imageUrl?: string
     alt?: string
@@ -25,6 +26,7 @@ const query = groq`{
     kicker,
     headline,
     intro,
+    heroBandColor,
     "heroImageOverride": heroImageOverride{
       "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
       "alt": image.alt
@@ -91,7 +93,7 @@ export default async function StudentWorkPage() {
             <RevealOnScroll
               effect="fade-right"
               className="flex flex-col justify-center px-7 py-10 md:px-14 md:py-12 lg:px-16"
-              style={{ backgroundColor: '#8cc9d3' }}
+              style={{ backgroundColor: page?.heroBandColor || '#8cc9d3' }}
             >
               <p className="font-exhibitions text-[11px] uppercase tracking-[0.22em] text-white/90">
                 {page?.kicker || 'STUDENT WORK'}
