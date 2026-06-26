@@ -27,6 +27,10 @@ export type HomePageCopy = {
   heroKicker?: string
   heroHeadline?: string
   heroSummary?: string
+  heroImageOverride?: {
+    imageUrl?: string
+    alt?: string
+  }
   currentStripLabel?: string
   currentStripHelp?: string
   whatsOnIntro?: string

@@ -18,6 +18,7 @@ type ResolvedCard = {
   ctaLabel: string
   href: string
   soldOut: boolean
+  isFeatured?: boolean
 }
 
 const FALLBACK_PRODUCTS: ResolvedCard[] = [
@@ -98,6 +99,7 @@ function resolveProducts(products: ShopProduct[]): ResolvedCard[] {
       ctaLabel: item.ctaLabel || 'Buy print',
       href: resolveHref(item),
       soldOut: isSoldOut(item),
+      isFeatured: Boolean(item.isFeatured),
     }))
   )
 }
@@ -107,7 +109,9 @@ export default async function ShopPage() {
   const cards = resolveProducts(products)
 
   const featuredPool = cards.filter((card) => !card.soldOut)
-  const featured = featuredPool.length > 0 ? featuredPool[randomInt(featuredPool.length)] : cards[0]
+  const pinnedFeatured = featuredPool.find((card) => card.isFeatured)
+  const featured =
+    pinnedFeatured || (featuredPool.length > 0 ? featuredPool[randomInt(featuredPool.length)] : cards[0])
 
   const kicker = page?.kicker?.trim() || 'SHOP'
   const headline =

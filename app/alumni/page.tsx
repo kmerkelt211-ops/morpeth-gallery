@@ -32,6 +32,10 @@ type AlumniPageCopy = {
   kicker?: string
   headline?: string
   intro?: string
+  heroImageOverride?: {
+    imageUrl?: string
+    alt?: string
+  }
   spotlights?: AlumniSpotlight[]
   aboutTitle?: string
   aboutBody?: string
@@ -89,6 +93,10 @@ export default async function AlumniPage() {
       kicker,
       headline,
       intro,
+      "heroImageOverride": heroImageOverride{
+        "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
+        "alt": image.alt
+      },
       spotlights[]{
         "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
         "alt": image.alt,
@@ -173,6 +181,7 @@ export default async function AlumniPage() {
     .filter((url, index, all) => all.indexOf(url) === index)
   const randomHeroImage = randomHeroPool.length > 0 ? randomHeroPool[randomInt(randomHeroPool.length)] : ''
   const heroImageUrl =
+    page?.heroImageOverride?.imageUrl ||
     randomHeroImage ||
     data.find((item) => Boolean(item.heroImageUrl))?.heroImageUrl ||
     spotlights.find((item) => Boolean(item.imageUrl))?.imageUrl
