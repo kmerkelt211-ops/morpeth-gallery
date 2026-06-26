@@ -10,6 +10,8 @@ import {
   type SupportPrintCard,
 } from '../../sanity/lib/support-page'
 
+export const revalidate = 60
+
 type ResolvedPrintCard = {
   imageUrl: string
   alt: string
