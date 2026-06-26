@@ -149,7 +149,7 @@ export default async function AlumniPage() {
       exhibitorType == "alumni" &&
       defined(slug.current) &&
       (${ARCHIVED_FILTER})
-    ] | order(coalesce(endDate, startDate) desc) [0...4] {
+    ] | order(coalesce(endDate, startDate) desc) [0...8] {
       _id, title, slug, startDate, endDate
     }
   }`
