@@ -30,6 +30,12 @@ export default defineType({
       rows: 4,
     }),
     defineField({
+      name: 'heroBandColor',
+      title: 'Hero band color (hex)',
+      type: 'string',
+      initialValue: '#8cc9d3',
+    }),
+    defineField({
       name: 'heroImageOverride',
       title: 'Hero image override',
       type: 'object',

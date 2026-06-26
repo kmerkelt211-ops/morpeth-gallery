@@ -43,6 +43,13 @@ export default defineType({
         'Former students of the Portman Gallery programme continue to make, exhibit and work in art and photography. This page celebrates their journeys and current practice.',
     }),
     defineField({
+      name: 'heroBandColor',
+      title: 'Hero band color (hex)',
+      type: 'string',
+      group: 'hero',
+      initialValue: '#F2A65A',
+    }),
+    defineField({
       name: 'heroImageOverride',
       title: 'Hero image override',
       type: 'object',
