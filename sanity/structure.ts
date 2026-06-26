@@ -3,6 +3,7 @@
 // - A normal list for Gallery Exhibitions
 
 import type { StructureResolver } from 'sanity/desk'
+import { ARCHIVED_FILTER, COMING_SOON_FILTER, CURRENT_FILTER } from './lib/exhibition-status'
 
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -51,6 +52,32 @@ export const structure: StructureResolver = (S) =>
               S.listItem()
                 .title('All exhibitions')
                 .child(S.documentTypeList('galleryExhibition').title('All exhibitions')),
+
+              S.divider(),
+
+              S.listItem()
+                .title('Current')
+                .child(
+                  S.documentTypeList('galleryExhibition')
+                    .title('Current')
+                    .filter(`_type == "galleryExhibition" && (${CURRENT_FILTER})`)
+                ),
+
+              S.listItem()
+                .title('Coming soon')
+                .child(
+                  S.documentTypeList('galleryExhibition')
+                    .title('Coming soon')
+                    .filter(`_type == "galleryExhibition" && (${COMING_SOON_FILTER})`)
+                ),
+
+              S.listItem()
+                .title('Past / archived')
+                .child(
+                  S.documentTypeList('galleryExhibition')
+                    .title('Past / archived')
+                    .filter(`_type == "galleryExhibition" && (${ARCHIVED_FILTER})`)
+                ),
 
               S.divider(),
 

@@ -6,6 +6,8 @@ import { randomInt } from 'node:crypto'
 import RevealOnScroll from '../components/reveal-on-scroll'
 import { exhibitionCardProjection, type ExhibitionCard } from '../../sanity/lib/exhibition-card'
 import { IMAGE_PARAMS } from '../../sanity/lib/image'
+import { ARCHIVED_FILTER } from '../../sanity/lib/exhibition-status'
+import PastExhibitionsSection, { type PastExhibitionItem } from '../components/past-exhibitions-section'
 
 export const revalidate = 60
 
@@ -140,13 +142,22 @@ export default async function AlumniPage() {
       defined(slug.current)
     ] | order(startDate desc) {
         ${exhibitionCardProjection}
-      }
+      },
+    "past": *[
+      _type == "galleryExhibition" &&
+      exhibitorType == "alumni" &&
+      defined(slug.current) &&
+      (${ARCHIVED_FILTER})
+    ] | order(coalesce(endDate, startDate) desc) [0...4] {
+      _id, title, slug, startDate, endDate
+    }
   }`
 
   const fetched = await client
     .fetch<{
       page?: AlumniPageCopy | null
       items?: ExhibitionCard[]
+      past?: PastExhibitionItem[]
     }>(query)
     .catch((err) => {
       console.error('Failed to fetch alumni page', err)
@@ -155,6 +166,7 @@ export default async function AlumniPage() {
 
   const page = fetched?.page && !Array.isArray(fetched.page) ? fetched.page : null
   const data = Array.isArray(fetched?.items) ? fetched.items : []
+  const pastExhibitions = Array.isArray(fetched?.past) ? fetched.past : []
   const spotlights = (page?.spotlights || []).filter((item) => Boolean(item.imageUrl && item.name))
 
   const aboutTitle = page?.aboutTitle?.trim() || 'About the alumni programme'
@@ -448,6 +460,8 @@ export default async function AlumniPage() {
             </div>
           </RevealOnScroll>
         </section>
+
+        <PastExhibitionsSection items={pastExhibitions} />
 
         {relatedLinks.length > 0 ? (
           <section aria-label="Related pages" className="border-t border-neutral-200 pt-10">

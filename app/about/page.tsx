@@ -8,6 +8,7 @@ import { randomInt } from 'node:crypto'
 import AboutInfoPanels from './about-info-panels'
 import RevealOnScroll from '../components/reveal-on-scroll'
 import { IMAGE_PARAMS } from '../../sanity/lib/image'
+import { ARCHIVED_FILTER } from '../../sanity/lib/exhibition-status'
 
 export const dynamic = 'force-dynamic'
 
@@ -157,6 +158,16 @@ const productImagePoolQuery = groq`*[
 ]{
   "url": image.asset->url + "${IMAGE_PARAMS}",
   "alt": coalesce(image.alt, title)
+}`
+
+const archivedExhibitionsQuery = groq`*[
+  _type == "galleryExhibition" &&
+  defined(slug.current) &&
+  (${ARCHIVED_FILTER})
+] | order(coalesce(endDate, startDate) desc) [0...4] {
+  title,
+  description,
+  "slug": slug.current
 }`
 
 const featuredExhibitionsQuery = groq`*[
@@ -413,12 +424,16 @@ type ExhibitionImagePool = {
 }
 
 export default async function AboutPage() {
-  const [data, exhibitionImagePools, productImagePool, featuredExhibitions] = await Promise.all([
-    client.fetch<AboutPageData | null>(aboutPageQuery).catch(() => null),
-    client.fetch<ExhibitionImagePool[]>(exhibitionHeroPoolQuery).catch(() => []),
-    client.fetch<HeroImageCandidate[]>(productImagePoolQuery).catch(() => []),
-    client.fetch<FeaturedExhibition[]>(featuredExhibitionsQuery).catch(() => []),
-  ])
+  const [data, exhibitionImagePools, productImagePool, featuredExhibitions, archivedExhibitions] =
+    await Promise.all([
+      client.fetch<AboutPageData | null>(aboutPageQuery).catch(() => null),
+      client.fetch<ExhibitionImagePool[]>(exhibitionHeroPoolQuery).catch(() => []),
+      client.fetch<HeroImageCandidate[]>(productImagePoolQuery).catch(() => []),
+      client.fetch<FeaturedExhibition[]>(featuredExhibitionsQuery).catch(() => []),
+      client
+        .fetch<Array<{ title?: string; description?: string; slug?: string }>>(archivedExhibitionsQuery)
+        .catch(() => []),
+    ])
 
   const exhibitionHeroPool: HeroImageCandidate[] = (exhibitionImagePools || []).flatMap((exhibition) => [
     ...(exhibition.heroUrls || []),
@@ -436,9 +451,13 @@ export default async function AboutPage() {
   const quickFacts =
     data?.quickFacts?.filter((f: QuickFact) => (f?.label || '').trim() || (f?.value || '').trim()) || []
 
-  const past = (data?.pastExhibitions || [])
+  const manualPast = (data?.pastExhibitions || [])
     .map((item) => (typeof item === 'string' ? item : item?.title || ''))
     .filter(Boolean)
+  const livePast = (archivedExhibitions || [])
+    .map((item) => [item?.title, item?.description].filter(Boolean).join(' - '))
+    .filter(Boolean)
+  const past = manualPast.length ? manualPast : livePast
   const future = (data?.futurePlans || [])
     .map((item) => {
       if (typeof item === 'string') return item

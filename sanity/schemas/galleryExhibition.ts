@@ -122,6 +122,24 @@ export default defineType({
     defineField({ name: 'endDate', type: 'date' }),
 
     defineField({
+      name: 'archiveStatusOverride',
+      title: 'Status override (escape hatch)',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Let dates decide (default)', value: 'auto' },
+          { title: 'Force: Coming soon', value: 'comingSoon' },
+          { title: 'Force: Current', value: 'current' },
+          { title: 'Force: Archived / past', value: 'archived' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'auto',
+      description:
+        'Leave this on "Let dates decide" - the site works out the status automatically: no start date yet = Coming soon, end date already passed = Archived, otherwise = Current. Only change this if you need to manually force a status regardless of the dates above. This setting always overrides the automatic date logic.',
+    }),
+
+    defineField({
       name: 'bgColor',
       title: 'Bg Color',
       type: 'string',
