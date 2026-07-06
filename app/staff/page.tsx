@@ -48,7 +48,8 @@ const query = groq`{
     defined(slug.current) &&
     (${ARCHIVED_FILTER})
   ] | order(coalesce(endDate, startDate) desc) [0...8] {
-    _id, title, slug, startDate, endDate
+    _id, title, slug, startDate, endDate,
+    "heroImageUrl": coalesce(heroImages[0].asset->url + "${IMAGE_PARAMS}", galleryImages[0].asset->url + "${IMAGE_PARAMS}")
   }
 }`
 
