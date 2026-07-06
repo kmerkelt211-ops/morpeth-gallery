@@ -10,6 +10,12 @@ import PastExhibitionsSection, { type PastExhibitionItem } from '../components/p
 
 export const revalidate = 60
 
+const GUEST_ARTIST_SECTIONS = [
+  { key: 'visiting', label: 'Visiting' },
+  { key: 'welcoming', label: 'Welcoming' },
+  { key: 'projects', label: 'Projects' },
+] as const
+
 type StaffPageCopy = {
   title?: string
   kicker?: string
@@ -126,38 +132,50 @@ export default async function StaffExhibitionsPage() {
           </div>
         </header>
 
-        <div className="grid gap-10 md:grid-cols-3">
-          {data.map((ex, index) =>
-            ex.slug?.current ? (
-              <RevealOnScroll key={ex._id} delay={Math.min(index * 45, 270)}>
-                <Link href={`/${ex.slug.current}`} className="block">
-                  <div className="relative aspect-[4/5] bg-neutral-200">
-                    {ex.heroImageUrl && (
-                      <Image
-                        src={ex.heroImageUrl}
-                        alt={ex.title}
-                        fill
-                        sizes="(min-width: 768px) 33vw, 100vw"
-                        className="object-cover"
-                      />
-                    )}
-                  </div>
-                  <h3 className="font-exhibitions mt-4 text-lg tracking-[0.12em] text-neutral-900">
-                    {ex.title}
-                  </h3>
-                  {ex.description ? (
-                    <p className="mt-2 text-sm text-neutral-700">{ex.description}</p>
-                  ) : null}
-                </Link>
-              </RevealOnScroll>
-            ) : null
-          )}
-          {!data.length ? (
-            <p className="md:col-span-3 text-sm text-neutral-600">
-              No guest artist exhibitions are published in Sanity yet.
-            </p>
-          ) : null}
-        </div>
+        {GUEST_ARTIST_SECTIONS.map((section) => {
+          const items = data.filter((ex) => (ex.guestArtistCategory || 'visiting') === section.key)
+          if (!items.length) return null
+
+          return (
+            <section key={section.key} className="mb-16">
+              <h2 className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">
+                {section.label}
+              </h2>
+              <div className="mt-6 grid gap-10 md:grid-cols-3">
+                {items.map((ex, index) =>
+                  ex.slug?.current ? (
+                    <RevealOnScroll key={ex._id} delay={Math.min(index * 45, 270)}>
+                      <Link href={`/${ex.slug.current}`} className="block">
+                        <div className="relative aspect-[4/5] bg-neutral-200">
+                          {ex.heroImageUrl && (
+                            <Image
+                              src={ex.heroImageUrl}
+                              alt={ex.title}
+                              fill
+                              sizes="(min-width: 768px) 33vw, 100vw"
+                              className="object-cover"
+                            />
+                          )}
+                        </div>
+                        <h3 className="font-exhibitions mt-4 text-lg tracking-[0.12em] text-neutral-900">
+                          {ex.title}
+                        </h3>
+                        {ex.description ? (
+                          <p className="mt-2 text-sm text-neutral-700">{ex.description}</p>
+                        ) : null}
+                      </Link>
+                    </RevealOnScroll>
+                  ) : null
+                )}
+              </div>
+            </section>
+          )
+        })}
+        {!data.length ? (
+          <p className="text-sm text-neutral-600">
+            No guest artist exhibitions are published in Sanity yet.
+          </p>
+        ) : null}
 
         <div className="mt-16">
           <PastExhibitionsSection items={pastExhibitions} />

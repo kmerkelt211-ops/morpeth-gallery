@@ -11,6 +11,7 @@ export type ExhibitionCard = {
   heroImageUrl?: string
   heroImageUrls?: string[]
   galleryImageUrls?: string[]
+  guestArtistCategory?: 'visiting' | 'welcoming' | 'projects'
 }
 
 // Shared projection used by the staff, student and alumni listing pages -
@@ -24,7 +25,8 @@ export const exhibitionCardProjection = groq`
   slug,
   "heroImageUrl": heroImages[0].asset->url + "${IMAGE_PARAMS}",
   "heroImageUrls": heroImages[]{ "url": asset->url + "${IMAGE_PARAMS}" }.url,
-  "galleryImageUrls": galleryImages[]{ "url": asset->url + "${IMAGE_PARAMS}" }.url
+  "galleryImageUrls": galleryImages[]{ "url": asset->url + "${IMAGE_PARAMS}" }.url,
+  guestArtistCategory
 `
 
 export function pickRandomHeroImage(items: ExhibitionCard[]): string {

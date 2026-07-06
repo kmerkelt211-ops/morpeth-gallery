@@ -110,6 +110,23 @@ export default defineType({
     }),
 
     defineField({
+      name: 'guestArtistCategory',
+      title: 'Guest artist category',
+      type: 'string',
+      hidden: ({ document }) => document?.exhibitorType !== 'staffVisiting',
+      options: {
+        list: [
+          { title: 'Visiting', value: 'visiting' },
+          { title: 'Welcoming', value: 'welcoming' },
+          { title: 'Projects', value: 'projects' },
+        ],
+        layout: 'radio',
+      },
+      description:
+        'Only used for Guest Artists. Splits the Guest Artists page into three sections. Leave blank to show under "Visiting".',
+    }),
+
+    defineField({
       name: 'isCurrent',
       title: "Show in 'Current digital exhibitions' carousel",
       type: 'boolean',
