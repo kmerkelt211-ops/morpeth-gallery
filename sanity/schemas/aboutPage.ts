@@ -254,6 +254,73 @@ export default defineType({
     }),
 
     defineField({
+      name: 'teamMembers',
+      title: 'Team members',
+      description: 'Staff shown in the "Meet the team" section on the About page.',
+      type: 'array',
+      validation: (r) => r.max(20),
+      of: [
+        {
+          type: 'object',
+          name: 'teamMember',
+          fields: [
+            defineField({
+              name: 'photo',
+              title: 'Photo',
+              type: 'image',
+              options: { hotspot: true },
+              validation: (r) => r.required(),
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+            }),
+            defineField({
+              name: 'name',
+              title: 'Name',
+              type: 'string',
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: 'role',
+              title: 'Role / title',
+              type: 'string',
+              description: 'e.g. "Head of Department", "Art Technician", "Photography Technician", "Teacher of Art & Photography"',
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: 'subjects',
+              title: 'Subjects taught',
+              type: 'array',
+              of: [{ type: 'string' }],
+              options: {
+                list: [
+                  { title: 'Art', value: 'art' },
+                  { title: 'Photography', value: 'photography' },
+                ],
+              },
+              description: 'Select all that apply - staff can teach both.',
+            }),
+            defineField({
+              name: 'bio',
+              title: 'Short bio',
+              type: 'text',
+              rows: 3,
+            }),
+            defineField({
+              name: 'email',
+              title: 'Email (optional)',
+              type: 'string',
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'name',
+              subtitle: 'role',
+              media: 'photo',
+            },
+          },
+        },
+      ],
+    }),
+    defineField({
       name: 'gallerySnapshots',
       title: 'Gallery snapshots',
       type: 'array',

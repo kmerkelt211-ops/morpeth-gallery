@@ -73,6 +73,21 @@ type AboutHeroOverrideImage = {
   alt?: string
 }
 
+type TeamMember = {
+  photoUrl?: string
+  alt?: string
+  name?: string
+  role?: string
+  subjects?: string[]
+  bio?: string
+  email?: string
+}
+
+const SUBJECT_LABELS: Record<string, string> = {
+  art: 'Art',
+  photography: 'Photography',
+}
+
 type AboutPageData = {
   title?: string
   intro?: string
@@ -89,6 +104,7 @@ type AboutPageData = {
   futurePlans?: Array<string | { title?: string; description?: string }>
   communityLinks?: CommunityLink[]
   aboutFeatureImage?: AboutFeatureImage
+  teamMembers?: TeamMember[]
   gallerySnapshots?: GallerySnapshot[]
   body?: PortableTextBlock[]
 }
@@ -133,6 +149,15 @@ const aboutPageQuery = groq`*[_id == "page_about"][0]{
     caption,
     "alt": image.alt,
     "imageUrl": image.asset->url + "${IMAGE_PARAMS}"
+  },
+  teamMembers[]{
+    "photoUrl": photo.asset->url + "${IMAGE_PARAMS}",
+    "alt": photo.alt,
+    name,
+    role,
+    subjects,
+    bio,
+    email
   },
   gallerySnapshots[]{alt, title, artist, year, caption, asset->{url}},
   body
@@ -528,6 +553,9 @@ export default async function AboutPage() {
         alt: data.heroImageOverride.alt,
       }
     : null
+  const teamMembers = (data?.teamMembers || []).filter(
+    (member): member is TeamMember => Boolean(member?.photoUrl && member?.name)
+  )
   const randomSanityHeroImage = pickRandomSanityHeroImage(data, sitewideImagePool)
   const aboutHeroImageUrl =
     fixedHeroImage?.url ||
@@ -678,6 +706,57 @@ export default async function AboutPage() {
             </RevealOnScroll>
           </div>
         </section>
+
+        {teamMembers.length > 0 ? (
+          <section className="mt-16 border-t border-neutral-200 pt-12" aria-labelledby="about-team-heading">
+            <RevealOnScroll>
+              <h2 id="about-team-heading" className="font-exhibitions text-xs tracking-[0.35em] text-neutral-700">
+                MEET THE TEAM
+              </h2>
+            </RevealOnScroll>
+            <div className="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {teamMembers.map((member, idx) => (
+                <RevealOnScroll
+                  key={`${member.name}-${idx}`}
+                  delay={Math.min(idx * 50, 250)}
+                  className="flex flex-col overflow-hidden border border-neutral-200 bg-white"
+                >
+                  <div className="relative aspect-[4/5] bg-neutral-200">
+                    {member.photoUrl ? (
+                      <Image
+                        src={member.photoUrl}
+                        alt={member.alt || `${member.name} portrait`}
+                        fill
+                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="flex flex-1 flex-col gap-2 p-5">
+                    <h3 className="font-exhibitions text-lg tracking-[0.08em] text-neutral-900">{member.name}</h3>
+                    <p className="text-sm font-medium text-neutral-700">{member.role}</p>
+                    {member.subjects && member.subjects.length > 0 ? (
+                      <p className="text-xs uppercase tracking-[0.14em] text-neutral-500">
+                        {member.subjects.map((s) => SUBJECT_LABELS[s] || s).join(' & ')}
+                      </p>
+                    ) : null}
+                    {member.bio ? (
+                      <p className="mt-1 text-sm leading-relaxed text-neutral-600">{member.bio}</p>
+                    ) : null}
+                    {member.email ? (
+                      <a
+                        href={`mailto:${member.email}`}
+                        className="lux-underline mt-auto pt-3 text-[11px] uppercase tracking-[0.18em] text-neutral-900"
+                      >
+                        {member.email}
+                      </a>
+                    ) : null}
+                  </div>
+                </RevealOnScroll>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <section className="mt-16 border-t border-neutral-200 pt-12">
           <RevealOnScroll>
