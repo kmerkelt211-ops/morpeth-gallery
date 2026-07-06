@@ -73,6 +73,7 @@ const mainNav = [
   { href: "/student", label: "Student" },
   { href: "/guest-artists", label: "Guest Artists" },
   { href: "/alumni", label: "Alumni" },
+  { href: "/house", label: "The House" },
   { href: "/clubs", label: "Clubs" },
   { href: "/support", label: "Support" },
 ];

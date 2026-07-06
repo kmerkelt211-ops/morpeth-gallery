@@ -1,6 +1,6 @@
 import { defineType, defineField } from 'sanity'
 
-const reservedSlugs = new Set(['about', 'clubs', 'staff', 'guest-artists', 'student', 'studio', 'alumni', 'support', 'exhibitions'])
+const reservedSlugs = new Set(['about', 'clubs', 'staff', 'guest-artists', 'student', 'studio', 'alumni', 'support', 'exhibitions', 'house'])
 
 export default defineType({
   name: 'galleryExhibition',
@@ -102,6 +102,7 @@ export default defineType({
           { title: 'Student work', value: 'student' },
           { title: 'Guest artists', value: 'staffVisiting' },
           { title: 'Alumni', value: 'alumni' },
+          { title: 'The House', value: 'house' },
           { title: 'Collaborative / other', value: 'other' },
         ],
         layout: 'radio',

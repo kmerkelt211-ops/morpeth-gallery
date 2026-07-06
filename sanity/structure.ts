@@ -26,6 +26,10 @@ export const structure: StructureResolver = (S) =>
         .child(S.document().schemaType('alumniPage').documentId('page_alumni')),
 
       S.listItem()
+        .title('The House page')
+        .child(S.document().schemaType('housePage').documentId('page_house')),
+
+      S.listItem()
         .title('Clubs page')
         .child(S.document().schemaType('clubsPage').documentId('page_clubs')),
 
@@ -103,6 +107,14 @@ export const structure: StructureResolver = (S) =>
                   S.documentTypeList('galleryExhibition')
                     .title('Guest artists')
                     .filter('_type == "galleryExhibition" && exhibitorType == "staffVisiting"')
+                ),
+
+              S.listItem()
+                .title('The House')
+                .child(
+                  S.documentTypeList('galleryExhibition')
+                    .title('The House')
+                    .filter('_type == "galleryExhibition" && exhibitorType == "house"')
                 ),
 
               S.listItem()

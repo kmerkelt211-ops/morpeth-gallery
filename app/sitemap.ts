@@ -8,6 +8,7 @@ const staticRoutes = [
   '/staff',
   '/guest-artists',
   '/alumni',
+  '/house',
   '/clubs',
   '/support',
   '/shop',

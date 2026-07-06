@@ -6,6 +6,7 @@ import alumniPage from '../schemas/alumniPage'
 import clubsPage from '../schemas/clubsPage'
 import galleryExhibition from '../schemas/galleryExhibition'
 import homePage from '../schemas/homePage'
+import housePage from '../schemas/housePage'
 import product from '../schemas/product'
 import shopPage from '../schemas/shopPage'
 import staffPage from '../schemas/staffPage'
@@ -17,6 +18,7 @@ export const schemaTypes = [
   studentPage,
   staffPage,
   alumniPage,
+  housePage,
   clubsPage,
   aboutPage,
   supportPage,
