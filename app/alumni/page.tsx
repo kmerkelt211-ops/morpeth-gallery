@@ -274,60 +274,61 @@ export default async function AlumniPage() {
                 <RevealOnScroll
                   key={`${person.name}-${index}`}
                   delay={Math.min(index * 60, 300)}
-                  className="lux-hover-rise flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white transition-shadow duration-300 hover:shadow-lg"
                 >
-                  <div className="relative aspect-[4/5] bg-neutral-200">
-                    {person.imageUrl ? (
-                      <Image
-                        src={person.imageUrl}
-                        alt={person.alt || `${person.name} portrait`}
-                        fill
-                        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                        className="object-cover"
-                      />
-                    ) : null}
-                  </div>
-                  <div className="flex flex-1 flex-col gap-2 p-5">
-                    <h4 className="font-exhibitions text-lg tracking-[0.08em] text-neutral-900">
-                      {person.name}
-                      {person.graduationYear ? (
-                        <span className="ml-2 text-sm font-normal text-neutral-500">
-                          (left {person.graduationYear})
-                        </span>
+                  <div className="lux-hover-rise flex h-full flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white transition-shadow duration-300 hover:shadow-lg">
+                    <div className="relative aspect-[4/5] bg-neutral-200">
+                      {person.imageUrl ? (
+                        <Image
+                          src={person.imageUrl}
+                          alt={person.alt || `${person.name} portrait`}
+                          fill
+                          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                          className="object-cover"
+                        />
                       ) : null}
-                    </h4>
-                    {person.currentPursuit ? (
-                      <p className="text-sm font-medium text-neutral-700">{person.currentPursuit}</p>
-                    ) : null}
-                    {person.quote ? (
-                      <p className="mt-1 text-sm leading-relaxed text-neutral-600">&ldquo;{person.quote}&rdquo;</p>
-                    ) : null}
-                    <div className="mt-auto flex flex-col gap-2 pt-3 text-[11px] uppercase tracking-[0.18em]">
-                      {person.portfolioUrl ? (
-                        <a
-                          href={person.portfolioUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="lux-underline text-neutral-900"
-                        >
-                          Website: {person.portfolioUrl.replace(/^https?:\/\//i, '').replace(/\/+$/, '')}
-                        </a>
+                    </div>
+                    <div className="flex flex-1 flex-col gap-2 p-5">
+                      <h4 className="font-exhibitions text-lg tracking-[0.08em] text-neutral-900">
+                        {person.name}
+                        {person.graduationYear ? (
+                          <span className="ml-2 text-sm font-normal text-neutral-500">
+                            (left {person.graduationYear})
+                          </span>
+                        ) : null}
+                      </h4>
+                      {person.currentPursuit ? (
+                        <p className="text-sm font-medium text-neutral-700">{person.currentPursuit}</p>
                       ) : null}
-                      {person.instagramHandle ? (
-                        (() => {
-                          const handle = normalizeInstagramHandle(person.instagramHandle)
-                          return handle ? (
-                            <a
-                              href={`https://instagram.com/${handle}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="lux-underline text-neutral-900"
-                            >
-                              Instagram: @{handle}
-                            </a>
-                          ) : null
-                        })()
+                      {person.quote ? (
+                        <p className="mt-1 text-sm leading-relaxed text-neutral-600">&ldquo;{person.quote}&rdquo;</p>
                       ) : null}
+                      <div className="mt-auto flex flex-col gap-2 pt-3 text-[11px] uppercase tracking-[0.18em]">
+                        {person.portfolioUrl ? (
+                          <a
+                            href={person.portfolioUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="lux-underline text-neutral-900"
+                          >
+                            Website: {person.portfolioUrl.replace(/^https?:\/\//i, '').replace(/\/+$/, '')}
+                          </a>
+                        ) : null}
+                        {person.instagramHandle ? (
+                          (() => {
+                            const handle = normalizeInstagramHandle(person.instagramHandle)
+                            return handle ? (
+                              <a
+                                href={`https://instagram.com/${handle}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="lux-underline text-neutral-900"
+                              >
+                                Instagram: @{handle}
+                              </a>
+                            ) : null
+                          })()
+                        ) : null}
+                      </div>
                     </div>
                   </div>
                 </RevealOnScroll>
