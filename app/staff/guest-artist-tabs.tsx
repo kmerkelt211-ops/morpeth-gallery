@@ -41,9 +41,11 @@ type GuestArtistTabsProps = {
 }
 
 export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTabsProps) {
-  const [activeKey, setActiveKey] = useState<SectionKey>('visiting')
+  const [activeKey, setActiveKey] = useState<SectionKey | null>(null)
 
-  const activeItems = items.filter((ex) => (ex.guestArtistCategory || 'visiting') === activeKey)
+  const activeItems = activeKey
+    ? items.filter((ex) => (ex.guestArtistCategory || 'visiting') === activeKey)
+    : []
 
   return (
     <div className="mb-16">
@@ -176,6 +178,7 @@ export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTab
         })}
       </div>
 
+      {activeKey ? (
       <div className="mt-10" role="tabpanel">
         {activeItems.length > 0 ? (
           <div className="grid gap-10 md:grid-cols-3">
@@ -211,6 +214,7 @@ export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTab
           </p>
         )}
       </div>
+      ) : null}
     </div>
   )
 }
