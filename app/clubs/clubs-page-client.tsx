@@ -164,23 +164,24 @@ export default function ClubsPageClient({
                   <RevealOnScroll
                     key={club.id}
                     delay={Math.min(index * 60, 240)}
-                    className="lux-hover-rise group flex flex-col border border-neutral-200 bg-white shadow-[0_1px_0_rgba(0,0,0,0.03)]"
                   >
-                    <div className="border-b border-neutral-200 bg-white">
-                      <Poster club={club} />
-                    </div>
+                    <div className="lux-hover-rise group flex h-full flex-col border border-neutral-200 bg-white shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+                      <div className="border-b border-neutral-200 bg-white">
+                        <Poster club={club} />
+                      </div>
 
-                    <div className="flex items-center justify-between px-5 py-4">
-                      <h3 className="font-exhibitions text-sm tracking-[0.16em] text-neutral-900 md:text-base">
-                        {club.title}
-                      </h3>
-                      <Link
-                        href={`/clubs/${club.slug}`}
-                        className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-3 py-2 text-[10px] uppercase tracking-[0.26em] text-neutral-900 transition group-hover:bg-neutral-900 group-hover:text-white"
-                      >
-                        {club.ctaLabel}
-                        <span aria-hidden>→</span>
-                      </Link>
+                      <div className="flex items-center justify-between px-5 py-4">
+                        <h3 className="font-exhibitions text-sm tracking-[0.16em] text-neutral-900 md:text-base">
+                          {club.title}
+                        </h3>
+                        <Link
+                          href={`/clubs/${club.slug}`}
+                          className="font-exhibitions inline-flex items-center gap-2 border border-neutral-900 px-3 py-2 text-[10px] uppercase tracking-[0.26em] text-neutral-900 transition group-hover:bg-neutral-900 group-hover:text-white"
+                        >
+                          {club.ctaLabel}
+                          <span aria-hidden>→</span>
+                        </Link>
+                      </div>
                     </div>
                   </RevealOnScroll>
                 ))}
