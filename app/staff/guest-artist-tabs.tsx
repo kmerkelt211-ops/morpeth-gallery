@@ -11,18 +11,21 @@ const GUEST_ARTIST_SECTIONS = [
     key: 'visiting',
     label: 'Visiting',
     accent: '#9EDFE6',
+    fallbackImage: '/guest-artists/visiting-placeholder.jpg',
     fallbackDescription: "Students visit an artist, view their work, or have their own work displayed alongside it.",
   },
   {
     key: 'welcoming',
     label: 'Welcoming',
     accent: '#d292b0',
+    fallbackImage: '/guest-artists/welcoming-placeholder.jpg',
     fallbackDescription: 'Artists who come to Portman Gallery to show their work and share their practice with students.',
   },
   {
     key: 'projects',
     label: 'Projects',
     accent: '#FFC16B',
+    fallbackImage: '/guest-artists/projects-placeholder.jpg',
     fallbackDescription: 'Collaborative projects developed with guest artists over an extended period.',
   },
 ] as const
@@ -53,10 +56,7 @@ export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTab
         {GUEST_ARTIST_SECTIONS.map((section, index) => {
           const isActive = section.key === activeKey
           const card = categoryCards?.[section.key]
-          const fallbackImage = items.find(
-            (ex) => (ex.guestArtistCategory || 'visiting') === section.key && ex.heroImageUrl
-          )?.heroImageUrl
-          const imageUrl = card?.imageUrl || fallbackImage
+          const imageUrl = card?.imageUrl || section.fallbackImage
           const description = card?.description?.trim() || section.fallbackDescription
 
           return (
@@ -65,7 +65,7 @@ export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTab
                 type="button"
                 role="tab"
                 aria-selected={isActive}
-                onClick={() => setActiveKey(section.key)}
+                onClick={() => setActiveKey(isActive ? null : section.key)}
                 className={`lux-hover-rise group flex h-full w-full flex-col border bg-white text-left shadow-[0_1px_0_rgba(0,0,0,0.03)] transition-colors duration-300 ${
                   isActive ? 'border-neutral-900' : 'border-neutral-200'
                 }`}
@@ -114,12 +114,12 @@ export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTab
                   </div>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between px-5 py-4">
+                <div className="mt-auto flex items-center justify-between gap-4 px-5 py-4">
                   <h3 className="font-exhibitions text-sm tracking-[0.16em] text-neutral-900 md:text-base">
                     {section.label}
                   </h3>
                   <span
-                    className={`font-exhibitions inline-flex items-center gap-2 border px-3 py-2 text-[10px] uppercase tracking-[0.26em] transition ${
+                    className={`font-exhibitions inline-flex shrink-0 items-center gap-2 border px-3 py-2 text-[10px] uppercase tracking-[0.26em] transition ${
                       isActive
                         ? 'border-neutral-900 bg-neutral-900 text-white'
                         : 'border-neutral-900 text-neutral-900 group-hover:bg-neutral-900 group-hover:text-white'
