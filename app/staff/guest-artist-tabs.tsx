@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import RevealOnScroll from '../components/reveal-on-scroll'
@@ -45,10 +45,21 @@ type GuestArtistTabsProps = {
 
 export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTabsProps) {
   const [activeKey, setActiveKey] = useState<SectionKey | null>(null)
+  const resultsRef = useRef<HTMLDivElement | null>(null)
 
   const activeItems = activeKey
     ? items.filter((ex) => (ex.guestArtistCategory || 'visiting') === activeKey)
     : []
+
+  const activeSection = GUEST_ARTIST_SECTIONS.find((s) => s.key === activeKey)
+
+  useEffect(() => {
+    if (!activeKey || !resultsRef.current) return
+    const timer = window.setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 80)
+    return () => window.clearTimeout(timer)
+  }, [activeKey])
 
   return (
     <div className="mb-16">
@@ -136,7 +147,20 @@ export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTab
       </div>
 
       {activeKey ? (
-        <div className="mt-10">
+        <div ref={resultsRef} className="mt-10 scroll-mt-24 animate-[fade-slide-up_0.5s_ease-out]">
+          <div className="mb-6 flex items-center gap-3">
+            <span
+              aria-hidden
+              className="h-8 w-1.5 rounded-full"
+              style={{ backgroundColor: activeSection?.accent }}
+            />
+            <h3 className="font-exhibitions text-xl uppercase tracking-[0.14em] text-neutral-900">
+              {activeSection?.label}
+            </h3>
+            <span className="font-exhibitions text-[11px] uppercase tracking-[0.2em] text-neutral-500">
+              {activeItems.length} {activeItems.length === 1 ? 'exhibition' : 'exhibitions'}
+            </span>
+          </div>
           {activeItems.length > 0 ? (
             <div className="grid gap-10 md:grid-cols-3">
               {activeItems.map((ex, index) =>
