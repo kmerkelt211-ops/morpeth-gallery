@@ -274,7 +274,7 @@ export default async function AlumniPage() {
                 <RevealOnScroll
                   key={`${person.name}-${index}`}
                   delay={Math.min(index * 60, 300)}
-                  className="flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white"
+                  className="lux-hover-rise flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white transition-shadow duration-300 hover:shadow-lg"
                 >
                   <div className="relative aspect-[4/5] bg-neutral-200">
                     {person.imageUrl ? (
