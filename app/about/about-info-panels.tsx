@@ -31,7 +31,7 @@ export default function AboutInfoPanels({
           type="button"
           onClick={() => setOpenPanel(isOpen('quick-facts') ? null : 'quick-facts')}
           aria-expanded={isOpen('quick-facts')}
-          className="w-full p-6 text-left"
+          className="w-full p-6 text-left transition-colors hover:bg-neutral-50"
         >
           <h2 className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600 md:text-[11px] md:tracking-[0.22em]">QUICK FACTS</h2>
         </button>
@@ -56,7 +56,7 @@ export default function AboutInfoPanels({
           type="button"
           onClick={() => setOpenPanel(isOpen('past-exhibitions') ? null : 'past-exhibitions')}
           aria-expanded={isOpen('past-exhibitions')}
-          className="w-full p-6 text-left"
+          className="w-full p-6 text-left transition-colors hover:bg-neutral-50"
         >
           <h2 className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600 md:text-[11px] md:tracking-[0.22em]">PAST EXHIBITIONS</h2>
         </button>
@@ -72,7 +72,7 @@ export default function AboutInfoPanels({
           type="button"
           onClick={() => setOpenPanel(isOpen('future-plans') ? null : 'future-plans')}
           aria-expanded={isOpen('future-plans')}
-          className="w-full p-6 text-left"
+          className="w-full p-6 text-left transition-colors hover:bg-neutral-50"
         >
           <h2 className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600 md:text-[11px] md:tracking-[0.22em]">FUTURE / IN DEVELOPMENT</h2>
         </button>
@@ -88,7 +88,7 @@ export default function AboutInfoPanels({
           type="button"
           onClick={() => setOpenPanel(isOpen('community-links') ? null : 'community-links')}
           aria-expanded={isOpen('community-links')}
-          className="w-full p-6 text-left"
+          className="w-full p-6 text-left transition-colors hover:bg-neutral-50"
         >
           <h2 className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-600 md:text-[11px] md:tracking-[0.22em]">COMMUNITY LINKS</h2>
         </button>
