@@ -11,6 +11,12 @@ import GuestArtistTabs from './guest-artist-tabs'
 
 export const revalidate = 60
 
+type CategoryCard = {
+  imageUrl?: string
+  alt?: string
+  description?: string
+}
+
 type StaffPageCopy = {
   title?: string
   kicker?: string
@@ -21,6 +27,9 @@ type StaffPageCopy = {
     imageUrl?: string
     alt?: string
   }
+  visitingCard?: CategoryCard
+  welcomingCard?: CategoryCard
+  projectsCard?: CategoryCard
 }
 
 const query = groq`{
@@ -33,6 +42,21 @@ const query = groq`{
     "heroImageOverride": heroImageOverride{
       "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
       "alt": image.alt
+    },
+    "visitingCard": visitingCard{
+      "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
+      "alt": image.alt,
+      description
+    },
+    "welcomingCard": welcomingCard{
+      "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
+      "alt": image.alt,
+      description
+    },
+    "projectsCard": projectsCard{
+      "imageUrl": image.asset->url + "${IMAGE_PARAMS}",
+      "alt": image.alt,
+      description
     }
   },
   "items": *[
@@ -128,7 +152,14 @@ export default async function StaffExhibitionsPage() {
         </header>
 
         {data.length > 0 ? (
-          <GuestArtistTabs items={data} />
+          <GuestArtistTabs
+            items={data}
+            categoryCards={{
+              visiting: page?.visitingCard,
+              welcoming: page?.welcomingCard,
+              projects: page?.projectsCard,
+            }}
+          />
         ) : (
           <p className="mb-16 text-sm text-neutral-600">
             No guest artist exhibitions are published in Sanity yet.

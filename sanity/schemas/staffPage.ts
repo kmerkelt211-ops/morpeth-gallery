@@ -63,5 +63,54 @@ export default defineType({
         },
       },
     }),
+
+    defineField({
+      name: 'visitingCard',
+      title: 'Visiting card',
+      description: 'Image and description for the "Visiting" category tile - artists who come to Portman.',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'image',
+          title: 'Image',
+          type: 'image',
+          options: { hotspot: true },
+          fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+        }),
+        defineField({ name: 'description', title: 'Description', type: 'text', rows: 3 }),
+      ],
+    }),
+    defineField({
+      name: 'welcomingCard',
+      title: 'Welcoming card',
+      description: 'Image and description for the "Welcoming" category tile - students visiting an artist / viewing work / having their own work displayed.',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'image',
+          title: 'Image',
+          type: 'image',
+          options: { hotspot: true },
+          fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+        }),
+        defineField({ name: 'description', title: 'Description', type: 'text', rows: 3 }),
+      ],
+    }),
+    defineField({
+      name: 'projectsCard',
+      title: 'Projects card',
+      description: 'Image and description for the "Projects" category tile.',
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'image',
+          title: 'Image',
+          type: 'image',
+          options: { hotspot: true },
+          fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+        }),
+        defineField({ name: 'description', title: 'Description', type: 'text', rows: 3 }),
+      ],
+    }),
   ],
 })
