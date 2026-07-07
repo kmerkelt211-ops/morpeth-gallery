@@ -10,16 +10,19 @@ const GUEST_ARTIST_SECTIONS = [
   {
     key: 'visiting',
     label: 'Visiting',
-    fallbackDescription: 'Artists who come to Portman Gallery to show their work and share their practice with students.',
+    accent: '#9EDFE6',
+    fallbackDescription: "Students visit an artist, view their work, or have their own work displayed alongside it.",
   },
   {
     key: 'welcoming',
     label: 'Welcoming',
-    fallbackDescription: "Students visit an artist, view their work, or have their own work displayed alongside it.",
+    accent: '#d292b0',
+    fallbackDescription: 'Artists who come to Portman Gallery to show their work and share their practice with students.',
   },
   {
     key: 'projects',
     label: 'Projects',
+    accent: '#FFC16B',
     fallbackDescription: 'Collaborative projects developed with guest artists over an extended period.',
   },
 ] as const
@@ -44,7 +47,7 @@ export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTab
 
   return (
     <div className="mb-16">
-      <div className="grid gap-6 sm:grid-cols-3" role="tablist" aria-label="Guest artist categories">
+      <div className="grid gap-8 sm:grid-cols-3" role="tablist" aria-label="Guest artist categories">
         {GUEST_ARTIST_SECTIONS.map((section) => {
           const isActive = section.key === activeKey
           const card = categoryCards?.[section.key]
@@ -61,14 +64,15 @@ export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTab
               role="tab"
               aria-selected={isActive}
               onClick={() => setActiveKey(section.key)}
-              className="group text-left"
+              className="group relative text-left"
             >
               <div
-                className={`relative aspect-[4/3] overflow-hidden bg-neutral-200 transition-all duration-300 ${
-                  isActive
-                    ? 'ring-2 ring-neutral-900 ring-offset-2'
-                    : 'opacity-70 group-hover:opacity-100'
+                className={`relative aspect-[4/3] overflow-hidden bg-neutral-200 transition-all duration-500 ease-out ${
+                  isActive ? '-translate-y-2 shadow-2xl' : 'group-hover:-translate-y-2 group-hover:shadow-2xl'
                 }`}
+                style={{
+                  boxShadow: isActive ? `0 24px 48px -16px ${section.accent}99` : undefined,
+                }}
               >
                 {imageUrl ? (
                   <Image
@@ -76,21 +80,97 @@ export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTab
                     alt={card?.alt || `${section.label} category image`}
                     fill
                     sizes="(min-width: 768px) 33vw, 100vw"
-                    className={`object-cover transition-transform duration-500 ${
-                      isActive ? 'scale-105' : 'group-hover:scale-105'
+                    className={`object-cover transition-all duration-700 ease-out ${
+                      isActive
+                        ? 'scale-110 saturate-150 grayscale-0'
+                        : 'grayscale group-hover:scale-110 group-hover:saturate-150 group-hover:grayscale-0'
                     }`}
                   />
                 ) : null}
+
+                {/* Diagonal shine sweep */}
                 <div
-                  className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 ${
-                    isActive ? 'opacity-100' : 'opacity-60 group-hover:opacity-80'
+                  aria-hidden
+                  className={`pointer-events-none absolute inset-0 -translate-x-full skew-x-12 bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-700 ease-out ${
+                    isActive ? 'translate-x-full' : 'group-hover:translate-x-full'
                   }`}
                 />
+
+                {/* Colour tint wash */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+                  style={{ backgroundColor: section.accent, opacity: isActive ? 0.22 : 0 }}
+                />
+                <div
+                  aria-hidden
+                  className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${
+                    isActive ? 'opacity-0' : 'opacity-0 group-hover:opacity-15'
+                  }`}
+                  style={{ backgroundColor: section.accent }}
+                />
+
+                {/* Legibility gradient */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent"
+                />
+
+                {/* "View" prompt on hover */}
+                <div
+                  aria-hidden
+                  className={`pointer-events-none absolute inset-0 flex items-center justify-center transition-all duration-300 ${
+                    isActive
+                      ? 'scale-90 opacity-0'
+                      : 'scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100'
+                  }`}
+                >
+                  <span className="font-exhibitions rounded-full border border-white/80 bg-black/30 px-6 py-2 text-[10px] uppercase tracking-[0.32em] text-white backdrop-blur-sm">
+                    View
+                  </span>
+                </div>
+
+                {/* Active corner marker */}
+                <div
+                  aria-hidden
+                  className={`absolute right-3 top-3 h-2.5 w-2.5 rounded-full transition-all duration-300 ${
+                    isActive ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
+                  }`}
+                  style={{ backgroundColor: section.accent, boxShadow: `0 0 0 3px rgba(255,255,255,0.85)` }}
+                />
               </div>
-              <h3 className="font-exhibitions mt-4 text-lg uppercase tracking-[0.14em] text-neutral-900">
-                {section.label}
-              </h3>
-              <p className="mt-2 text-sm italic leading-relaxed text-neutral-600">{description}</p>
+
+              <div className="mt-4 flex items-center gap-2 overflow-hidden">
+                <h3
+                  className={`font-exhibitions text-lg uppercase transition-all duration-300 ${
+                    isActive ? 'tracking-[0.24em]' : 'tracking-[0.14em] group-hover:tracking-[0.24em]'
+                  }`}
+                  style={{ color: isActive ? section.accent.replace('#', '#') : undefined }}
+                >
+                  {section.label}
+                </h3>
+                <span
+                  aria-hidden
+                  className={`font-exhibitions text-lg transition-all duration-300 ${
+                    isActive
+                      ? 'translate-x-0 opacity-100'
+                      : '-translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100'
+                  }`}
+                  style={{ color: section.accent }}
+                >
+                  →
+                </span>
+              </div>
+
+              <div
+                aria-hidden
+                className={`mt-1.5 h-[3px] rounded-full transition-all duration-500 ease-out ${
+                  isActive ? 'w-full' : 'w-8 group-hover:w-full'
+                }`}
+                style={{ backgroundColor: section.accent }}
+              />
+
+              <p className="mt-3 text-sm italic leading-relaxed text-neutral-600">{description}</p>
             </button>
           )
         })}
