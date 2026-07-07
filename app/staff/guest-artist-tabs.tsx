@@ -49,8 +49,8 @@ export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTab
 
   return (
     <div className="mb-16">
-      <div className="grid gap-8 sm:grid-cols-3" role="tablist" aria-label="Guest artist categories">
-        {GUEST_ARTIST_SECTIONS.map((section) => {
+      <div className="grid gap-8 md:grid-cols-3">
+        {GUEST_ARTIST_SECTIONS.map((section, index) => {
           const isActive = section.key === activeKey
           const card = categoryCards?.[section.key]
           const fallbackImage = items.find(
@@ -60,160 +60,117 @@ export default function GuestArtistTabs({ items, categoryCards }: GuestArtistTab
           const description = card?.description?.trim() || section.fallbackDescription
 
           return (
-            <button
-              key={section.key}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => setActiveKey(section.key)}
-              className="group relative text-left"
-            >
-              <div
-                className={`relative aspect-[4/3] overflow-hidden bg-neutral-200 transition-all duration-500 ease-out ${
-                  isActive ? '-translate-y-2 shadow-2xl' : 'group-hover:-translate-y-2 group-hover:shadow-2xl'
+            <RevealOnScroll key={section.key} delay={Math.min(index * 60, 240)}>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveKey(section.key)}
+                className={`lux-hover-rise group flex h-full w-full flex-col border bg-white text-left shadow-[0_1px_0_rgba(0,0,0,0.03)] transition-colors duration-300 ${
+                  isActive ? 'border-neutral-900' : 'border-neutral-200'
                 }`}
-                style={{
-                  boxShadow: isActive ? `0 24px 48px -16px ${section.accent}99` : undefined,
-                }}
               >
-                {imageUrl ? (
-                  <Image
-                    src={imageUrl}
-                    alt={card?.alt || `${section.label} category image`}
-                    fill
-                    sizes="(min-width: 768px) 33vw, 100vw"
-                    className={`object-cover transition-all duration-700 ease-out ${
-                      isActive
-                        ? 'scale-110 saturate-150 grayscale-0'
-                        : 'grayscale group-hover:scale-110 group-hover:saturate-150 group-hover:grayscale-0'
-                    }`}
-                  />
-                ) : null}
+                <div className="border-b border-neutral-200 bg-white p-6">
+                  <div className="relative mb-4 h-44 w-full overflow-hidden border border-neutral-200 bg-neutral-100">
+                    {imageUrl ? (
+                      <Image
+                        src={imageUrl}
+                        alt={card?.alt || `${section.label} category image`}
+                        fill
+                        sizes="(min-width: 768px) 33vw, 100vw"
+                        className={`object-cover transition-all duration-500 ${
+                          isActive
+                            ? 'scale-105 grayscale-0'
+                            : 'grayscale group-hover:scale-105 group-hover:grayscale-0'
+                        }`}
+                      />
+                    ) : null}
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 transition-opacity duration-300"
+                      style={{ backgroundColor: section.accent, opacity: isActive ? 0.18 : 0 }}
+                    />
+                    <div
+                      aria-hidden
+                      className={`absolute right-2 top-2 h-2.5 w-2.5 rounded-full transition-all duration-300 ${
+                        isActive ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
+                      }`}
+                      style={{ backgroundColor: section.accent, boxShadow: '0 0 0 3px rgba(255,255,255,0.9)' }}
+                    />
+                  </div>
 
-                {/* Diagonal shine sweep */}
-                <div
-                  aria-hidden
-                  className={`pointer-events-none absolute inset-0 -translate-x-full skew-x-12 bg-gradient-to-r from-transparent via-white/50 to-transparent transition-transform duration-700 ease-out ${
-                    isActive ? 'translate-x-full' : 'group-hover:translate-x-full'
-                  }`}
-                />
+                  <div className="font-exhibitions text-[10px] uppercase tracking-[0.26em] text-neutral-700">
+                    PORTMAN GALLERY
+                  </div>
 
-                {/* Colour tint wash */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 transition-opacity duration-500"
-                  style={{ backgroundColor: section.accent, opacity: isActive ? 0.22 : 0 }}
-                />
-                <div
-                  aria-hidden
-                  className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${
-                    isActive ? 'opacity-0' : 'opacity-0 group-hover:opacity-15'
-                  }`}
-                  style={{ backgroundColor: section.accent }}
-                />
-
-                {/* Legibility gradient */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent"
-                />
-
-                {/* "View" prompt on hover */}
-                <div
-                  aria-hidden
-                  className={`pointer-events-none absolute inset-0 flex items-center justify-center transition-all duration-300 ${
-                    isActive
-                      ? 'scale-90 opacity-0'
-                      : 'scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100'
-                  }`}
-                >
-                  <span className="font-exhibitions rounded-full border border-white/80 bg-black/30 px-6 py-2 text-[10px] uppercase tracking-[0.32em] text-white backdrop-blur-sm">
-                    View
-                  </span>
+                  <div className="mt-5">
+                    <div
+                      className="font-exhibitions text-2xl tracking-[0.14em] text-neutral-900 md:text-3xl"
+                      style={{ color: isActive ? section.accent : undefined }}
+                    >
+                      {section.label}
+                    </div>
+                    <div className="mt-2 text-sm font-medium text-neutral-800">{description}</div>
+                  </div>
                 </div>
 
-                {/* Active corner marker */}
-                <div
-                  aria-hidden
-                  className={`absolute right-3 top-3 h-2.5 w-2.5 rounded-full transition-all duration-300 ${
-                    isActive ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
-                  }`}
-                  style={{ backgroundColor: section.accent, boxShadow: `0 0 0 3px rgba(255,255,255,0.85)` }}
-                />
-              </div>
-
-              <div className="mt-4 flex items-center gap-2 overflow-hidden">
-                <h3
-                  className={`font-exhibitions text-lg uppercase transition-all duration-300 ${
-                    isActive ? 'tracking-[0.24em]' : 'tracking-[0.14em] group-hover:tracking-[0.24em]'
-                  }`}
-                  style={{ color: isActive ? section.accent.replace('#', '#') : undefined }}
-                >
-                  {section.label}
-                </h3>
-                <span
-                  aria-hidden
-                  className={`font-exhibitions text-lg transition-all duration-300 ${
-                    isActive
-                      ? 'translate-x-0 opacity-100'
-                      : '-translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100'
-                  }`}
-                  style={{ color: section.accent }}
-                >
-                  →
-                </span>
-              </div>
-
-              <div
-                aria-hidden
-                className={`mt-1.5 h-[3px] rounded-full transition-all duration-500 ease-out ${
-                  isActive ? 'w-full' : 'w-8 group-hover:w-full'
-                }`}
-                style={{ backgroundColor: section.accent }}
-              />
-
-              <p className="mt-3 text-sm italic leading-relaxed text-neutral-600">{description}</p>
-            </button>
+                <div className="mt-auto flex items-center justify-between px-5 py-4">
+                  <h3 className="font-exhibitions text-sm tracking-[0.16em] text-neutral-900 md:text-base">
+                    {section.label}
+                  </h3>
+                  <span
+                    className={`font-exhibitions inline-flex items-center gap-2 border px-3 py-2 text-[10px] uppercase tracking-[0.26em] transition ${
+                      isActive
+                        ? 'border-neutral-900 bg-neutral-900 text-white'
+                        : 'border-neutral-900 text-neutral-900 group-hover:bg-neutral-900 group-hover:text-white'
+                    }`}
+                  >
+                    {isActive ? 'Viewing' : 'View'}
+                    <span aria-hidden>→</span>
+                  </span>
+                </div>
+              </button>
+            </RevealOnScroll>
           )
         })}
       </div>
 
       {activeKey ? (
-      <div className="mt-10" role="tabpanel">
-        {activeItems.length > 0 ? (
-          <div className="grid gap-10 md:grid-cols-3">
-            {activeItems.map((ex, index) =>
-              ex.slug?.current ? (
-                <RevealOnScroll key={ex._id} delay={Math.min(index * 45, 270)}>
-                  <Link href={`/${ex.slug.current}`} className="block">
-                    <div className="relative aspect-[4/5] bg-neutral-200">
-                      {ex.heroImageUrl && (
-                        <Image
-                          src={ex.heroImageUrl}
-                          alt={ex.title}
-                          fill
-                          sizes="(min-width: 768px) 33vw, 100vw"
-                          className="object-cover"
-                        />
-                      )}
-                    </div>
-                    <h3 className="font-exhibitions mt-4 text-lg tracking-[0.12em] text-neutral-900">
-                      {ex.title}
-                    </h3>
-                    {ex.description ? (
-                      <p className="mt-2 text-sm text-neutral-700">{ex.description}</p>
-                    ) : null}
-                  </Link>
-                </RevealOnScroll>
-              ) : null
-            )}
-          </div>
-        ) : (
-          <p className="text-sm text-neutral-600">
-            No {GUEST_ARTIST_SECTIONS.find((s) => s.key === activeKey)?.label.toLowerCase()} exhibitions are published yet.
-          </p>
-        )}
-      </div>
+        <div className="mt-10">
+          {activeItems.length > 0 ? (
+            <div className="grid gap-10 md:grid-cols-3">
+              {activeItems.map((ex, index) =>
+                ex.slug?.current ? (
+                  <RevealOnScroll key={ex._id} delay={Math.min(index * 45, 270)}>
+                    <Link href={`/${ex.slug.current}`} className="block">
+                      <div className="relative aspect-[4/5] bg-neutral-200">
+                        {ex.heroImageUrl && (
+                          <Image
+                            src={ex.heroImageUrl}
+                            alt={ex.title}
+                            fill
+                            sizes="(min-width: 768px) 33vw, 100vw"
+                            className="object-cover"
+                          />
+                        )}
+                      </div>
+                      <h3 className="font-exhibitions mt-4 text-lg tracking-[0.12em] text-neutral-900">
+                        {ex.title}
+                      </h3>
+                      {ex.description ? (
+                        <p className="mt-2 text-sm text-neutral-700">{ex.description}</p>
+                      ) : null}
+                    </Link>
+                  </RevealOnScroll>
+                ) : null
+              )}
+            </div>
+          ) : (
+            <p className="text-sm text-neutral-600">
+              No {GUEST_ARTIST_SECTIONS.find((s) => s.key === activeKey)?.label.toLowerCase()} exhibitions are published yet.
+            </p>
+          )}
+        </div>
       ) : null}
     </div>
   )
