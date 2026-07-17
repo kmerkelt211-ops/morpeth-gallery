@@ -71,8 +71,8 @@ export default function LightboxModal({
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.97 }}
         transition={{ duration: 0.18 }}
-        className="relative flex w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
-        style={{ maxHeight: '92vh' }}
+        className="relative flex w-full max-w-[min(96vw,1600px)] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        style={{ maxHeight: '95vh' }}
       >
         <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-3">
           <p className="font-exhibitions text-[11px] uppercase tracking-[0.2em] text-neutral-700">
@@ -92,7 +92,7 @@ export default function LightboxModal({
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           className="relative flex w-full items-center justify-center overflow-hidden bg-neutral-950"
-          style={{ height: 'min(60vh, 640px)' }}
+          style={{ height: 'min(78vh, 1100px)' }}
         >
           <AnimatePresence mode="wait" initial={false}>
             <motion.img
