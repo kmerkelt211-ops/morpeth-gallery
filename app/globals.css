@@ -229,16 +229,12 @@ html[data-menu-open="true"] .mobile-drawer__panel {
   transform: scale(0.965);
 }
 .reveal-observe[data-effect="wipe-right"] {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-  clip-path: inset(0 100% 0 0 round 1rem);
+  opacity: 0;
+  transform: translate3d(-28px, 0, 0);
 }
 .reveal-observe[data-revealed="true"] {
   opacity: 1;
   transform: translate3d(0, 0, 0);
-}
-.reveal-observe[data-effect="wipe-right"][data-revealed="true"] {
-  clip-path: inset(0 0 0 0 round 1rem);
 }
 
 .support-page-enter {
