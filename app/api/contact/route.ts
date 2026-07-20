@@ -95,7 +95,7 @@ async function sendWithResend(data: ParsedContactRequest, metadata: { ip: string
   const subjectLine = data.subject || `${enquiryType} enquiry`
 
   const text = [
-    'New support enquiry from the Morpeth Gallery website',
+    'New support enquiry from the Portman Gallery website',
     '',
     `Name: ${data.name}`,
     `Email: ${data.email}`,
