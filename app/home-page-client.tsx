@@ -199,7 +199,7 @@ export default function HomePageClient({
     <main className="bg-white text-neutral-900">
       {/* HERO (Tate-style split) */}
       <section className="px-6 pt-10 md:px-12 lg:px-20">
-        <div className="grid overflow-hidden border border-neutral-200 md:grid-cols-2">
+        <div className="mx-auto grid max-w-6xl overflow-hidden border border-neutral-200 md:grid-cols-2">
           {/* Image (left) */}
           <RevealOnScroll effect="fade-left" className="relative min-h-[320px] bg-neutral-100 md:min-h-[560px]">
             {heroImageUrl ? (
@@ -429,7 +429,7 @@ export default function HomePageClient({
         {/* Soft halftone texture behind the section */}
         <div className="pointer-events-none absolute inset-0 halftone-soft opacity-35" />
 
-        <div className="relative">
+        <div className="relative mx-auto max-w-6xl">
           <RevealOnScroll>
             <header className="mb-12 text-center md:text-left">
               <p className="font-exhibitions text-xs tracking-[0.35em] text-neutral-500">
@@ -520,7 +520,7 @@ export default function HomePageClient({
 
       {/* COLOUR BLOCKS / MEMBERSHIP-STYLE PROMOS */}
       <section className="bg-neutral-50 px-6 py-20 md:px-12 lg:px-20">
-        <div className="grid gap-8 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
           <RevealOnScroll effect="fade-up" className="flex flex-col justify-between bg-[#8CC1B2] px-8 py-10 text-white">
             <div>
               <p className="font-exhibitions text-xs tracking-[0.36em]">
