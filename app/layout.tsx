@@ -8,9 +8,9 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { siteUrl } from "./site-config";
 
-const title = "Morpeth Gallery | Portman Gallery";
+const title = "Portman Gallery | Morpeth School";
 const description =
-  "Morpeth Gallery (Portman Gallery) showcases art and photography from students, guest artists and collaborators across the school year.";
+  "Portman Gallery at Morpeth School showcases art and photography from students, guest artists and collaborators across the school year.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
