@@ -278,7 +278,7 @@ export default function HomePageClient({
           onTouchEnd={handleStripTouchEnd}
         >
           <div
-            className={`grid gap-6 md:items-center md:gap-8 ${
+            className={`mx-auto grid max-w-6xl gap-6 md:items-center md:gap-8 ${
               activeExhibitionImageUrl ? 'md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]' : ''
             }`}
           >
