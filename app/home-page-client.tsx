@@ -593,7 +593,7 @@ export default function HomePageClient({
       </section>
 
       {/* FOOTER INFO / SUPPORT */}
-      <section className="relative border-t border-neutral-200 bg-[#9EDFE6] px-6 py-20 md:px-12 lg:px-20">
+      <section className="relative border-t border-neutral-200 bg-[#9EDFE6] px-6 py-16 md:px-12 lg:px-20">
         {/* Soft halftone band behind heading */}
         <div className="pointer-events-none absolute inset-x-0 top-10 mx-auto h-32 max-w-3xl halftone-soft opacity-35" />
         <div className="mx-auto max-w-5xl">
@@ -610,21 +610,19 @@ export default function HomePageClient({
             </p>
           </RevealOnScroll>
 
-          <div className="mt-12 grid md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <div className="mt-10 grid items-center gap-8 md:grid-cols-2 md:gap-12">
             {/* Text band (left) */}
-            <RevealOnScroll effect="fade-right" className="flex flex-col justify-between px-8 py-10 text-neutral-900 md:px-10 md:py-12">
-              <div>
-                <p className="font-exhibitions text-xs tracking-[0.36em] text-neutral-800">
-                  SUPPORT
-                </p>
-                <h3 className="font-exhibitions mt-4 text-2xl font-normal tracking-[0.16em]">
-                  Help the Portman Gallery grow
-                </h3>
-                <p className="mt-4 max-w-md text-sm leading-relaxed text-neutral-800">
-                  Sales of books and prints, donations and partnerships help us fund new shows,
-                  commission projects and provide opportunities for young people at Morpeth.
-                </p>
-              </div>
+            <RevealOnScroll effect="fade-right" className="flex flex-col text-neutral-900">
+              <p className="font-exhibitions text-xs tracking-[0.36em] text-neutral-800">
+                SUPPORT
+              </p>
+              <h3 className="font-exhibitions mt-4 text-2xl font-normal tracking-[0.16em]">
+                Help the Portman Gallery grow
+              </h3>
+              <p className="mt-4 max-w-md text-sm leading-relaxed text-neutral-800">
+                Sales of books and prints, donations and partnerships help us fund new shows,
+                commission projects and provide opportunities for young people at Morpeth.
+              </p>
               <div className="mt-6 flex flex-wrap gap-3 text-xs">
                 <Link
                   href="/support"
@@ -637,13 +635,13 @@ export default function HomePageClient({
             </RevealOnScroll>
 
             {/* Image band (right) */}
-            <RevealOnScroll effect="fade-left" delay={90} className="relative min-h-[260px] md:min-h-[320px]">
+            <RevealOnScroll effect="fade-left" delay={90} className="relative min-h-[280px] overflow-hidden rounded-lg md:min-h-[340px]">
               {heroImageUrl ? (
                 <Image
                   src={heroImageUrl}
                   alt="Installation view in the Portman Gallery"
                   fill
-                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  sizes="(min-width: 1024px) 45vw, 100vw"
                   className="object-cover"
                 />
               ) : (
